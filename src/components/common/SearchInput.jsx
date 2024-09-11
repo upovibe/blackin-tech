@@ -10,10 +10,10 @@ const SearchInput = () => {
       <Input
         type="search"
         placeholder="Search..."
-        className="pr-12 w-ful"
+        className="pr-10 w-ful"
       />
       {/* Search button with icon */}
-      <Button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white bg-slate-700 hover:bg-slate-800 transition-all duration-300 rounded-md">
+      <Button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black/50 p-0 bg-transparent hover:bg-transparent">
         <FaSearch />
       </Button>
     </div>

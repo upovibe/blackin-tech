@@ -17,6 +17,11 @@ function NavBar() {
     navigate('/search');
   };
 
+  const handleSignUpClick = () => {
+    // Redirect to the signup page when the Sign Up button is clicked
+    navigate('/signup');
+  };
+
   return (
     <nav className='relative flex w-full justify-center items-center bg-slate-100'>
       <div className="container flex items-center md:justify-between p-2 py-3 relative w-full">
@@ -45,12 +50,12 @@ function NavBar() {
             </div>
 
             {/* Search Button for smaller screens */}
-            <Button className="lg:hidden p-0 bg-transparent text-slate-700 hover:bg-transparent " size="small" onClick={handleSearchClick}>
+            <Button className="lg:hidden bg-transparent text-slate-700 hover:bg-transparent " size="small" onClick={handleSearchClick}>
               <FaSearch />
             </Button>
 
-            {/* Button */}
-            <Button className="hidden md:block">Sign Up</Button>
+            {/* Sign Up Button */}
+            <Button className="hidden md:block" onClick={handleSignUpClick}>Sign Up</Button>
           </div>
         </div>
 
@@ -65,7 +70,7 @@ function NavBar() {
             <div className="p-4 flex justify-between items-center">
               <div>
                 <Link to="/" className="text-xl font-semibold">
-                    BT
+                  BT
                 </Link>
               </div>
               {/* Close Button */}
@@ -77,16 +82,19 @@ function NavBar() {
               </button>
             </div>
             <ul className="mt-4 space-y-4 p-3">
-              <li className="hover:bg-slate-500 p-2 rounded-md transition-all w-full">
-                <Link to="/jobs" className='cursor-pointer w-full'>Jobs</Link>
+              <li className="hover:bg-slate-500 rounded-md transition-all w-full">
+                <Link to="/jobs" className='block w-full h-full p-2'>Jobs</Link>
               </li>
-              <li className="hover:bg-slate-500 p-2 rounded-md transition-all">
-                <Link to="/about">Abouts</Link>
+              <li className="hover:bg-slate-500 rounded-md transition-all w-full">
+                <Link to="/about" className='block w-full h-full p-2'>Abouts</Link>
               </li>
-              <li className="hover:bg-slate-500 p-2 rounded-md transition-all">
-                <Link to="/terms">Terms</Link>
+              <li className="hover:bg-slate-500 rounded-md transition-all w-full">
+                <Link to="/terms" className='block w-full h-full p-2'>Terms</Link>
               </li>
             </ul>
+            <div className='p-2'>
+              <Button className="block bg-white text-black hover:text-white w-full" onClick={handleSignUpClick}>Sign Up</Button>
+            </div>
           </div>
         </div>
 
