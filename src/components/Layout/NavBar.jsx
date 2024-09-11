@@ -3,9 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import SearchInput from '../common/SearchInput';
 import Button from '../common/Button';
 import Logo from '../common/Logo';
+import NavAvatar from '../auth/NavAvatar';
+import { UserAuth } from '../../contexts/AuthContext';
 import { FaSearch, FaWindowClose } from 'react-icons/fa';
 
 function NavBar() {
+  const { user } = UserAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate(); // For navigation purposes
 
@@ -29,7 +32,7 @@ function NavBar() {
         <div className='flex items-center justify-between w-full'>
           <div className='flex items-center space-x-5'>
             {/* Logo */}
-            <Logo/>
+            <Logo />
 
             <ul className="hidden md:flex items-center space-x-4  w-full md:w-max flex-row justify-start md:justify-center md:items-center gap-6 font-semibold">
               <li className='block w-full hover:bg-slate-700/50 hover:text-white md:hover:text-slate-950 md:hover:bg-transparent transition-all duration-300 ease-in-out md:border-b-2 border-transparent md:hover:border-slate-700 p-2 md:p-0 md:pb-[1px]'>
@@ -52,8 +55,13 @@ function NavBar() {
               <FaSearch />
             </Button>
 
-            {/* Sign Up Button */}
-            <Button className="hidden md:block" onClick={handleSignUpClick}>Sign Up</Button>
+            {/* Conditionally render Sign Up Button and NavAvatar */}
+            {!user && (
+              <div className='w-max'>
+                <Button className="hidden md:block" onClick={handleSignUpClick}>Sign Up</Button>
+              </div>
+            )}
+            {user && <NavAvatar />}
           </div>
         </div>
 
@@ -84,15 +92,17 @@ function NavBar() {
                 <Link to="/jobs" className='block w-full h-full p-2'>Jobs</Link>
               </li>
               <li className="hover:bg-slate-500 rounded-md transition-all w-full">
-                <Link to="/about" className='block w-full h-full p-2'>Abouts</Link>
+                <Link to="/about" className='block w-full h-full p-2'>About</Link>
               </li>
               <li className="hover:bg-slate-500 rounded-md transition-all w-full">
                 <Link to="/terms" className='block w-full h-full p-2'>Terms</Link>
               </li>
             </ul>
-            <div className='p-2'>
-              <Button className="block bg-white text-black hover:text-white w-full" onClick={handleSignUpClick}>Sign Up</Button>
-            </div>
+            {!user && (
+              <div className='p-2'>
+                <Button className="block bg-white text-black hover:text-white w-full" onClick={handleSignUpClick}>Sign Up</Button>
+              </div>
+            )}
           </div>
         </div>
 

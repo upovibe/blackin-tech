@@ -36,36 +36,43 @@ const SignInForm = () => {
     setToast((prevToast) => ({ ...prevToast, visible: false }));
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    if (!formValues.identifier || !formValues.password) {
-      setToast({ type: 'error', message: 'Please fill out all required fields.', visible: true });
-      return;
-    }
-  
-    setLoading(true);
-  
-    try {
-      const result = await signInUser(formValues.identifier, formValues.password);
-  
-      if (result.success) {
-        setToast({ type: 'success', message: 'Sign-in successful!', visible: true });
-        setTimeout(() => {
-          setLoading(false);
-          navigate('/profile');
-        }, 2000);
-      } else {
-        setToast({ type: 'error', message: result.message || 'Sign-in failed', visible: true });
-        setLoading(false);
-      }
-    } catch (error) {
-      setToast({ type: 'error', message: 'An error occurred during sign-in.', visible: true });
-      setLoading(false);
-    }
-  };
 
-  const handleGoogleSignIn = async () => {
+    if (!formValues.identifier || !formValues.password) {
+        setToast({ type: 'error', message: 'Please fill out all required fields.', visible: true });
+        return;
+    }
+
+    setLoading(true);
+
+    try {
+        const result = await signInUser(formValues.identifier, formValues.password);
+
+        if (result.success) {
+            if (formValues.identifier === 'admin@example.com') {
+                // Navigate admin to admin dashboard
+                navigate('/admin/dashboard');
+            } else {
+                // Navigate regular users to their profile
+                navigate('/profile');
+            }
+
+            setToast({ type: 'success', message: 'Sign-in successful!', visible: true });
+        } else {
+            setToast({ type: 'error', message: result.message || 'Sign-in failed', visible: true });
+        }
+
+        setLoading(false);
+    } catch (error) {
+        setToast({ type: 'error', message: 'An error occurred during sign-in.', visible: true });
+        setLoading(false);
+    }
+};
+
+
+  const handleGoogleSignIn  = async () => {
     setLoading(true);
     const result = await signInWithGoogle();
     if (result.success) {
@@ -90,7 +97,7 @@ const SignInForm = () => {
       {/* Form content */}
       <div className="transition-all duration-700 ease-in-out overflow-hidden opacity-100 max-h-screen">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Button className="w-full text-sm h-10" iconLeft={<FaGoogle />} onClick={handleGoogleSignIn}>
+          <Button type="button"  className="w-full text-sm h-10" iconLeft={<FaGoogle />} onClick={handleGoogleSignIn}>
             Sign in with Google
           </Button>
           <HorizontalLineWithText text="or" />

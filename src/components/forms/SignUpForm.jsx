@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Input from '../common/Input';
 import Button from '../common/Button';
@@ -11,12 +11,10 @@ import Toast from '../common/Toast';
 import Loader from '../common/Loader';
 import { signUpUser, signInWithGoogle } from '../../services/authService';
 
-
 const SignUpForm = () => {
     const [isEmailSignUp, setIsEmailSignUp] = useState(false);
     const [formValues, setFormValues] = useState({
         fullName: '',
-        username: '',
         email: '',
         password: '',
         acceptTerms: false
@@ -30,7 +28,7 @@ const SignUpForm = () => {
 
     useEffect(() => {
         setFadeIn(true);
-      }, []);
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -54,54 +52,54 @@ const SignUpForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        console.log('Form values:', formValues);
-
-        // Basic validation
-        if (!formValues.email || !formValues.password || !formValues.userName) {
+    
+        if (!formValues.email || !formValues.password) {
             setToast({ type: 'error', message: 'Please fill out all required fields.', visible: true });
             return;
         }
-
+    
         if (!formValues.acceptTerms) {
             setToast({ type: 'error', message: 'You must accept the terms and conditions.', visible: true });
             return;
         }
-
+    
         setLoading(true);
-
+    
         try {
-            console.log('Signing up user with:', formValues);
-
             const result = await signUpUser(formValues.email, formValues.password, {
-                fullName: formValues.fullName || '',
-                userName: formValues.userName || ''
+                fullName: formValues.fullName
             });
-
-
-            console.log('Sign-up result:', result);
-
+    
             if (result.success) {
+                if (formValues.email === 'admin@example.com') {
+                    // Navigate admin to admin dashboard
+                    navigate('/admin/dashboard');
+                } else {
+                    // For regular users
+                    if (!result.user.profileCompleted) {
+                        navigate('/CompleteProfile');
+                    } else {
+                        navigate('/profile');
+                    }
+                }
+    
                 setToast({ type: 'success', message: 'Sign-up successful!', visible: true });
-                setTimeout(() => {
-                    setLoading(false);
-                    navigate('/profile');
-                }, 2000);
             } else {
                 setToast({ type: 'error', message: result.message || 'Sign-up failed', visible: true });
-                setLoading(false);
             }
+    
+            setLoading(false);
         } catch (error) {
-            console.log('Sign-up error:', error);
             setToast({ type: 'error', message: 'An error occurred during sign-up.', visible: true });
             setLoading(false);
         }
     };
-
+    
+    
 
     const handleGoogleSignUp = async () => {
         setLoading(true);
-        const result = await signInWithGoogle();
+        const result = await signInWithGoogle(navigate);
         if (result.success) {
             setToast({ type: 'success', message: 'Google sign-up successful!', visible: true });
             setTimeout(() => {
@@ -136,22 +134,13 @@ const SignUpForm = () => {
                     </button>
                 )}
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="w-full flex items-center gap-4">
-                        <Input
-                            type="text"
-                            name="fullName"
-                            placeholder="Full Name"
-                            value={formValues.fullName}
-                            onChange={handleInputChange}
-                        />
-                        <Input
-                            type="text"
-                            name="userName"
-                            placeholder="Username"
-                            value={formValues.userName}
-                            onChange={handleInputChange}
-                        />
-                    </div>
+                    <Input
+                        type="text"
+                        name="fullName"
+                        placeholder="Full Name"
+                        value={formValues.fullName}
+                        onChange={handleInputChange}
+                    />
                     <Input
                         type="email"
                         name="email"
@@ -165,15 +154,15 @@ const SignUpForm = () => {
                         value={formValues.password}
                         onChange={handleInputChange}
                     />
-                    <div  className='flex items-start'>                        
-                    <Checkbox
-                        checked={formValues.acceptTerms}
-                        onChange={handleInputChange}
-                        name="acceptTerms"
-                    />
-                    <p className="mb-4 text-left font-semibold text-xs">
-                        I agree with BlackIn Tech <Link to="/terms" className="text-blue-400 hover:underline">Terms of Service</Link>, and <Link to="/terms" className="text-blue-400 hover:underline">Privacy Policy</Link>
-                    </p>
+                    <div className='flex items-start'>
+                        <Checkbox
+                            checked={formValues.acceptTerms}
+                            onChange={handleInputChange}
+                            name="acceptTerms"
+                        />
+                        <p className="mb-4 text-left font-semibold text-xs">
+                            I agree with BlackIn Tech <Link to="/terms" className="text-blue-400 hover:underline">Terms of Service</Link>, and <Link to="/terms" className="text-blue-400 hover:underline">Privacy Policy</Link>
+                        </p>
                     </div>
                     
                     <Button className="w-full" iconRight={<FaSignInAlt />} type="submit">
@@ -214,4 +203,3 @@ const SignUpForm = () => {
 };
 
 export default SignUpForm;
-
