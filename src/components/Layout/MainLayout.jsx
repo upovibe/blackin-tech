@@ -6,7 +6,7 @@ function MainLayout({ children }) {
   return (
     <div className="main-layout">
       <Header />
-      <div className="content mt-[4rem] h-[calc(100vh-4rem)]">
+      <div className="content">
         {children}
       </div>
       <Footer/>

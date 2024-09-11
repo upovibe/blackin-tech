@@ -4,7 +4,7 @@ import NavBar from './NavBar'
 function Header() {
   return (
     <>
-    <header>
+    <header className="flex justify-center w-screen h-max shadow border-b-1 border-slate-400/50">
       <NavBar/>
     </header>
     </>
