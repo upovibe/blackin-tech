@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Input from '../common/Input';
 import Button from '../common/Button';
 import Checkbox from '../common/Checkbox';
@@ -6,22 +7,34 @@ import PasswordInput from '../common/PasswordInput';
 import { FaArrowLeft, FaEnvelope, FaSignInAlt } from 'react-icons/fa';
 import { FaGoogle } from 'react-icons/fa6';
 import HorizontalLineWithText from '../common/HorizontalLineWithText';
+import Toast from '../common/Toast';
+import Loader from '../common/Loader';
+import { signUpUser, signInWithGoogle } from '../../services/authService';
 
 
 const SignUpForm = () => {
     const [isEmailSignUp, setIsEmailSignUp] = useState(false);
-
     const [formValues, setFormValues] = useState({
         fullName: '',
-        userName: '',
+        username: '',
         email: '',
         password: '',
         acceptTerms: false
     });
 
+    const [loading, setLoading] = useState(false);
+    const [toast, setToast] = useState({ type: '', message: '', visible: false });
+    const [fadeIn, setFadeIn] = useState(false);
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        setFadeIn(true);
+      }, []);
+
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormValues(prev => ({
+        setFormValues((prev) => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value
         }));
@@ -35,16 +48,83 @@ const SignUpForm = () => {
         setIsEmailSignUp(false);
     };
 
-    const handleSubmit = (e) => {
+    const handleCloseToast = () => {
+        setToast((prevToast) => ({ ...prevToast, visible: false }));
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission logic here
+
+        console.log('Form values:', formValues);
+
+        // Basic validation
+        if (!formValues.email || !formValues.password || !formValues.userName) {
+            setToast({ type: 'error', message: 'Please fill out all required fields.', visible: true });
+            return;
+        }
+
+        if (!formValues.acceptTerms) {
+            setToast({ type: 'error', message: 'You must accept the terms and conditions.', visible: true });
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            console.log('Signing up user with:', formValues);
+
+            const result = await signUpUser(formValues.email, formValues.password, {
+                fullName: formValues.fullName || '',
+                userName: formValues.userName || ''
+            });
+
+
+            console.log('Sign-up result:', result);
+
+            if (result.success) {
+                setToast({ type: 'success', message: 'Sign-up successful!', visible: true });
+                setTimeout(() => {
+                    setLoading(false);
+                    navigate('/profile');
+                }, 2000);
+            } else {
+                setToast({ type: 'error', message: result.message || 'Sign-up failed', visible: true });
+                setLoading(false);
+            }
+        } catch (error) {
+            console.log('Sign-up error:', error);
+            setToast({ type: 'error', message: 'An error occurred during sign-up.', visible: true });
+            setLoading(false);
+        }
+    };
+
+
+    const handleGoogleSignUp = async () => {
+        setLoading(true);
+        const result = await signInWithGoogle();
+        if (result.success) {
+            setToast({ type: 'success', message: 'Google sign-up successful!', visible: true });
+            setTimeout(() => {
+                setLoading(false);
+                navigate('/profile');
+            }, 2000);
+        } else {
+            setToast({ type: 'error', message: result.message || 'Google sign-up failed', visible: true });
+            setLoading(false);
+        }
     };
 
     return (
-        <div className="p-4">
-            <h2 className="text-lg font-bold mb-4">Sign up to BlackIn Tech</h2>
+        <div className={`relative p-4 transition-opacity duration-700 ${fadeIn ? 'opacity-100' : 'opacity-0'}`}>
+            {/* Loader Overlay */}
+            {loading && (
+                <Loader visible={loading} />
+            )}
 
-            <div className={`transition-all duration-700 ease-in-out overflow-hidden ${isEmailSignUp ? 'max-h-screen' : 'max-h-0'}`}>
+            <h2 className="text-lg font-bold mb-4 text-center">Sign up to BlackIn Tech</h2>
+
+            {/* Form content */}
+            <div className={`transition-all duration-700 ease-in-out overflow-hidden ${isEmailSignUp ? 'opacity-100 max-h-screen' : 'opacity-0 max-h-0'}`}>
                 {isEmailSignUp && (
                     <button
                         type="button"
@@ -56,7 +136,7 @@ const SignUpForm = () => {
                     </button>
                 )}
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className='w-full flex items-center gap-4'>
+                    <div className="w-full flex items-center gap-4">
                         <Input
                             type="text"
                             name="fullName"
@@ -81,37 +161,57 @@ const SignUpForm = () => {
                     />
                     <PasswordInput
                         name="password"
-                        placeholder="Password"
+                        placeholder="Enter at least six characters"
                         value={formValues.password}
                         onChange={handleInputChange}
                     />
+                    <div  className='flex items-start'>                        
                     <Checkbox
-                        label="I accept the Terms and Conditions"
                         checked={formValues.acceptTerms}
                         onChange={handleInputChange}
                         name="acceptTerms"
                     />
-                    <Button iconRight={<FaSignInAlt />} type="submit">Sign Up</Button>
+                    <p className="mb-4 text-left font-semibold text-xs">
+                        I agree with BlackIn Tech <Link to="/terms" className="text-blue-400 hover:underline">Terms of Service</Link>, and <Link to="/terms" className="text-blue-400 hover:underline">Privacy Policy</Link>
+                    </p>
+                    </div>
+                    
+                    <Button className="w-full" iconRight={<FaSignInAlt />} type="submit">
+                        Sign Up
+                    </Button>
                 </form>
             </div>
 
+            {/* Google sign-up button */}
             {!isEmailSignUp && (
-                <div className="space-y-4">
-                    <div className='w-full flex flex-col justify-center items-center space-y-3'>
-                        <Button className='w-full' iconLeft={<FaGoogle />} onClick={() => {/* Handle Google Sign Up */ }}>Sign up with Google</Button>
+                <div className={`transition-opacity duration-700 ${isEmailSignUp ? 'opacity-0' : 'opacity-100'} space-y-9`}>
+                    <div className="w-full flex flex-col justify-center items-center space-y-3">
+                        <Button className="w-full text-sm h-10" iconLeft={<FaGoogle />} onClick={handleGoogleSignUp}>
+                            Sign up with Google
+                        </Button>
                         <HorizontalLineWithText text="or" />
-                        <Button className='w-full' iconLeft={<FaEnvelope />} onClick={handleEmailSignUpClick}>Continue with email</Button>
+                        <Button className="w-full text-sm h-10" iconLeft={<FaEnvelope />} onClick={handleEmailSignUpClick}>
+                            Continue with email
+                        </Button>
                     </div>
-
-                    <p className="mb-4">By creating an account you agree with our Terms of Service, Privacy Policy, and our default Notification Settings.</p>
+                    <p className="mb-4 text-center font-semibold text-xs">
+                        By creating an account you agree with our <Link to="/terms" className="text-blue-400 hover:underline">Terms of Service</Link>, and <Link to="/terms" className="text-blue-400 hover:underline">Privacy Policy</Link>
+                    </p>
                 </div>
             )}
 
-            <p className="mt-4 text-sm text-slate-600">
-                Already have an account? <a href="/sign-in" className="text-blue-500">Sign In</a>
+            <p className="mt-6 text-center text-sm text-slate-600">
+                Already have an account?{' '}
+                <Link to="/signin" className="text-blue-500">
+                    Sign In
+                </Link>
             </p>
+
+            {/* Toast component */}
+            <Toast type={toast.type} message={toast.message} visible={toast.visible} onClose={handleCloseToast} />
         </div>
     );
 };
 
 export default SignUpForm;
+

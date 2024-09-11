@@ -5,7 +5,7 @@ import Footer from "./Footer";
 function MainLayout({ children }) {
   return (
     <div className="main-layout">
-      <Header />
+      <Header className=' bg-slate-100'/>
       <div className="content">
         {children}
       </div>

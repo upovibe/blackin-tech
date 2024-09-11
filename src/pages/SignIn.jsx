@@ -1,10 +1,10 @@
 import React from 'react';
 import Lottie from 'lottie-react';
-import animationData from '../assets/animations/Animation - Signup.json';
-import SignUpForm from '../components/forms/SignUpForm'
+import animationData from '../assets/animations/Animation - Signin.json';
+import SignInForm from '../components/forms/SignInForm';
 import Logo from '../components/common/Logo';
 
-function SignUp() {
+function SignIn() {
     return (
         <main className="flex h-screen w-screen">
             <section className="h-screen hidden overflow-hidden md:w-6/12 lg:w-5/12 xl:w-4/12 md:block">
@@ -33,7 +33,7 @@ function SignUp() {
             <section className="flex h-screen items-center justify-center w-full md:justify-start">
                 <div className="container flex h-full items-center justify-center p-3 md:justify-start">
                     <div className='w-full max-w-[416px] m-0 md:ml-20'>
-                        <SignUpForm />
+                        <SignInForm/>
                     </div>
                 </div>
             </section>
@@ -41,4 +41,4 @@ function SignUp() {
     )
 }
 
-export default SignUp
+export default SignIn

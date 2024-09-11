@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SearchInput from '../common/SearchInput';
 import Button from '../common/Button';
+import Logo from '../common/Logo';
 import { FaSearch, FaWindowClose } from 'react-icons/fa';
 
 function NavBar() {
@@ -23,15 +24,12 @@ function NavBar() {
   };
 
   return (
-    <nav className='relative flex w-full justify-center items-center bg-slate-100'>
+    <nav className='relative flex w-full justify-center items-center'>
       <div className="container flex items-center md:justify-between p-2 py-3 relative w-full">
         <div className='flex items-center justify-between w-full'>
           <div className='flex items-center space-x-5'>
             {/* Logo */}
-            <Link to="/" className="font-extrabold hover:text-slate-700 font-serif logo text-2xl text-slate-900 flex items-center transition-all duration-300 ease-in-out mr-5">
-              <span className='hidden md:block'>BlackinTech</span>
-              <span className='block md:hidden font-black'>BT</span>
-            </Link>
+            <Logo/>
 
             <ul className="hidden md:flex items-center space-x-4  w-full md:w-max flex-row justify-start md:justify-center md:items-center gap-6 font-semibold">
               <li className='block w-full hover:bg-slate-700/50 hover:text-white md:hover:text-slate-950 md:hover:bg-transparent transition-all duration-300 ease-in-out md:border-b-2 border-transparent md:hover:border-slate-700 p-2 md:p-0 md:pb-[1px]'>
