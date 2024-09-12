@@ -4,6 +4,8 @@ import { UserAuth } from '../../contexts/AuthContext';
 import { logoutUser } from '../../services/authService';
 import { FaUser, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import defaultAvatar from '../../assets/images/avatar-default.png';
+import HorizontalLineWithText from '../common/HorizontalLineWithText';
+import { FaGauge } from 'react-icons/fa6';
 
 const NavAvatar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +22,6 @@ const NavAvatar = () => {
     if (result.success) {
       navigate('/signin'); // Redirect to sign-in or home page after logout
     } else {
-      // Handle error (e.g., show a toast notification)
       console.error(result.message);
     }
   };
@@ -49,7 +50,7 @@ const NavAvatar = () => {
       {isOpen && (
         <div
           ref={dropdownRef} // Set ref to dropdown menu
-          className="absolute top-14 flex flex-col gap-5 right-0 mt-2 w-80 bg-white shadow-lg rounded-lg p-8 border border-gray-200 transition-all duration-300"
+          className="absolute top-14 flex flex-col gap-5 right-0 mt-2 w-max md:w-80 bg-white shadow-lg rounded-lg p-4 md:p-8 border border-gray-200 transition-all duration-300"
         >
           <div className="flex flex-col items-center space-y-2 mb-2 cursor-pointer" onClick={handleClick}>
             <img
@@ -60,11 +61,21 @@ const NavAvatar = () => {
             <span className="text-sm font-medium">{user.fullName || "User Name"}</span>
           </div>
           <ul className="space-y-2">
+            {/* Conditionally render the Apply for Job link if the user is not an admin */}
+            {user.role !== 'admin' && (
+              <li>
+                <Link to="/jobs"
+                  className="flex items-center space-x-2 p-2 w-full text-left hover:bg-gray-100 rounded-lg text-slate-700"
+                >
+                  <FaUser /> <span>Apply for Job</span>
+                </Link>
+              </li>
+            )}
             <li>
               <Link to="/jobs"
                 className="flex items-center space-x-2 p-2 w-full text-left hover:bg-gray-100 rounded-lg text-slate-700"
               >
-                <FaUser /> <span>Apply for Job</span>
+                <FaUser /> <span>Post Job</span>
               </Link>
             </li>
             <li>
@@ -79,10 +90,11 @@ const NavAvatar = () => {
                 <Link to="/dashboard"
                   className="flex items-center space-x-2 p-2 w-full text-left hover:bg-gray-100 rounded-lg text-slate-700"
                 >
-                  <FaCog /> <span>Dashboard</span>
+                  <FaGauge /> <span>Dashboard</span>
                 </Link>
               </li>
             )}
+            <HorizontalLineWithText text="Logout" />
             <li>
               <button
                 className="flex items-center space-x-2 p-2 w-full text-left hover:bg-gray-100 rounded-lg text-slate-700"

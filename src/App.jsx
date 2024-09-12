@@ -14,7 +14,7 @@ import NotFound from './pages/NotFound';
 import Search from './pages/Search';
 import Settings from './pages/Settings';
 import CompleteProfile from './components/auth/CompleteProfile';
-import Dashboard from './pages/Dashboard'; // Import the Dashboard page
+import Dashboard from './admin/Dashboard';
 
 function App() {
   return (
