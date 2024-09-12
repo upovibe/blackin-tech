@@ -4,7 +4,7 @@ import { UserAuth } from '../../contexts/AuthContext';
 import { logoutUser } from '../../services/authService';
 import { FaUser, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import defaultAvatar from '../../assets/images/avatar-default.png';
-import HorizontalLineWithText from '../common/HorizontalLineWithText';
+import DividerWithText from '../common/DividerWithText';
 import { FaGauge } from 'react-icons/fa6';
 
 const NavAvatar = () => {
@@ -94,7 +94,7 @@ const NavAvatar = () => {
                 </Link>
               </li>
             )}
-            <HorizontalLineWithText text="Logout" />
+            <DividerWithText text="Logout" />
             <li>
               <button
                 className="flex items-center space-x-2 p-2 w-full text-left hover:bg-gray-100 rounded-lg text-slate-700"

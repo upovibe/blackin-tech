@@ -4,7 +4,7 @@ import Input from "../common/Input";
 import Button from "../common/Button";
 import PasswordInput from "../common/PasswordInput";
 import { FaGoogle, FaSignInAlt } from "react-icons/fa";
-import HorizontalLineWithText from "../common/HorizontalLineWithText";
+import HorizontalLineWithText from "../common/DividerWithText";
 import Toast from "../common/Toast";
 import Loader from "../common/Loader";
 import { signInUser, signInWithGoogle } from "../../services/authService";
