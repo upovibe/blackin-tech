@@ -2,19 +2,28 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../contexts/AuthContext";
 import defaultAvatar from "../assets/images/avatar-default.png";
-import { FaInfoCircle } from "react-icons/fa";
-import Divider from '../components/common/Divider'
+import { FaInfoCircle, FaLocationArrow, FaMapMarker } from "react-icons/fa";
+import Divider from "../components/common/Divider";
+import TabComponent from "../components/common/TabComponent";
 
 function Profile() {
   const navigate = useNavigate();
   const { user } = UserAuth();
+  const tabs = [
+    { label: "Job Listings", content: <div>This is the Work tab content.</div> },
+    { label: "Jobs Applied", content: <div>This is the Boosted Shots tab content.</div> },
+  ];
+
+  const handleTabChange = (tab) => {
+    console.log("Selected Tab:", tab);
+  };
 
   return (
     <>
       <main className="w-screen">
         <section className="-full flex items-center justify-center">
-          <div className="container flex items-center px-4 py-16 gap-10">
-            <div className="flex items-center flex-col gap-2 mb-4 bg-slate-800 w-4/12 rounded-xl border-2 border-slate-500/80 p-3">
+          <div className="container flex items-start flex-col lg:flex-row px-4 py-16 gap-10">
+            <div className="flex items-center flex-col gap-2 mb-4 w-full lg:w-3/6 xl:w-2/6 rounded-xl border-2 border-slate-300/80 p-3">
               <div className="relative flex flex-col items-center justify-center">
                 <img
                   src={user.avatarUrl || defaultAvatar}
@@ -27,59 +36,44 @@ function Profile() {
                   </span>
                 )}
               </div>
-              <span className="text-3xl font-bold">
-                  {user.fullName || "Anonymous"}
-                </span>
+              <span className="text-2xl font-bold">
+                {user.fullName || "Anonymous"}
+              </span>
               <div className="flex flex-row gap-2 items-center">
-              <span className="text-lg">@{user.userName}</span>
-                <span className="text-lg font-semibold ">
-                  {user.pronouns}
-                </span>
+                <span className="font-semibold text-lg lowercase">@{user.userName}</span>&#183;
+                <span className="text-sm font-semibold underline">{user.pronouns}</span>
               </div>
-              <p className="flex items-center space-x-2 mt-4">
-                <FaInfoCircle />
-                <span>{user.bio}</span>
-              </p>
-              <div className="flex flex-col items-center space-x-4">                
-                <span className="text-lg font-semibold">
-                  {user.country}&nbsp;{user.city}
-                </span>
-              </div>
-              
-            </div>
-            <div className="flex items-center flex-col gap-2 mb-4 bg-slate-800 w-8/12">
-              <img
-                src={user?.avatarUrl}
-                alt={`${user?.firstName} ${user?.lastName}`}
-                className="w-28 h-28 rounded-full border-2 border-opacity-20 border-gray-300"
+              <Divider
+                direction="horizontal"
+                className="mx-4 my-2 opacity-50"
               />
-              <div className="flex flex-row gap-2 items-center">
-                <div className="font-semibold text-2xl uppercase">
-                  <span>{user.fullName}</span>
-                </div>
-                <span className="text-lg font-semibold ">
-                  ({user.pronouns})
-                </span>
-              </div>
-              <div className="flex flex-col items-center space-x-4">
-                <span className="text-3xl font-bold">
-                  {user.fullName || "Anonymous"}
-                </span>
-                <span className="text-lg font-semibold">
+              <span className="flex items-baseline space-x-2 text-slate-800 font-semibold text-sm mr-auto">
+                <FaInfoCircle />
+                <p>{user.bio}</p>
+              </span>
+
+              <Divider
+                direction="horizontal"
+                className="mx-4 my-2 opacity-50"
+              />
+              <div className="flex items-baseline space-x-2 mr-auto text-slate-800 font-semibold text-sm">
+                <FaMapMarker />
+                <span className="">
                   {user.country}&nbsp;{user.city}
                 </span>
               </div>
-              <div className="flex flex-row gap-2 items-center mb-4">
-                <span className="text-lg">@{user.username}</span>
-                <span className="flex items-center space-x-2  text-sm px-3 py-[1px] shadow bg-orange-400 text-white rounded-full font-semibold">
-                  {user?.role}
-                </span>
+              <div className="w-full md:w-max ml-auto mt-5">
+                <button
+                  className="w-full hover:bg-gray-100 p-2 px-3 border-2 rounded-lg text-slate-700 text-center"
+                  onClick={() => navigate("/edit-profile")}> Edit Profile</button>
               </div>
-              <Divider direction="vertical" className="mx-4" />
-              <p className="flex items-center space-x-2 mt-4">
-                <FaInfoCircle />
-                <span>{user.bio}</span>
-              </p>
+            </div>
+            <div className="flex items-center flex-col gap-2 mb-4 rounded-xl size-full border-slate-300/80 p-3">
+              <div className="size-full">
+                <TabComponent tabs={tabs} defaultActiveTab="Job Listings" onTabChange={handleTabChange} orientation="horizontal" />
+              </div>
+               {/* Vertical Tabs (full width) */}
+            {/* <TabComponent tabs={tabs} defaultActiveTab="Jobs Applied" onTabChange={handleTabChange} orientation="vertical" />  */}
             </div>
           </div>
         </section>

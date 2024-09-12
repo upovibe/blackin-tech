@@ -6,7 +6,7 @@ import Checkbox from "../common/Checkbox";
 import PasswordInput from "../common/PasswordInput";
 import { FaArrowLeft, FaEnvelope, FaSignInAlt } from "react-icons/fa";
 import { FaGoogle } from "react-icons/fa6";
-import HorizontalLineWithText from "../common/DividerWithText";
+import HorizontalLineWithText from "../common/HorizontalLineWithText";
 import Toast from "../common/Toast";
 import Loader from "../common/Loader";
 import { signUpUser, signInWithGoogle } from "../../services/authService";
