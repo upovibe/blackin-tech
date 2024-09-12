@@ -52,7 +52,7 @@ const SelectInput = ({ options, placeholder, className, ...rest }) => {
   }, [options]);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative " ref={dropdownRef}>
       <Input
         type="text"
         value={inputValue}
@@ -63,7 +63,7 @@ const SelectInput = ({ options, placeholder, className, ...rest }) => {
         {...rest}
       />
       {isOpen && (
-        <ul className="absolute z-50 w-full bg-white border border-slate-300 rounded-md mt-1 max-h-48 overflow-y-auto transition-all duration-300">
+        <ul className="absolute z-50 w-full bg-white border border-slate-300 rounded-md mt-1 max-h-40 overflow-y-auto transition-all duration-300">
           {filteredOptions.length > 0 ? (
             filteredOptions.map((option, index) => (
               <li
