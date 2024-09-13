@@ -216,3 +216,4 @@ export const fetchJobTypes = async () => {
   ];
   return jobTypes;
 };
+

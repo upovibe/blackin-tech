@@ -36,6 +36,14 @@ const JobForm = () => {
     fetchJobTypes().then(setJobTypes);
   }, []);
 
+  // Function to generate slug from job title
+  const generateSlug = (title) => {
+    return title
+      .toLowerCase() // Convert to lowercase
+      .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric characters with hyphens
+      .replace(/(^-|-$)/g, ''); // Remove any leading or trailing hyphens
+  };
+
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -61,11 +69,14 @@ const JobForm = () => {
         mediaUrls = await uploadImages(media);
       }
   
+      const slug = generateSlug(formData.title); // Generate slug from title
+
       const jobData = {
         ...formData,
         createdAt: new Date(),
         media: mediaUrls,
         createdBy: user.uid, // Add the user ID here
+        slug, // Add the slug to the jobData object
       };
   
       await createDocument('jobs', jobData);

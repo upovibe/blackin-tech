@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import SearchInput from '../common/SearchInput';
+import SearchInput from '../filters/SearchInput';
 import Button from '../common/Button';
 import Logo from '../common/Logo';
 import NavAvatar from '../auth/NavAvatar';
@@ -16,13 +16,7 @@ function NavBar() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const handleSearchClick = () => {
-    // Redirect to the search page when the search button is clicked
-    navigate('/search');
-  };
-
   const handleSignUpClick = () => {
-    // Redirect to the signup page when the Sign Up button is clicked
     navigate('/signup');
   };
 
@@ -45,17 +39,7 @@ function NavBar() {
           </div>
 
           <div className='flex items-center gap-3 ml-auto'>
-            {/* Search Component */}
-            <div className="hidden lg:block  w-64">
-              <SearchInput />
-            </div>
-
-            {/* Search Button for smaller screens */}
-            <Button className="lg:hidden bg-transparent text-slate-700 hover:bg-transparent " size="small" onClick={handleSearchClick}>
-              <FaSearch />
-            </Button>
-
-            {/* Conditionally render Sign Up Button and NavAvatar */}
+            <SearchInput/>
             {!user && (
               <div className='w-max'>
                 <Button className="hidden md:block" onClick={handleSignUpClick}>Sign Up</Button>
@@ -71,7 +55,6 @@ function NavBar() {
             <div className={`w-6 h-[2px] bg-slate-900 transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></div>
             <div className={`w-6 h-[2px] bg-slate-900 transition-transform duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></div>
           </div>
-          {/* Sliding Menu */}
           <div className={`fixed top-0 left-0 h-full w-64 bg-slate-700 text-white shadow-lg transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out z-20`}>
             <div className="p-4 flex justify-between items-center">
               <div>
@@ -79,7 +62,6 @@ function NavBar() {
                   BT
                 </Link>
               </div>
-              {/* Close Button */}
               <button
                 onClick={toggleMenu}
                 className="text-slate-300 hover:text-white transition-all"
@@ -105,8 +87,6 @@ function NavBar() {
             )}
           </div>
         </div>
-
-        {/* Overlay to close menu */}
         {isMenuOpen && (
           <div
             onClick={toggleMenu}

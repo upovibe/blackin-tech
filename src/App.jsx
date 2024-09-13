@@ -15,6 +15,7 @@ import Search from './pages/Search';
 import Settings from './pages/Settings';
 import CompleteProfile from './components/auth/CompleteProfile';
 import Dashboard from './admin/Dashboard';
+import JobDetails from './components/views/JobDetails'; // Import JobDetails component
 
 function App() {
   return (
@@ -27,7 +28,8 @@ function App() {
         {/* Public routes with MainLayout */}
         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
         <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />
-        <Route path="/Search" element={<MainLayout><Search /></MainLayout>} />
+        <Route path="/jobs/:slug" element={<MainLayout><JobDetails /></MainLayout>} /> {/* Job details route */}
+        <Route path="/search" element={<MainLayout><Search /></MainLayout>} />
         <Route path="/terms" element={<MainLayout><Terms /></MainLayout>} />
         <Route path="/about" element={<MainLayout><About /></MainLayout>} />
 

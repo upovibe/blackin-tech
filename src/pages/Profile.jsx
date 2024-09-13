@@ -5,12 +5,13 @@ import defaultAvatar from "../assets/images/avatar-default.png";
 import { FaInfoCircle, FaLocationArrow, FaMapMarker } from "react-icons/fa";
 import Divider from "../components/common/Divider";
 import TabComponent from "../components/common/TabComponent";
+import JobList from "../components/lists/JobList";
 
 function Profile() {
   const navigate = useNavigate();
   const { user } = UserAuth();
   const tabs = [
-    { label: "Job Listings", content: <div>This is the Work tab content.</div> },
+    { label: "Job Listings", content: <div><JobList/></div> },
     { label: "Jobs Applied", content: <div>This is the Boosted Shots tab content.</div> },
   ];
 
@@ -20,9 +21,9 @@ function Profile() {
 
   return (
     <>
-      <main className="w-screen">
-        <section className="-full flex items-center justify-center">
-          <div className="container flex items-start flex-col lg:flex-row px-4 py-16 gap-10">
+      <main className="w-screen ">
+        <section className="w-full py-16 full flex items-center justify-center">
+          <div className="container flex items-start flex-col lg:flex-row p-0 px-2 md:py-2 gap-10">
             <div className="flex items-center flex-col gap-2 mb-4 w-full lg:w-3/6 xl:w-2/6 rounded-xl border-2 border-slate-300/80 p-3">
               <div className="relative flex flex-col items-center justify-center">
                 <img
