@@ -16,7 +16,6 @@ import Lottie from "lottie-react";
 import SetUpProfile from "../../assets/animations/Animation - SettingUpProfile.json";
 import successAnimation from "../../assets/animations/Animation - ProfileSuccess.json";
 import Toast from "../common/Toast";
-import { Fa0 } from "react-icons/fa6";
 import {
   FaArrowAltCircleLeft,
   FaArrowAltCircleRight,
