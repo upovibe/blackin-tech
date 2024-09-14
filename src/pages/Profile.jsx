@@ -5,13 +5,13 @@ import defaultAvatar from "../assets/images/avatar-default.png";
 import { FaInfoCircle, FaMapMarker } from "react-icons/fa";
 import Divider from "../components/common/Divider";
 import TabComponent from "../components/common/TabComponent";
-import JobList from "../components/lists/JobList";
 
 function Profile() {
   const navigate = useNavigate();
   const { user } = UserAuth();
   const tabs = [
     { label: "Job Listings", content: <div><JobList/></div> },
+    { label: "Jobs Applied", content: <div>This is the Boosted Shots tab content.</div> },
     { label: "Jobs Applied", content: <div>This is the Boosted Shots tab content.</div> },
   ];
 

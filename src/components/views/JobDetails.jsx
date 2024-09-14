@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getAllDocuments } from '../../services/firestoreService';
 import { UserAuth } from '../../contexts/AuthContext';
-import { FaWhatsapp, FaFacebook, FaLinkedin, FaLink, FaTwitter } from 'react-icons/fa';
+import { FaWhatsapp, FaFacebook, FaLinkedin, FaLink, FaSave } from 'react-icons/fa';
 import Lottie from 'lottie-react';
 import LoadingPage from '../../assets/animations/Animation - LoadingPage.json';
 import Toast from '../common/Toast';
@@ -140,46 +140,51 @@ const JobDetails = () => {
             <HrizontalLineWithText text='Share' className='my-4' />
             <div className="flex items-center gap-4">
               <a
-                href={`https://api.whatsapp.coms/send?text=${encodeURIComponent(message)}`}
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-green-500 flex items-center gap-2 border-2 px-2 py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
+                className="text-green-500 flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
               >
                 <FaWhatsapp />
-                <span className='text-slate-900 font-semibold text-xs hidden md:block hidden md:block'>WhatsApp</span>
+                <span className="text-slate-900 font-semibold text-xs hidden md:block">WhatsApp</span>
               </a>
+
               <a
                 href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 flex items-center gap-2 border-2 px-2 py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
+                className="text-blue-600 flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
               >
                 <FaFacebook />
-                <span className='text-slate-900 font-semibold text-xs hidden md:block'>Facebook</span>
+                <span className="text-slate-900 font-semibold text-xs hidden md:block">Facebook</span>
               </a>
+
               <a
                 href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(job.title)}&summary=${encodeURIComponent(message)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-700 flex items-center gap-2 border-2 px-2 py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
+                className="text-blue-700 flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
               >
                 <FaLinkedin />
-                <span className='text-slate-900 font-semibold text-xs hidden md:block'>LinkedIn</span>
+                <span className="text-slate-900 font-semibold text-xs hidden md:block">LinkedIn</span>
               </a>
+
               <a
                 href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(message)}&via=YourTwitterHandle`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-black flex items-center gap-2 border-2 px-2 py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
+                className="text-black flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
               >
                 <FaX />
-                <span className='text-slate-900 font-semibold text-xs hidden md:block'>X/Twitter</span>
+                <span className="text-slate-900 font-semibold text-xs hidden md:block">X/Twitter</span>
               </a>
-              <button onClick={handleCopyLink} className="flex items-center gap-2 border-2 px-2 py-1 bg-slate-300/50 border-slate-300/20 rounded-full">
+
+              <button onClick={handleCopyLink} className="flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full">
                 <FaLink />
-                <span className='text-slate-900 font-semibold text-xs hidden md:block'>Copy</span>
+                <span className="text-slate-900 font-semibold text-xs hidden md:block">Copy</span>
               </button>
             </div>
+
             <Divider direction="horizontal" className="my-5 opacity-25" />
 
 
@@ -188,15 +193,18 @@ const JobDetails = () => {
               <div className="mb-14 p-1 bg-slate-50 rounded-lg" dangerouslySetInnerHTML={{ __html: job.description }}></div>
             </div>
             {/* Social Sharing Buttons */}
-            <div className="w-full">
-              <Button className='ml-auto'>
+            <div className="w-full flex items-center justify-between">
+              <Button className=''>
                 Apply Now
+              </Button>
+              <Button className=''>
+                Save Job
               </Button>
             </div>
           </div>
 
           {/* Right Section - Author Details and Latest Jobs */}
-          <div className="lg:w-1/4 border-t lg:border-t-0 lg:border-l border-gray-200 lg:pl-10">
+          <div className="lg:w-1/4 border-0 border-t-2 lg:border-t-0 lg:border-l-2 pt-20 lg:pt-0 lg:pl-10 my-10">
             <div className="mb-8 border-2 border-slate-300/50 rounded-xl p-10">
               <div className='flex flex-col items-center justify-center'>
                 <img
@@ -223,8 +231,10 @@ const JobDetails = () => {
                 <p className=""><strong>Job Type:</strong> {job.jobType}</p>
               </div>
               <div className='flex flex-col items-center justify-start mt-5'>
-                <HorizontalLineWithText text={user.role}/>
-                <span className="font-semibold mr-auto">{timeSince(new Date(job.createdAt))}</span>
+                <HorizontalLineWithText
+                  className='text-sm font-semibold'
+                  text={`${user.role} posted ${timeSince(new Date(job.createdAt))}`}
+                />
               </div>
             </div>
 
@@ -237,7 +247,7 @@ const JobDetails = () => {
                     <Link
                       to={`/jobs/${latestJob.slug}`}
                       onClick={() => navigate(`/jobs/${latestJob.slug}`, { replace: false })}
-                      className="text-blue-600 hover:underline"
+                      className="text-blue-600 hover:underline transition-all duration-200 ease-in-out"
                     >
                       {latestJob.title}
                     </Link>

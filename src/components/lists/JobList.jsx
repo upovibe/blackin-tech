@@ -4,9 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import animationData from '../../assets/animations/Animation - Jobs.json';
 import imageLoadingAnimation from '../../assets/animations/Animation - Image Loading.json';
-import { FaMapMarker,FaUserCircle } from 'react-icons/fa';
+import { FaMapMarker, FaUserCircle } from 'react-icons/fa';
 import { UserAuth } from '../../contexts/AuthContext';
 import { timeSince } from '../../utils/timingUtils';
+import Toast from '../common/Toast'
 
 // Truncate text function
 const truncateText = (text, maxLength) => {
@@ -43,7 +44,7 @@ const JobList = ({ filters }) => {
         console.error('Error fetching jobs: ', error);
       }
     };
-    
+
 
     fetchJobs();
   }, [filters]);
@@ -98,7 +99,7 @@ const JobList = ({ filters }) => {
                   </span>
                   <div className="hidden md:inline-flex items-center relative group text-xs font-semibold text-slate-700 space-x-1 mt-1">
                     {/* Display author's name with hover tooltip */}
-                    <FaUserCircle/>
+                    <FaUserCircle />
                     <span>{user?.userName || 'Unknown Author'}</span>
 
                     {/* Tooltip div, only shown on hover */}
@@ -121,7 +122,7 @@ const JobList = ({ filters }) => {
             </div>
 
             {/* Apply View - initially hidden, visible on hover */}
-            <div className="apply-view absolute bg-slate-100 top-0 right-0 p-2 rounded-l-lg size-full w-1/2 items-center gap-2 justify-end overflow-hidden flex opacity-0 hover:opacity-100 transition-all duration-300 ease-in-out">
+            <div className="apply-view absolute bg-slate-100 top-0 right-0 p-2 rounded-l-lg size-full lg:w-8/12 items-center gap-2 justify-end overflow-hidden flex opacity-0 hover:opacity-100 transition-all duration-300 ease-in-out">
               <Link
                 to={`/jobs/${job.slug}`}
                 className="view-details p-1 px-2 text-sm rounded-full border-2 border-slate-600/25 hover:bg-slate-800 hover:text-white/80 transition-all duration-300 ease-in-out"
@@ -130,6 +131,15 @@ const JobList = ({ filters }) => {
               </Link>
               <button className="apply-button p-1 px-2 text-sm rounded-full border-2 border-slate-600/25 hover:bg-slate-800 hover:text-white/80 transition-all duration-300 ease-in-out">
                 Apply Now
+              </button>
+              <button
+                className="apply-button p-1 px-2 text-sm rounded-full border-2 border-slate-600/25 hover:bg-slate-800 hover:text-white/80 transition-all duration-300 ease-in-out"
+                onClick={(event) => {
+                  event.stopPropagation(); // Prevents the parent div's onClick from firing
+                  console.log('Job saved');
+                }}
+              >
+                Save Job
               </button>
             </div>
           </div>

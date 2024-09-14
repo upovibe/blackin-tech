@@ -3,7 +3,7 @@ import React from 'react';
 const Button = ({ children, className = '', iconLeft = null, iconRight = null, ...props }) => {
   return (
     <button
-      className={`flex items-center justify-center px-4 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 transition-all duration-300 ${className}`}
+      className={`flex items-center justify-center px-4 py-1 md:px-4 md:py-2 md:text-base bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-all duration-300 ${className}`}
       {...props}
     >
       {iconLeft && <span className="mr-2">{iconLeft}</span>}
