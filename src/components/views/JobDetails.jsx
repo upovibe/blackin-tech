@@ -8,6 +8,11 @@ import LoadingPage from '../../assets/animations/Animation - LoadingPage.json';
 import Toast from '../common/Toast';
 import { timeSince } from '../../utils/timingUtils';
 import NavigationButtons from '../common/NavigationButton';
+import { FaX } from 'react-icons/fa6';
+import Divider from '../common/Divider';
+import HrizontalLineWithText from '../common/HorizontalLineWithText';
+import Button from '../common/Button';
+import HorizontalLineWithText from '../common/HorizontalLineWithText';
 
 const JobDetails = () => {
   const { slug } = useParams();
@@ -94,139 +99,159 @@ const JobDetails = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 flex flex-col lg:flex-row lg:justify-between gap-8">
-
-      {/* Back Button */}
-      {/* Left Section - Job Details */}
-      <div className="lg:w-3/4">
-        <div className="w-full">
+    <main>
+      <section>
+        <div className='container mx-auto py-4'>
           <NavigationButtons />
         </div>
-        <div className="text-lg font-semibold">Company Details</div>
-
-        {/* Display uploaded images */}
-        {job.media && job.media.length > 0 && (
-          <div className={`grid justify-center ${getGridClass(job.media.length)} mt-3`}>
-            {job.media.map((url, index) => (
-              <div
-                key={index}
-                className={`relative flex justify-center items-center ${job.media.length === 1
-                  ? "w-full h-full"
-                  : job.media.length === 3 && index === 0
-                    ? "col-span-2 w-full"
-                    : "w-full"
-                  }`}
-              >
-                <div className="w-full h-96 flex justify-center items-center overflow-hidden shadow-md rounded-lg">
-                  {isImageUrl(url) ? (
-                    <img
-                      src={url}
-                      alt={`media-${index}`}
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                  ) : null}
-                </div>
+        <div className="container mx-auto p-4 flex flex-col lg:flex-row lg:justify-center gap-8">
+          <div className="lg:w-2/4">
+            <div className="text-lg font-semibold mb-3">Company Details</div>
+            <h1 className="text-3xl font-bold mb-2">{job.title}</h1>
+            {/* Display uploaded images */}
+            {job.media && job.media.length > 0 && (
+              <div className={`grid justify-center ${getGridClass(job.media.length)} mt-3`}>
+                {job.media.map((url, index) => (
+                  <div
+                    key={index}
+                    className={`relative flex justify-center items-center ${job.media.length === 1
+                      ? "w-full h-full"
+                      : job.media.length === 3 && index === 0
+                        ? "col-span-2 w-full"
+                        : "w-full"
+                      }`}
+                  >
+                    <div className="w-full h-96 flex justify-center items-center overflow-hidden shadow-md rounded-lg">
+                      {isImageUrl(url) ? (
+                        <img
+                          src={url}
+                          alt={`media-${index}`}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
+                <h3 className="text-sm text-gray-500 mb-4">{job.subtitle}</h3>
               </div>
-            ))}
+            )}
+
+            {/* Social Sharing Buttons */}
+            <HrizontalLineWithText text='Share' className='my-4' />
+            <div className="flex items-center gap-4">
+              <a
+                href={`https://api.whatsapp.coms/send?text=${encodeURIComponent(message)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-green-500 flex items-center gap-2 border-2 px-2 py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
+              >
+                <FaWhatsapp />
+                <span className='text-slate-900 font-semibold text-xs hidden md:block hidden md:block'>WhatsApp</span>
+              </a>
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 flex items-center gap-2 border-2 px-2 py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
+              >
+                <FaFacebook />
+                <span className='text-slate-900 font-semibold text-xs hidden md:block'>Facebook</span>
+              </a>
+              <a
+                href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(job.title)}&summary=${encodeURIComponent(message)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-700 flex items-center gap-2 border-2 px-2 py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
+              >
+                <FaLinkedin />
+                <span className='text-slate-900 font-semibold text-xs hidden md:block'>LinkedIn</span>
+              </a>
+              <a
+                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(message)}&via=YourTwitterHandle`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-black flex items-center gap-2 border-2 px-2 py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
+              >
+                <FaX />
+                <span className='text-slate-900 font-semibold text-xs hidden md:block'>X/Twitter</span>
+              </a>
+              <button onClick={handleCopyLink} className="flex items-center gap-2 border-2 px-2 py-1 bg-slate-300/50 border-slate-300/20 rounded-full">
+                <FaLink />
+                <span className='text-slate-900 font-semibold text-xs hidden md:block'>Copy</span>
+              </button>
+            </div>
+            <Divider direction="horizontal" className="my-5 opacity-25" />
+
+
+            <div className="flex flex-col gap-2">
+              <div className="text-lg font-semibold">About the Company</div>
+              <div className="mb-14 p-1 bg-slate-50 rounded-lg" dangerouslySetInnerHTML={{ __html: job.description }}></div>
+            </div>
+            {/* Social Sharing Buttons */}
+            <div className="w-full">
+              <Button className='ml-auto'>
+                Apply Now
+              </Button>
+            </div>
           </div>
-        )}
 
-        <h1 className="text-3xl font-bold">{job.title}</h1>
-        <h3 className="text-xl text-gray-500 mb-4">{job.subtitle}</h3>
-
-        {/* Posted Time */}
-        <p className="text-sm text-gray-500 mb-4">
-          <span>{timeSince(new Date(job.createdAt))}</span>
-        </p>
-
-        <div className="mb-6" dangerouslySetInnerHTML={{ __html: job.description }}></div>
-
-        {/* Social Sharing Buttons */}
-        <div className="flex gap-4 mb-6">
-          <a
-            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-green-500 text-2xl"
-          >
-            <FaWhatsapp />
-          </a>
-          <a
-            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 text-2xl"
-          >
-            <FaFacebook />
-          </a>
-          <a
-            href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(job.title)}&summary=${encodeURIComponent(message)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-700 text-2xl"
-          >
-            <FaLinkedin />
-          </a>
-          <a
-            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(message)}&via=YourTwitterHandle`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-700 text-2xl"
-          >
-            <FaTwitter />
-          </a>
-          <button onClick={handleCopyLink} className="text-gray-600 text-2xl">
-            <FaLink />
-          </button>
-        </div>
-      </div>
-
-      {/* Right Section - Author Details and Latest Jobs */}
-      <div className="lg:w-1/4 border-t lg:border-t-0 lg:border-l border-gray-200 pt-6 lg:pl-6">
-        <div className="mb-8 text-center lg:text-left">
-          <img
-            src={job.logo || 'default_logo.png'}
-            alt="Company Logo"
-            className="w-24 h-24 rounded-full mx-auto lg:mx-0 lg:mb-4"
-          />
-          <h4 className="text-xl font-semibold">{job.companyName || 'Unknown Company'}</h4>
-          <p className="text-sm text-gray-500">{user?.userName || 'Unknown Author'}</p>
-          <a
-            href={job.website || '#'}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline block mt-2"
-          >
-            {job.website ? 'Visit Website' : 'No Website Available'}
-          </a>
-          <p className="mb-2"><strong>Location:</strong> {job.location}</p>
-          <p className="mb-4"><strong>Job Type:</strong> {job.jobType}</p>
-          <button className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
-            Apply for this job
-          </button>
-        </div>
-
-        <div className="mb-6">
-          <h4 className="text-lg font-semibold mb-4">Latest Jobs</h4>
-          <ul className="list-none space-y-2">
-            {latestJobs.map((latestJob) => (
-              <li key={latestJob.id}>
-                <Link
-                  to={`/jobs/${latestJob.slug}`}
-                  onClick={() => navigate(`/jobs/${latestJob.slug}`, { replace: false })}
-                  className="text-blue-600 hover:underline"
+          {/* Right Section - Author Details and Latest Jobs */}
+          <div className="lg:w-1/4 border-t lg:border-t-0 lg:border-l border-gray-200 lg:pl-10">
+            <div className="mb-8 border-2 border-slate-300/50 rounded-xl p-10">
+              <div className='flex flex-col items-center justify-center'>
+                <img
+                  src={job.logo || 'default_logo.png'}
+                  alt="Company Logo"
+                  className="w-24 h-24 rounded-full mx-auto lg:mx-0 lg:mb-4"
+                />
+                <h4 className="text-xl font-semibold">{job.companyName || 'Unknown Company'}</h4>
+                <a
+                  href={job.website || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-black/80 text-sm hover:text-black semibold block mt-2 transition-all duration-300 ease-in-out"
                 >
-                  {latestJob.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+                  {job.website ? 'Visit Website' : 'No Website Available'}
+                </a>
+                <Button className="mt-4">
+                  Apply for this job
+                </Button>
+              </div>
+              <Divider direction="horizontal" className="my-8 opacity-25" />
+              <div className='space-y-2'>
+                <p className="text-left"><strong>Location:</strong> {job.location}</p>
+                <p className=""><strong>Job Type:</strong> {job.jobType}</p>
+              </div>
+              <div className='flex flex-col items-center justify-start mt-5'>
+                <HorizontalLineWithText text={user.role}/>
+                <span className="font-semibold mr-auto">{timeSince(new Date(job.createdAt))}</span>
+              </div>
+            </div>
 
-      {/* Toast Notification */}
-      {toast.visible && <Toast message={toast.message} type={toast.type} onClose={closeToast} />}
-    </div>
+
+            <div className="mb-6">
+              <h4 className="text-lg font-semibold mb-4">Latest Jobs</h4>
+              <ul className="list-none space-y-2">
+                {latestJobs.map((latestJob) => (
+                  <li key={latestJob.id}>
+                    <Link
+                      to={`/jobs/${latestJob.slug}`}
+                      onClick={() => navigate(`/jobs/${latestJob.slug}`, { replace: false })}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {latestJob.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Toast Notification */}
+          {toast.visible && <Toast message={toast.message} type={toast.type} onClose={closeToast} />}
+        </div>
+      </section>
+    </main>
   );
 };
 
