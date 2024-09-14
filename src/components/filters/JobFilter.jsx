@@ -58,7 +58,7 @@ const JobFilter = ({ onFilterChange }) => {
   };
 
   return (
-    <div className=" bg-slate-100 w-full p-2 border-2 border-slate-600/10 shadow-md rounded-lg">
+    <div className=" bg-slate-100 p-2 border-2 border-slate-600/10 shadow-md rounded-lg">
       <HorizontalLineWithText text="Filter by location" />
       <div className="">
         <Input

@@ -4,3 +4,40 @@
         <div className="text-2xl">21</div>         
     </div>     
 </div>
+
+<section className='w-full flex items-center justify-center py-16'>
+          <div className="container p-0 px-2 md:py-2">
+            <div className="flex items-center justify-center flex-col space-y-5 px-80 p-0">
+              <h1 className="text-4xl md:text-6xl font-bold text-center font-serif">
+                Your Gateway to Tech Opportunities
+              </h1>
+              <p className="text-sm md:text-base lg:text-xl text-center text-gray-600 max-w-3xl mx-auto">
+                Discover tech roles that value diversity and inclusion. At BlacKin Tech, we connect Black professionals with top-tier companies in Germany looking for talent in software development, data science, cybersecurity, and more.
+              </p>
+            </div>
+          </div>
+        </section>
+        
+        <Lottie
+        animationData={animationData}
+        loop={true}
+        className="w-full h-full"
+      />
+    </div>\
+
+    
+import Lottie from 'lottie-react';
+import animationData from '../assets/animations/Animation - TechJobs.json'
+
+    
+    <div className='w-full space-y-10 pb-20 px-0'>
+    <h1 className="text-4xl md:text-6xl font-bold text-center font-serif">
+      Your Gateway to Tech Opportunities
+    </h1>
+    <p className="text-sm md:text-base lg:text-xl text-center text-gray-600 max-w-3xl mx-auto">
+      Discover tech roles that value diversity and inclusion. At BlacKin Tech, we connect Black professionals with top-tier companies in Germany looking for talent in software development, data science, cybersecurity, and more.
+    </p>
+  </div>
+
+<JobList filters={filters} />
+<JobFilter onFilterChange={handleFilterChange} />

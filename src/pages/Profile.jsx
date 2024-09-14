@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../contexts/AuthContext";
 import defaultAvatar from "../assets/images/avatar-default.png";
-import { FaInfoCircle, FaLocationArrow, FaMapMarker } from "react-icons/fa";
+import { FaInfoCircle, FaMapMarker } from "react-icons/fa";
 import Divider from "../components/common/Divider";
 import TabComponent from "../components/common/TabComponent";
 import JobList from "../components/lists/JobList";
@@ -21,8 +21,8 @@ function Profile() {
 
   return (
     <>
-      <main className="w-screen ">
-        <section className="w-full py-16 full flex items-center justify-center">
+      <main className="">
+        <section className="w-screen py-16 full flex items-center justify-center">
           <div className="container flex items-start flex-col lg:flex-row p-0 px-2 md:py-2 gap-10">
             <div className="flex items-center flex-col gap-2 mb-4 w-full lg:w-3/6 xl:w-2/6 rounded-xl border-2 border-slate-300/80 p-3">
               <div className="relative flex flex-col items-center justify-center">
