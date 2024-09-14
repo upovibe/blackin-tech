@@ -78,7 +78,7 @@ const Jobs = () => {
                 <FaBriefcase />
                 <span>JobBoard</span>
               </button>
-              <p className='text-xl font-bold'>Recent job posts</p>              
+              <p className='text-xl font-bold leading-tight'>Recent job posts</p>              
             </div>
             <JobList filters={filters} key={refreshKey} /> {/* Passing refreshKey to re-render JobList */}
           </div>

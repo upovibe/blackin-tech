@@ -205,6 +205,7 @@ export const fetchCountries = async () => {
 //Funtion to fetch Job Type
 export const fetchJobTypes = async () => {
   const jobTypes = [
+    "Remote",
     "Full-time",
     "Part-time",
     "Contractual",

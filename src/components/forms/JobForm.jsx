@@ -4,19 +4,24 @@ import Input from '../common/Input';
 import SelectInput from '../common/SelectInput';
 import TextArea from '../common/TextArea';
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; 
-import Button from '../common/Button'; 
-import Toast from '../common/Toast'; 
-import Lottie from 'lottie-react'; 
-import successAnimation from '../../assets/animations/Animation - JobPosted.json'; 
+import 'react-quill/dist/quill.snow.css';
+import Button from '../common/Button';
+import Toast from '../common/Toast';
+import Lottie from 'lottie-react';
+import successAnimation from '../../assets/animations/Animation - JobPosted.json';
 import { createDocument } from '../../services/firestoreService';
 import { fetchCountries, fetchJobTypes } from '../../api/jobsApi';
 import ImagesUpload from '../common/ImagesUpload';
 import { uploadImages } from '../../services/storageService';
+import AvatarUpload from '../common/AvatarUpload';
+import SlidingCheckbox from '../common/SlidingCheckbox';
 
 const JobForm = () => {
   const { user } = UserAuth();
   const [formData, setFormData] = useState({
+    logo: '',
+    companyName: '',
+    website: '',
     title: '',
     subtitle: '',
     location: '',
@@ -26,10 +31,11 @@ const JobForm = () => {
 
   const [countries, setCountries] = useState([]);
   const [jobTypes, setJobTypes] = useState([]);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [showToast, setShowToast] = useState({ visible: false, message: '', type: 'success' });
-  const [success, setSuccess] = useState(false); 
-  const [media, setMedia] = useState([]); // State to store uploaded images
+  const [success, setSuccess] = useState(false);
+  const [media, setMedia] = useState([]);
+  const [showMediaUpload, setShowMediaUpload] = useState(false);
 
   useEffect(() => {
     fetchCountries().then(setCountries);
@@ -48,10 +54,14 @@ const JobForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleLogoUpload = (url) => {
+    setFormData({ ...formData, logo: url }); // Set the uploaded logo URL
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     if (!formData.title || !formData.location || !formData.jobType || !formData.description) {
       setShowToast({
         visible: true,
@@ -61,42 +71,45 @@ const JobForm = () => {
       setLoading(false);
       return;
     }
-  
+
     try {
       let mediaUrls = [];
-  
+
       if (media.length > 0) {
         mediaUrls = await uploadImages(media);
       }
-  
-      const slug = generateSlug(formData.title); // Generate slug from title
+
+      const slug = generateSlug(formData.title);
 
       const jobData = {
         ...formData,
         createdAt: new Date(),
         media: mediaUrls,
-        createdBy: user.uid, // Add the user ID here
-        slug, // Add the slug to the jobData object
+        createdBy: user.uid,
+        slug,
       };
-  
+
       await createDocument('jobs', jobData);
-  
+
       setSuccess(true);
       setShowToast({
         visible: true,
         message: 'Job posted successfully!',
         type: 'success',
       });
-  
+
       setFormData({
+        logo: '',
+        companyName: '',
+        website: '',
         title: '',
         subtitle: '',
         location: '',
         jobType: '',
         description: '',
       });
-      setMedia([]); 
-  
+      setMedia([]);
+
     } catch (error) {
       setShowToast({
         visible: true,
@@ -107,7 +120,7 @@ const JobForm = () => {
       setLoading(false);
     }
   };
-  
+
 
   const closeToast = () => {
     setShowToast({ ...showToast, visible: false });
@@ -116,6 +129,27 @@ const JobForm = () => {
   return (
     <div className="relative h-max p-1">
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Company Logo (Required)
+          </label>
+          <AvatarUpload onUpload={handleLogoUpload} /> {/* AvatarUpload for logo */}
+        </div>
+
+        <Input
+          name="companyName"
+          placeholder="Company Name"
+          value={formData.companyName}
+          onChange={handleInputChange}
+          required
+        />
+
+        <Input
+          name="website"
+          placeholder="Company Website (optional)"
+          value={formData.website}
+          onChange={handleInputChange}
+        />
         <Input
           name="title"
           placeholder="Job Title"
@@ -153,11 +187,22 @@ const JobForm = () => {
         <ReactQuill
           value={formData.description}
           onChange={(content) => setFormData({ ...formData, description: content })}
-          placeholder="Add more info on Salary, Required Qualifications, Company Overview, Benefits, etc."
+          placeholder="Add more info on Salary(optional), Required Qualifications, Company Overview, Benefits, etc."
           className="bg-slate-200 text-slate-900 rounded-md"
         />
 
-        <ImagesUpload setMedia={setMedia} /> {/* Image Upload Component */}
+        <div className="flex items-center mt-4">
+          <SlidingCheckbox
+            id="media-toggle"
+            name="showMediaUpload"
+            checked={showMediaUpload}
+            onChange={() => setShowMediaUpload(!showMediaUpload)}
+          />
+          <span className="ml-3 text-sm font-medium text-gray-700">Upload Images (Optional)</span>
+        </div>
+        {showMediaUpload && (
+          <ImagesUpload setMedia={setMedia} />
+        )}
 
         <Button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded-md">
           {loading ? 'Posting...' : 'Post Job'}

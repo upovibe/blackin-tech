@@ -4,9 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import animationData from '../../assets/animations/Animation - Jobs.json';
 import imageLoadingAnimation from '../../assets/animations/Animation - Image Loading.json';
-import { FaMapMarker, FaUber } from 'react-icons/fa';
+import { FaMapMarker,FaUserCircle } from 'react-icons/fa';
 import { UserAuth } from '../../contexts/AuthContext';
-import { timeSince } from '../../utils/timingUtils'; 
+import { timeSince } from '../../utils/timingUtils';
 
 // Truncate text function
 const truncateText = (text, maxLength) => {
@@ -34,12 +34,16 @@ const JobList = ({ filters }) => {
             : true;
           const matchesRemote = filters.remote ? job.remote === true : true;
           return matchesLocation && matchesJobType && matchesRemote;
-        });
+        }).map(job => ({
+          ...job,
+          createdAt: job.createdAt?.toDate ? job.createdAt.toDate() : new Date(job.createdAt) // Convert Firestore timestamp
+        }));
         setJobs(filteredJobs);
       } catch (error) {
         console.error('Error fetching jobs: ', error);
       }
     };
+    
 
     fetchJobs();
   }, [filters]);
@@ -64,20 +68,20 @@ const JobList = ({ filters }) => {
           <div
             key={job.id}
             onClick={() => navigate(`/jobs/${job.slug}`)}
-            className="job-item group relative p-2 mb-5 bg-slate-100 w-full rounded-xl cursor-pointer overflow-hidden border-2 border-slate-500/10"
+            className="job-item relative p-2 mb-5 bg-slate-100 w-full rounded-xl cursor-pointer overflow-hidden border-2 border-slate-500/10"
           >
             <div className="flex items-center gap-3 h-full">
-              <div className="job-image-wrapper size-20 min-h-20 min-w-20 md:size-16 md:min-h-16 md:min-w-16 relative overflow-hidden rounded-lg shadow cursor-pointer group">
+              <div className="job-image-wrapper size-20 min-h-20 min-w-20 md:size-16 md:min-h-16 md:min-w-16 relative overflow-hidden rounded-lg shadow cursor-pointer">
                 {job.media && job.media[0] ? (
                   <img
                     src={job.media[0]}
                     alt={job.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                   />
                 ) : (
                   <Lottie
                     animationData={imageLoadingAnimation}
-                    className="w-full h-full transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-full"
                   />
                 )}
               </div>
@@ -85,21 +89,22 @@ const JobList = ({ filters }) => {
               {/* Content wrapper */}
               <div className="flex items-center justify-between w-full h-full gap-3">
                 <div className="flex flex-col justify-between h-full">
-                  <h2 className="font-semibold leading-tight text-lg hover:decoration-slice transition-all duration-300 ease-in-out">
+                  <h2 className="font-semibold leading-tight text-lg">
                     {truncateText(job.title, titleLength)}
                   </h2>
                   <p className="truncate">{truncateText(job.subtitle, subtitleLength)}</p>
                   <span className="px-2 bg-slate-400 rounded-full text-white text-xs font-semibold py-0 inline-flex w-fit md:hidden mt-3">
                     {job.jobType}
                   </span>
-                  <div className="hidden md:inline-flex relative group">
+                  <div className="hidden md:inline-flex items-center relative group text-xs font-semibold text-slate-700 space-x-1 mt-1">
                     {/* Display author's name with hover tooltip */}
-                    <FaUber />
+                    <FaUserCircle/>
                     <span>{user?.userName || 'Unknown Author'}</span>
 
                     {/* Tooltip div, only shown on hover */}
-                    <div className="absolute left-0 top-full z-50 mb-2 hidden group-hover:block bg-slate-800 text-white text-xs rounded-lg px-3 py-1">
-                      Featured listing posted by Admin {timeSince(new Date(job.createdAt))}
+                    <div className="absolute left-0 buttom-full z-50 mb-2 hidden group-hover:block bg-slate-800 text-white text-xs rounded-lg px-3 py-1 leading-tight font-semibold">
+                      Featured listing posted by Admin <span>{timeSince(new Date(job.createdAt))}</span>
+
                     </div>
                   </div>
                 </div>
@@ -115,8 +120,8 @@ const JobList = ({ filters }) => {
               </div>
             </div>
 
-            {/* Hidden initially, visible on hover */}
-            <div className="absolute bg-slate-100 top-0 right-0 p-2 rounded-l-lg size-full w-1/2 items-center gap-2 justify-end overflow-hidden flex opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out">
+            {/* Apply View - initially hidden, visible on hover */}
+            <div className="apply-view absolute bg-slate-100 top-0 right-0 p-2 rounded-l-lg size-full w-1/2 items-center gap-2 justify-end overflow-hidden flex opacity-0 hover:opacity-100 transition-all duration-300 ease-in-out">
               <Link
                 to={`/jobs/${job.slug}`}
                 className="view-details p-1 px-2 text-sm rounded-full border-2 border-slate-600/25 hover:bg-slate-800 hover:text-white/80 transition-all duration-300 ease-in-out"
@@ -128,6 +133,7 @@ const JobList = ({ filters }) => {
               </button>
             </div>
           </div>
+
         ))
       ) : (
         <div className="no-jobs-found mt-6 flex flex-col items-center">
