@@ -58,7 +58,7 @@ const JobFilter = ({ onFilterChange }) => {
   };
 
   return (
-    <div className=" bg-slate-100 p-2 border-2 border-slate-600/10 shadow-md rounded-lg">
+    <div className=" bg-slate-100 p-2 border-2 border-slate-500/10 rounded-lg">
       <HorizontalLineWithText text="Filter by location" />
       <div className="">
         <Input
@@ -80,18 +80,18 @@ const JobFilter = ({ onFilterChange }) => {
           className="border mt-2 p-2 w-full rounded"
         />
       </div>
-      <div className='flex items-center justify-between gap-3 mt-3'>
-      <Button
+      <div className='flex items-center justify-between gap-3 mt-8'>
+      <button
         onClick={handleFilterSubmit}
-        className="mt-4 w-full bg-slate-500 text-white p-2 rounded-lg"
+        className="w-full bg-slate-500 text-white p-1 rounded-lg hover:bg-slate-950 transition-all duration-300 ease-in-out"
       >
         Filter
-      </Button>
+      </button>
       <button
         onClick={handleClearFilters}
-        className="mt-2 w-full bg-gray-200 text-gray-700 p-2 rounded-lg"
+        className="w-full bg-gray-200 text-gray-700 p-1 rounded-lg"
       >
-        Clear Filters
+        Clear
       </button>
       </div>      
     </div>
