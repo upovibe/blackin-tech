@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getAllDocuments } from '../../services/firestoreService';
+import { getAllDocuments, getSavedJobs, saveJob, removeSavedJob } from '../../services/firestoreService';
 import { Link, useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import animationData from '../../assets/animations/Animation - Jobs.json';
@@ -7,9 +7,10 @@ import imageLoadingAnimation from '../../assets/animations/Animation - Image Loa
 import { FaMapMarker, FaUserCircle } from 'react-icons/fa';
 import { UserAuth } from '../../contexts/AuthContext';
 import { timeSince } from '../../utils/timingUtils';
-import Toast from '../common/Toast'
+import Modal from '../common/Modal';
+import JobApplicationForm from '../forms/JobApplicationForm';
+import Toast from '../common/Toast'; // Import the Toast component
 
-// Truncate text function
 const truncateText = (text, maxLength) => {
   if (!text) return '';
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
@@ -18,33 +19,112 @@ const truncateText = (text, maxLength) => {
 const JobList = ({ filters }) => {
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
+  const [savedJobs, setSavedJobs] = useState(new Set());
   const [titleLength, setTitleLength] = useState(30);
   const [subtitleLength, setSubtitleLength] = useState(50);
-  const { user } = UserAuth(); // Get user from context
+  const { user } = UserAuth();
+
+  // Toast state
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
+
+  // Modal state for handling job application form
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+
+  // Function to handle job saving
+  const handleSaveJob = async (jobId) => {
+    if (user) {
+      try {
+        await saveJob(user.uid, jobId);
+        setSavedJobs((prevSavedJobs) => new Set([...prevSavedJobs, jobId]));
+        setToastMessage('Job saved successfully!');
+        setToastType('success');
+        setToastVisible(true);
+      } catch (error) {
+        console.error('Error saving job: ', error);
+        setToastMessage('Failed to save the job.');
+        setToastType('error');
+        setToastVisible(true);
+      }
+    } else {
+      setToastMessage('You must be logged in to save jobs.');
+      setToastType('error');
+      setToastVisible(true);
+      navigate('/login');
+    }
+  };
+
+
+  // Function to handle job removal
+  const handleRemoveJob = async (jobId) => {
+    if (user) {
+      try {
+        await removeSavedJob(user.uid, jobId);
+        setSavedJobs((prevSavedJobs) => {
+          const updatedSavedJobs = new Set(prevSavedJobs);
+          updatedSavedJobs.delete(jobId);
+          return updatedSavedJobs;
+        });
+        setToastMessage('Job removed successfully!');
+        setToastType('success');
+        setToastVisible(true);
+      } catch (error) {
+        console.error('Error removing job: ', error);
+        setToastMessage('Failed to remove the job.');
+        setToastType('error');
+        setToastVisible(true);
+      }
+    } else {
+      setToastMessage('You must be logged in to remove jobs.');
+      setToastType('error');
+      setToastVisible(true);
+      navigate('/login');
+    }
+  };
+
+
+  // Fetch saved jobs when the user logs in or when the component mounts
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      if (user) {
+        try {
+          const savedJobsData = await getSavedJobs(user.uid);
+          setSavedJobs(new Set(savedJobsData));
+        } catch (error) {
+          console.error('Error fetching saved jobs: ', error);
+        }
+      }
+    };
+
+    fetchSavedJobs();
+  }, [user]);
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         const jobData = await getAllDocuments('jobs');
-        const filteredJobs = jobData.filter(job => {
-          const matchesLocation = filters.location
-            ? job.location?.toLowerCase().includes(filters.location.toLowerCase())
-            : true;
-          const matchesJobType = filters.jobType
-            ? job.jobType === filters.jobType
-            : true;
-          const matchesRemote = filters.remote ? job.remote === true : true;
-          return matchesLocation && matchesJobType && matchesRemote;
-        }).map(job => ({
-          ...job,
-          createdAt: job.createdAt?.toDate ? job.createdAt.toDate() : new Date(job.createdAt) // Convert Firestore timestamp
-        }));
+        const filteredJobs = jobData
+          .filter((job) => {
+            const matchesLocation = filters.location
+              ? job.location?.toLowerCase().includes(filters.location.toLowerCase())
+              : true;
+            const matchesJobType = filters.jobType
+              ? job.jobType === filters.jobType
+              : true;
+            const matchesRemote = filters.remote ? job.remote === true : true;
+            return matchesLocation && matchesJobType && matchesRemote;
+          })
+          .map((job) => ({
+            ...job,
+            createdAt: job.createdAt?.toDate ? job.createdAt.toDate() : new Date(job.createdAt),
+          }));
         setJobs(filteredJobs);
       } catch (error) {
         console.error('Error fetching jobs: ', error);
       }
     };
-
 
     fetchJobs();
   }, [filters]);
@@ -61,6 +141,23 @@ const JobList = ({ filters }) => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  const handleModalOpen = (job) => {
+    if (user) {
+      setSelectedJob(job);
+      setIsModalOpen(true);
+    } else {
+      setToastMessage('You must be logged in to apply for a job.');
+      setToastType('error');
+      setToastVisible(true);
+      navigate('/login');
+    }
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedJob(null);
+  };
 
   return (
     <div className="job-list">
@@ -98,15 +195,8 @@ const JobList = ({ filters }) => {
                     {job.jobType}
                   </span>
                   <div className="hidden md:inline-flex items-center relative group text-xs font-semibold text-slate-700 space-x-1 mt-1">
-                    {/* Display author's name with hover tooltip */}
                     <FaUserCircle />
                     <span>{user?.userName || 'Unknown Author'}</span>
-
-                    {/* Tooltip div, only shown on hover */}
-                    <div className="absolute left-0 buttom-full z-50 mb-2 hidden group-hover:block bg-slate-800 text-white text-xs rounded-lg px-3 py-1 leading-tight font-semibold">
-                      Featured listing posted by Admin <span>{timeSince(new Date(job.createdAt))}</span>
-
-                    </div>
                   </div>
                 </div>
                 <div className="hidden flex-col items-center text-sm font-semibold space-y-2 md:flex h-full justify-between">
@@ -122,34 +212,58 @@ const JobList = ({ filters }) => {
             </div>
 
             {/* Apply View - initially hidden, visible on hover */}
-            <div className="apply-view absolute bg-slate-100 top-0 right-0 p-2 rounded-l-lg size-full lg:w-8/12 items-center gap-2 justify-end overflow-hidden flex opacity-0 hover:opacity-100 transition-all duration-300 ease-in-out">
-              <Link
-                to={`/jobs/${job.slug}`}
-                className="view-details p-1 px-2 text-sm rounded-full border-2 border-slate-600/25 hover:bg-slate-800 hover:text-white/80 transition-all duration-300 ease-in-out"
-              >
-                View Details
-              </Link>
-              <button className="apply-button p-1 px-2 text-sm rounded-full border-2 border-slate-600/25 hover:bg-slate-800 hover:text-white/80 transition-all duration-300 ease-in-out">
-                Apply Now
-              </button>
+            <div className="apply-view absolute bg-slate-100 top-0 right-0 p-2 rounded-l-lg size-full lg:w-8/12 items-center gap-2 justify-end overflow-hidden flex opacity-0 hover:opacity-100 transition-opacity duration-300 ease-in-out">
               <button
                 className="apply-button p-1 px-2 text-sm rounded-full border-2 border-slate-600/25 hover:bg-slate-800 hover:text-white/80 transition-all duration-300 ease-in-out"
                 onClick={(event) => {
-                  event.stopPropagation(); // Prevents the parent div's onClick from firing
-                  console.log('Job saved');
+                  event.stopPropagation();
+                  handleModalOpen(job);
                 }}
               >
-                Save Job
+                Apply Now
               </button>
+              {savedJobs.has(job.id) ? (
+                <button
+                  className="remove-button p-1 px-2 text-sm rounded-full border-2 border-slate-600/25 hover:bg-slate-800 hover:text-white/80 transition-all duration-300 ease-in-out"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleRemoveJob(job.id);
+                  }}
+                >
+                  Remove Job
+                </button>
+              ) : (
+                <button
+                  className="save-button p-1 px-2 text-sm rounded-full border-2 border-slate-600/25 hover:bg-slate-800 hover:text-white/80 transition-all duration-300 ease-in-out"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleSaveJob(job.id);
+                  }}
+                >
+                  Save Job
+                </button>
+              )}
             </div>
           </div>
-
         ))
       ) : (
         <div className="no-jobs-found mt-6 flex flex-col items-center">
           <Lottie animationData={animationData} className="w-64 h-64" />
         </div>
       )}
+
+      {/* Modal for Job Application */}
+      <Modal isOpen={isModalOpen} onClose={handleModalClose} title="Apply for Job">
+        <JobApplicationForm job={selectedJob} />
+      </Modal>
+
+      {/* Toast Notification */}
+      <Toast
+        visible={toastVisible}
+        type={toastType}
+        message={toastMessage}
+        onClose={() => setToastVisible(false)}
+      />
     </div>
   );
 };

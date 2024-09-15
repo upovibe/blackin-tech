@@ -11,3 +11,14 @@ export const uploadImages = async (files) => {
 
   return Promise.all(uploadPromises);
 };
+
+export const uploadDocuments = async (files) => {
+  const uploadPromises = files.map(async (file) => {
+    const fileRef = ref(storage, `documents/${file.name}`);
+    await uploadBytes(fileRef, file);
+    const downloadURL = await getDownloadURL(fileRef);
+    return downloadURL;
+  });
+
+  return Promise.all(uploadPromises);
+};

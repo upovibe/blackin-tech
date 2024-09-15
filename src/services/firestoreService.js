@@ -8,6 +8,7 @@ import {
   deleteDoc,
   doc,
   onSnapshot,
+  setDoc,
   query, 
   where, 
   increment,
@@ -92,4 +93,68 @@ export const listenToCollection = (collectionName, callback) => {
     const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     callback(data);
   });
+};
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Function to save a job for a user
+export const saveJob = async (userId, jobId) => {
+  try {
+    const savedJobsDocRef = doc(db, 'savedJobs', userId);
+    const savedJobsSnap = await getDoc(savedJobsDocRef);
+    let savedJobs = [];
+    if (savedJobsSnap.exists()) {
+      savedJobs = savedJobsSnap.data().jobs || [];
+    }
+    if (!savedJobs.includes(jobId)) {
+      savedJobs.push(jobId);
+      await setDoc(savedJobsDocRef, { jobs: savedJobs }, { merge: true });
+      console.log("Job saved successfully.");
+    } else {
+      console.log("Job is already saved.");
+    }
+  } catch (e) {
+    console.error("Error saving job: ", e);
+  }
+};
+
+
+// Function to remove a saved job for a user
+export const removeSavedJob = async (userId, jobId) => {
+  try {
+    const savedJobsDocRef = doc(db, 'savedJobs', userId);
+    const savedJobsSnap = await getDoc(savedJobsDocRef);
+    if (savedJobsSnap.exists()) {
+      let savedJobs = savedJobsSnap.data().jobs || [];
+      if (savedJobs.includes(jobId)) {
+        savedJobs = savedJobs.filter(id => id !== jobId);
+        await setDoc(savedJobsDocRef, { jobs: savedJobs }, { merge: true });
+        console.log("Job removed successfully.");
+      } else {
+        console.log("Job not found in saved jobs.");
+      }
+    } else {
+      console.log("No saved jobs found for this user.");
+    }
+  } catch (e) {
+    console.error("Error removing job: ", e);
+  }
+};
+
+// Function to get saved jobs for a user
+export const getSavedJobs = async (userId) => {
+  try {
+    const savedJobsDocRef = doc(db, 'savedJobs', userId);
+    const savedJobsSnap = await getDoc(savedJobsDocRef);
+    if (savedJobsSnap.exists()) {
+      return savedJobsSnap.data().jobs || [];
+    } else {
+      return [];
+    }
+  } catch (e) {
+    console.error("Error fetching saved jobs: ", e);
+    return [];
+  }
 };
