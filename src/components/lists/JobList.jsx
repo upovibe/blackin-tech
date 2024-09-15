@@ -9,7 +9,8 @@ import { UserAuth } from '../../contexts/AuthContext';
 import { timeSince } from '../../utils/timingUtils';
 import Modal from '../common/Modal';
 import JobApplicationForm from '../forms/JobApplicationForm';
-import Toast from '../common/Toast'; // Import the Toast component
+import Toast from '../common/Toast';
+import Pagination from '../common/Pegination';
 
 const truncateText = (text, maxLength) => {
   if (!text) return '';
@@ -22,6 +23,9 @@ const JobList = ({ filters }) => {
   const [savedJobs, setSavedJobs] = useState(new Set());
   const [titleLength, setTitleLength] = useState(30);
   const [subtitleLength, setSubtitleLength] = useState(50);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [jobsPerPage] = useState(10);
   const { user } = UserAuth();
 
   // Toast state
@@ -49,13 +53,9 @@ const JobList = ({ filters }) => {
         setToastVisible(true);
       }
     } else {
-      setToastMessage('You must be logged in to save jobs.');
-      setToastType('error');
-      setToastVisible(true);
-      navigate('/login');
+      alert('You must be logged in to save jobs.');
     }
   };
-
 
   // Function to handle job removal
   const handleRemoveJob = async (jobId) => {
@@ -77,13 +77,9 @@ const JobList = ({ filters }) => {
         setToastVisible(true);
       }
     } else {
-      setToastMessage('You must be logged in to remove jobs.');
-      setToastType('error');
-      setToastVisible(true);
-      navigate('/login');
+      alert('You must be logged in to remove jobs.');
     }
   };
-
 
   // Fetch saved jobs when the user logs in or when the component mounts
   useEffect(() => {
@@ -101,33 +97,39 @@ const JobList = ({ filters }) => {
     fetchSavedJobs();
   }, [user]);
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const jobData = await getAllDocuments('jobs');
-        const filteredJobs = jobData
-          .filter((job) => {
-            const matchesLocation = filters.location
-              ? job.location?.toLowerCase().includes(filters.location.toLowerCase())
-              : true;
-            const matchesJobType = filters.jobType
-              ? job.jobType === filters.jobType
-              : true;
-            const matchesRemote = filters.remote ? job.remote === true : true;
-            return matchesLocation && matchesJobType && matchesRemote;
-          })
-          .map((job) => ({
-            ...job,
-            createdAt: job.createdAt?.toDate ? job.createdAt.toDate() : new Date(job.createdAt),
-          }));
-        setJobs(filteredJobs);
-      } catch (error) {
-        console.error('Error fetching jobs: ', error);
-      }
-    };
+  // Fetch jobs with pagination
+// Fetch jobs with pagination
+useEffect(() => {
+  const fetchJobs = async () => {
+    try {
+      const allJobs = await getAllDocuments('jobs');
+      const filteredJobs = allJobs
+        .filter((job) => {
+          const matchesLocation = filters.location
+            ? job.location?.toLowerCase().includes(filters.location.toLowerCase())
+            : true;
+          const matchesJobType = filters.jobType
+            ? job.jobType === filters.jobType
+            : true;
+          const matchesRemote = filters.remote ? job.remote === true : true;
+          return matchesLocation && matchesJobType && matchesRemote;
+        })
+        .map((job) => ({
+          ...job,
+          createdAt: job.createdAt?.toDate ? job.createdAt.toDate() : new Date(job.createdAt),
+        }));
+      
+      setTotalPages(Math.ceil(filteredJobs.length / jobsPerPage));
+      const paginatedJobs = filteredJobs.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
+      setJobs(paginatedJobs);
+    } catch (error) {
+      console.error('Error fetching jobs: ', error);
+    }
+  };
 
-    fetchJobs();
-  }, [filters]);
+  fetchJobs();
+}, [filters, currentPage, jobsPerPage]); // Include jobsPerPage in the dependency array
+
 
   // Adjust truncation based on screen size
   useEffect(() => {
@@ -197,6 +199,9 @@ const JobList = ({ filters }) => {
                   <div className="hidden md:inline-flex items-center relative group text-xs font-semibold text-slate-700 space-x-1 mt-1">
                     <FaUserCircle />
                     <span>{user?.userName || 'Unknown Author'}</span>
+                    <div className="absolute left-0 buttom-full z-50 mb-2 hidden group-hover:block bg-slate-800 text-white text-xs rounded-lg px-3 py-1 leading-tight font-semibold">
+                      Featured listing posted by Admin <span>{timeSince(new Date(job.createdAt))}</span>
+                    </div>
                   </div>
                 </div>
                 <div className="hidden flex-col items-center text-sm font-semibold space-y-2 md:flex h-full justify-between">
@@ -213,6 +218,12 @@ const JobList = ({ filters }) => {
 
             {/* Apply View - initially hidden, visible on hover */}
             <div className="apply-view absolute bg-slate-100 top-0 right-0 p-2 rounded-l-lg size-full lg:w-8/12 items-center gap-2 justify-end overflow-hidden flex opacity-0 hover:opacity-100 transition-opacity duration-300 ease-in-out">
+            <Link
+                to={`/jobs/${job.slug}`}
+                className="view-details p-1 px-2 text-sm rounded-full border-2 border-slate-600/25 hover:bg-slate-800 hover:text-white/80 transition-all duration-300 ease-in-out"
+              >
+                View Details
+              </Link>
               <button
                 className="apply-button p-1 px-2 text-sm rounded-full border-2 border-slate-600/25 hover:bg-slate-800 hover:text-white/80 transition-all duration-300 ease-in-out"
                 onClick={(event) => {
@@ -251,6 +262,13 @@ const JobList = ({ filters }) => {
           <Lottie animationData={animationData} className="w-64 h-64" />
         </div>
       )}
+
+      {/* Pagination Component */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
 
       {/* Modal for Job Application */}
       <Modal isOpen={isModalOpen} onClose={handleModalClose} title="Apply for Job">
