@@ -17,7 +17,7 @@ import {
   collection,
   updateDoc,
 } from "firebase/firestore";
-import { auth, db } from "./firebase";
+import { auth, db, } from "./firebase";
 
 
 //Hard Coded Admin Email
@@ -187,5 +187,14 @@ export const updateProfile = async (profileData) => {
   }
 };
 
-
-
+// Fetch user details by user ID
+export const getUserById = async (userId) => {
+  try {
+    const userDocRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(userDocRef);
+    return userDoc.exists() ? userDoc.data() : null;
+  } catch (error) {
+    console.error('Error fetching user data: ', error);
+    return null;
+  }
+};

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getAllDocuments } from '../../services/firestoreService';
+import { getAllDocuments, getSavedJobs, saveJob, removeSavedJob, incrementJobViewCount, updateDocument } from '../../services/firestoreService';
 import { UserAuth } from '../../contexts/AuthContext';
-import { FaWhatsapp, FaFacebook, FaLinkedin, FaLink, FaSave } from 'react-icons/fa';
+import { getUserById } from '../../services/authService'; 
+import { FaWhatsapp, FaFacebook, FaLinkedin, FaLink, FaBookmark, FaEye } from 'react-icons/fa';
 import Lottie from 'lottie-react';
 import LoadingPage from '../../assets/animations/Animation - LoadingPage.json';
 import Toast from '../common/Toast';
@@ -13,18 +14,29 @@ import Divider from '../common/Divider';
 import HrizontalLineWithText from '../common/HorizontalLineWithText';
 import Button from '../common/Button';
 import HorizontalLineWithText from '../common/HorizontalLineWithText';
+import Modal from '../common/Modal';
+import JobApplicationForm from '../forms/JobApplicationForm';
+import Tooltip from '../common/Tooltip';
+
 
 const JobDetails = () => {
+  const navigate = useNavigate();
   const { slug } = useParams();
-  const navigate = useNavigate(); // For back navigation
-  const { user } = UserAuth();
   const [job, setJob] = useState(null);
+  const [savedJobs, setSavedJobs] = useState(new Set());
   const [latestJobs, setLatestJobs] = useState([]);
-  const [toast, setToast] = useState({
-    visible: false,
-    message: '',
-    type: 'success',
-  });
+  const { user } = UserAuth();
+  const [posterUsername, setPosterUsername] = useState('');
+
+  // Toast state
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
+
+  // Modal state for handling job application form
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+
 
   useEffect(() => {
     const fetchJobBySlug = async () => {
@@ -38,7 +50,16 @@ const JobDetails = () => {
             : new Date(jobData.createdAt);
         }
 
-        setJob(jobData);
+         // Fetch poster's username
+         const jobPoster = await getUserById(jobData.postedBy);
+         setPosterUsername(jobPoster?.userName || 'Unknown Author');
+
+        // Ensure jobData contains viewCount and saveCount
+        setJob({
+          ...jobData,
+          viewCount: jobData.viewCount || 0,
+          saveCount: jobData.saveCount || 0,
+        });
 
         const latestJobList = jobs
           .filter((j) => j.slug !== slug)
@@ -53,6 +74,116 @@ const JobDetails = () => {
   }, [slug]);
 
 
+  // Increment the view count when the job is loaded
+  useEffect(() => {
+    const incrementViewCount = async () => {
+      if (job) {
+        try {
+          await incrementJobViewCount(job.id);
+        } catch (error) {
+          console.error('Error incrementing view count: ', error);
+        }
+      }
+    };
+
+    incrementViewCount();
+  }, [job]);
+
+
+  // Fetch saved jobs when the user logs in or when the component mounts
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      if (user) {
+        try {
+          const savedJobsData = await getSavedJobs(user.uid);
+          setSavedJobs(new Set(savedJobsData));
+        } catch (error) {
+          console.error('Error fetching saved jobs: ', error);
+        }
+      }
+    };
+
+    fetchSavedJobs();
+  }, [user]);
+
+
+  // Function to handle job saving
+  const handleSaveJob = async (jobId) => {
+    if (user) {
+      try {
+        await saveJob(user.uid, jobId);
+        setSavedJobs((prevSavedJobs) => new Set([...prevSavedJobs, jobId]));
+  
+        // Increment save count after saving
+        setJob((prevJob) => ({
+          ...prevJob,
+          saveCount: prevJob.saveCount + 1,
+        }));
+  
+        setToastMessage('Job saved successfully!');
+        setToastType('success');
+        setToastVisible(true);
+      } catch (error) {
+        console.error('Error saving job: ', error);
+        setToastMessage('Failed to save the job.');
+        setToastType('error');
+        setToastVisible(true);
+      }
+    } else {
+      alert('You must be logged in to save jobs.');
+    }
+  };
+  
+  
+
+  // Function to handle job removal
+  const handleRemoveJob = async (jobId) => {
+    if (user) {
+      try {
+        await removeSavedJob(user.uid, jobId);
+        setSavedJobs((prevSavedJobs) => {
+          const updatedSavedJobs = new Set(prevSavedJobs);
+          updatedSavedJobs.delete(jobId);
+          return updatedSavedJobs;
+        });
+  
+        // Decrement save count after removing
+        setJob((prevJob) => ({
+          ...prevJob,
+          saveCount: prevJob.saveCount - 1,
+        }));
+  
+        setToastMessage('Job removed successfully!');
+        setToastType('success');
+        setToastVisible(true);
+      } catch (error) {
+        console.error('Error removing job: ', error);
+        setToastMessage('Failed to remove the job.');
+        setToastType('error');
+        setToastVisible(true);
+      }
+    } else {
+      alert('You must be logged in to remove jobs.');
+    }
+  };  
+
+
+  // Fetch saved jobs when the user logs in or when the component mounts
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      if (user) {
+        try {
+          const savedJobsData = await getSavedJobs(user.uid);
+          setSavedJobs(new Set(savedJobsData));
+        } catch (error) {
+          console.error('Error fetching saved jobs: ', error);
+        }
+      }
+    };
+
+    fetchSavedJobs();
+  }, [user]);
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     setToast({
@@ -62,8 +193,21 @@ const JobDetails = () => {
     });
   };
 
-  const closeToast = () => {
-    setToast({ ...toast, visible: false });
+  const handleModalOpen = (job) => {
+    if (user) {
+      setSelectedJob(job);
+      setIsModalOpen(true);
+    } else {
+      setToastMessage('You must be logged in to apply for a job.');
+      setToastType('error');
+      setToastVisible(true);
+      navigate('/login');
+    }
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedJob(null);
   };
 
   const isImageUrl = (url) => {
@@ -105,7 +249,8 @@ const JobDetails = () => {
           <NavigationButtons />
         </div>
         <div className="container mx-auto p-4 flex flex-col lg:flex-row lg:justify-center gap-8">
-          <div className="lg:w-2/4">
+          {/* Left Section */}
+          <div className="lg:w-3/4 xl:w-2/4">
             <div className="text-lg font-semibold mb-3">Company Details</div>
             <h1 className="text-3xl font-bold mb-2">{job.title}</h1>
             {/* Display uploaded images */}
@@ -138,51 +283,68 @@ const JobDetails = () => {
 
             {/* Social Sharing Buttons */}
             <HrizontalLineWithText text='Share' className='my-4' />
-            <div className="flex items-center gap-4">
-              <a
-                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-green-500 flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
-              >
-                <FaWhatsapp />
-                <span className="text-slate-900 font-semibold text-xs hidden md:block">WhatsApp</span>
-              </a>
+            <div className='flex items-center justify-between'>
+              <div className="flex items-center gap-4">
+                <a
+                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-500 flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
+                >
+                  <FaWhatsapp />
+                  <span className="text-slate-900 font-semibold text-xs hidden md:block">WhatsApp</span>
+                </a>
 
-              <a
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
-              >
-                <FaFacebook />
-                <span className="text-slate-900 font-semibold text-xs hidden md:block">Facebook</span>
-              </a>
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
+                >
+                  <FaFacebook />
+                  <span className="text-slate-900 font-semibold text-xs hidden md:block">Facebook</span>
+                </a>
 
-              <a
-                href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(job.title)}&summary=${encodeURIComponent(message)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-700 flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
-              >
-                <FaLinkedin />
-                <span className="text-slate-900 font-semibold text-xs hidden md:block">LinkedIn</span>
-              </a>
+                <a
+                  href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(pageUrl)}&title=${encodeURIComponent(job.title)}&summary=${encodeURIComponent(message)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-700 flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
+                >
+                  <FaLinkedin />
+                  <span className="text-slate-900 font-semibold text-xs hidden md:block">LinkedIn</span>
+                </a>
 
-              <a
-                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(message)}&via=YourTwitterHandle`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-black flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
-              >
-                <FaX />
-                <span className="text-slate-900 font-semibold text-xs hidden md:block">X/Twitter</span>
-              </a>
+                <a
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(message)}&via=YourTwitterHandle`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-black flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full"
+                >
+                  <FaX />
+                  <span className="text-slate-900 font-semibold text-xs hidden md:block">X/Twitter</span>
+                </a>
 
-              <button onClick={handleCopyLink} className="flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full">
-                <FaLink />
-                <span className="text-slate-900 font-semibold text-xs hidden md:block">Copy</span>
-              </button>
+                <button onClick={handleCopyLink} className="flex items-center gap-2 border-2 p-2 md:py-1 bg-slate-300/50 border-slate-300/20 rounded-full">
+                  <FaLink />
+                  <span className="text-slate-900 font-semibold text-xs hidden md:block">Copy</span>
+                </button>
+              </div>
+              <div className="flex items-center gap-3">
+                {/* Display view count */}
+                <Tooltip position="left" text="Click to see more details">
+                  <span className="flex items-center gap-1 text-sm">
+                    {job.viewCount || 0} <FaEye />
+                  </span>
+                </Tooltip>
+
+                {/* Display save count */}
+                <Tooltip position="left" text="Number of saves">
+                  <span className="flex items-center gap-1 text-sm text-slate-700">
+                    {job.saveCount || 0} <FaBookmark />
+                  </span>
+                </Tooltip>
+              </div>
             </div>
 
             <Divider direction="horizontal" className="my-5 opacity-25" />
@@ -192,19 +354,36 @@ const JobDetails = () => {
               <div className="text-lg font-semibold">About the Company</div>
               <div className="mb-14 p-1 bg-slate-50 rounded-lg" dangerouslySetInnerHTML={{ __html: job.description }}></div>
             </div>
-            {/* Social Sharing Buttons */}
+
+            {/* Buttons for Apply and Save/Remove */}
             <div className="w-full flex items-center justify-between">
-              <Button className=''>
+              <Button
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleModalOpen(job);
+                }}>
                 Apply Now
               </Button>
-              <Button className=''>
-                Save Job
-              </Button>
+              {savedJobs.has(job.id) ? (
+                <Button onClick={(event) => {
+                  event.stopPropagation();
+                  handleRemoveJob(job.id);
+                }}>
+                  Remove Job
+                </Button>
+              ) : (
+                <Button onClick={(event) => {
+                  event.stopPropagation();
+                  handleSaveJob(job.id);
+                }}>
+                  Save Job
+                </Button>
+              )}
             </div>
           </div>
 
-          {/* Right Section - Author Details and Latest Jobs */}
-          <div className="lg:w-1/4 border-0 border-t-2 lg:border-t-0 lg:border-l-2 pt-20 lg:pt-0 lg:pl-10 my-10">
+          {/* Right Section */}
+          <div className="lg:W-2/4 xl:w-1/4 border-0 border-t-2 lg:border-t-0 lg:border-l-2 pt-20 lg:pt-0 lg:pl-10 my-10">
             <div className="mb-8 border-2 border-slate-300/50 rounded-xl p-10">
               <div className='flex flex-col items-center justify-center'>
                 <img
@@ -221,7 +400,11 @@ const JobDetails = () => {
                 >
                   {job.website ? 'Visit Website' : 'No Website Available'}
                 </a>
-                <Button className="mt-4">
+                <Button className="mt-4"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleModalOpen(job);
+                  }}>
                   Apply for this job
                 </Button>
               </div>
@@ -233,7 +416,7 @@ const JobDetails = () => {
               <div className='flex flex-col items-center justify-start mt-5'>
                 <HorizontalLineWithText
                   className='text-sm font-semibold'
-                  text={`${user.role} posted ${timeSince(new Date(job.createdAt))}`}
+                  text={`${posterUsername} ${timeSince(new Date(job.createdAt))}`}
                 />
               </div>
             </div>
@@ -257,8 +440,18 @@ const JobDetails = () => {
             </div>
           </div>
 
+          {/* Modal for Job Application */}
+          <Modal isOpen={isModalOpen} onClose={handleModalClose} title="Apply for Job">
+            <JobApplicationForm job={selectedJob} />
+          </Modal>
+
           {/* Toast Notification */}
-          {toast.visible && <Toast message={toast.message} type={toast.type} onClose={closeToast} />}
+          <Toast
+            visible={toastVisible}
+            type={toastType}
+            message={toastMessage}
+            onClose={() => setToastVisible(false)}
+          />
         </div>
       </section>
     </main>

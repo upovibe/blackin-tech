@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getAllDocuments, getSavedJobs, saveJob, removeSavedJob } from '../../services/firestoreService';
+import { getUserById } from '../../services/authService';
 import { Link, useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import animationData from '../../assets/animations/Animation - Jobs.json';
@@ -11,6 +12,7 @@ import Modal from '../common/Modal';
 import JobApplicationForm from '../forms/JobApplicationForm';
 import Toast from '../common/Toast';
 import Pagination from '../common/Pegination';
+import Tooltip from '../common/TooltIP.JSX';
 
 const truncateText = (text, maxLength) => {
   if (!text) return '';
@@ -98,37 +100,40 @@ const JobList = ({ filters }) => {
   }, [user]);
 
   // Fetch jobs with pagination
-// Fetch jobs with pagination
-useEffect(() => {
-  const fetchJobs = async () => {
-    try {
-      const allJobs = await getAllDocuments('jobs');
-      const filteredJobs = allJobs
-        .filter((job) => {
-          const matchesLocation = filters.location
-            ? job.location?.toLowerCase().includes(filters.location.toLowerCase())
-            : true;
-          const matchesJobType = filters.jobType
-            ? job.jobType === filters.jobType
-            : true;
-          const matchesRemote = filters.remote ? job.remote === true : true;
-          return matchesLocation && matchesJobType && matchesRemote;
-        })
-        .map((job) => ({
-          ...job,
-          createdAt: job.createdAt?.toDate ? job.createdAt.toDate() : new Date(job.createdAt),
-        }));
-      
-      setTotalPages(Math.ceil(filteredJobs.length / jobsPerPage));
-      const paginatedJobs = filteredJobs.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
-      setJobs(paginatedJobs);
-    } catch (error) {
-      console.error('Error fetching jobs: ', error);
-    }
-  };
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const allJobs = await getAllDocuments('jobs');
+        const filteredJobs = await Promise.all(allJobs
+          .filter((job) => {
+            const matchesLocation = filters.location
+              ? job.location?.toLowerCase().includes(filters.location.toLowerCase())
+              : true;
+            const matchesJobType = filters.jobType
+              ? job.jobType === filters.jobType
+              : true;
+            const matchesRemote = filters.remote ? job.remote === true : true;
+            return matchesLocation && matchesJobType && matchesRemote;
+          })
+          .map(async (job) => {
+            const jobPoster = await getUserById(job.postedBy);
+            return {
+              ...job,
+              createdAt: job.createdAt?.toDate ? job.createdAt.toDate() : new Date(job.createdAt),
+              posterUsername: jobPoster ? jobPoster.userName : 'Unknown Author'
+            };
+          }));
 
-  fetchJobs();
-}, [filters, currentPage, jobsPerPage]); // Include jobsPerPage in the dependency array
+        setTotalPages(Math.ceil(filteredJobs.length / jobsPerPage));
+        const paginatedJobs = filteredJobs.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
+        setJobs(paginatedJobs);
+      } catch (error) {
+        console.error('Error fetching jobs: ', error);
+      }
+    };
+
+    fetchJobs();
+  }, [filters, currentPage, jobsPerPage]);
 
 
   // Adjust truncation based on screen size
@@ -196,13 +201,11 @@ useEffect(() => {
                   <span className="px-2 bg-slate-400 rounded-full text-white text-xs font-semibold py-0 inline-flex w-fit md:hidden mt-3">
                     {job.jobType}
                   </span>
-                  <div className="hidden md:inline-flex items-center relative group text-xs font-semibold text-slate-700 space-x-1 mt-1">
-                    <FaUserCircle />
-                    <span>{user?.userName || 'Unknown Author'}</span>
-                    <div className="absolute left-0 buttom-full z-50 mb-2 hidden group-hover:block bg-slate-800 text-white text-xs rounded-lg px-3 py-1 leading-tight font-semibold">
-                      Featured listing posted by Admin <span>{timeSince(new Date(job.createdAt))}</span>
-                    </div>
-                  </div>
+                  <Tooltip position='right' text={`Featured listing posted by Admin ${timeSince(new Date(job.createdAt))}`}>
+                    <span className="text-xs font-semibold text-slate-700 space-x-1 mt-1 flex items-center gap-1">
+                      <FaUserCircle /> {job.posterUsername}
+                    </span>
+                  </Tooltip>
                 </div>
                 <div className="hidden flex-col items-center text-sm font-semibold space-y-2 md:flex h-full justify-between">
                   <span className="flex items-center gap-2">
@@ -218,7 +221,7 @@ useEffect(() => {
 
             {/* Apply View - initially hidden, visible on hover */}
             <div className="apply-view absolute bg-slate-100 top-0 right-0 p-2 rounded-l-lg size-full lg:w-8/12 items-center gap-2 justify-end overflow-hidden flex opacity-0 hover:opacity-100 transition-opacity duration-300 ease-in-out">
-            <Link
+              <Link
                 to={`/jobs/${job.slug}`}
                 className="view-details p-1 px-2 text-sm rounded-full border-2 border-slate-600/25 hover:bg-slate-800 hover:text-white/80 transition-all duration-300 ease-in-out"
               >
@@ -260,6 +263,7 @@ useEffect(() => {
       ) : (
         <div className="no-jobs-found mt-6 flex flex-col items-center">
           <Lottie animationData={animationData} className="w-64 h-64" />
+          <p>No jobs found for this tab.</p>
         </div>
       )}
 

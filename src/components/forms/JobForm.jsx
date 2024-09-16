@@ -10,11 +10,13 @@ import Toast from '../common/Toast';
 import Lottie from 'lottie-react';
 import successAnimation from '../../assets/animations/Animation - JobPosted.json';
 import { createDocument } from '../../services/firestoreService';
+import { getUserById } from '../../services/authService';
 import { fetchCountries, fetchJobTypes } from '../../api/jobsApi';
 import ImagesUpload from '../common/ImagesUpload';
 import { uploadImages } from '../../services/storageService';
 import AvatarUpload from '../common/AvatarUpload';
 import SlidingCheckbox from '../common/SlidingCheckbox';
+import CompanyLogo from '../../assets/images/company-logo.png';
 
 const JobForm = () => {
   const { user } = UserAuth();
@@ -28,7 +30,6 @@ const JobForm = () => {
     jobType: '',
     description: '',
   });
-
   const [countries, setCountries] = useState([]);
   const [jobTypes, setJobTypes] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -36,18 +37,28 @@ const JobForm = () => {
   const [success, setSuccess] = useState(false);
   const [media, setMedia] = useState([]);
   const [showMediaUpload, setShowMediaUpload] = useState(false);
+  const [logoError, setLogoError] = useState(false);  // Track if logo is missing
 
   useEffect(() => {
     fetchCountries().then(setCountries);
     fetchJobTypes().then(setJobTypes);
   }, []);
 
-  // Function to generate slug from job title
+  const fetchPosterUsername = async (uid) => {
+    try {
+      const userDoc = await getUserById(uid);
+      return userDoc.userName || 'Unknown Author';
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      return 'Unknown Author';
+    }
+  };
+
   const generateSlug = (title) => {
     return title
-      .toLowerCase() // Convert to lowercase
-      .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric characters with hyphens
-      .replace(/(^-|-$)/g, ''); // Remove any leading or trailing hyphens
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
   };
 
   const handleInputChange = (e) => {
@@ -55,7 +66,8 @@ const JobForm = () => {
   };
 
   const handleLogoUpload = (url) => {
-    setFormData({ ...formData, logo: url }); // Set the uploaded logo URL
+    setFormData({ ...formData, logo: url });
+    setLogoError(false);  // Clear error when logo is uploaded
   };
 
   const handleSubmit = async (e) => {
@@ -72,6 +84,14 @@ const JobForm = () => {
       return;
     }
 
+    // Check if logo is provided
+    if (!formData.logo) {
+      setLogoError(true); // Show error for missing logo
+      setFormData({ ...formData, logo: CompanyLogo }); // Use default logo
+      setLoading(false);
+      return;
+    }
+
     try {
       let mediaUrls = [];
 
@@ -80,12 +100,14 @@ const JobForm = () => {
       }
 
       const slug = generateSlug(formData.title);
+      const username = await fetchPosterUsername(user.uid);
 
       const jobData = {
         ...formData,
         createdAt: new Date(),
         media: mediaUrls,
-        createdBy: user.uid,
+        postedBy: user.uid,
+        posterUsername: username,
         slug,
       };
 
@@ -121,7 +143,6 @@ const JobForm = () => {
     }
   };
 
-
   const closeToast = () => {
     setShowToast({ ...showToast, visible: false });
   };
@@ -130,10 +151,11 @@ const JobForm = () => {
     <div className="relative h-max p-1">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Company Logo (Required)
+          <label className={`block text-sm font-medium ${logoError ? 'text-red-600' : 'text-gray-700'} mb-2`}>
+            Company Logo {logoError && <span>(Required)</span>}
           </label>
-          <AvatarUpload onUpload={handleLogoUpload} /> {/* AvatarUpload for logo */}
+          <AvatarUpload onUpload={handleLogoUpload} />
+          {logoError && <p className="text-red-600 text-sm">Please upload a company logo.</p>}
         </div>
 
         <Input
@@ -150,6 +172,7 @@ const JobForm = () => {
           value={formData.website}
           onChange={handleInputChange}
         />
+
         <Input
           name="title"
           placeholder="Job Title"

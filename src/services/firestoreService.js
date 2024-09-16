@@ -99,7 +99,29 @@ export const listenToCollection = (collectionName, callback) => {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Function to save a job for a user
+// // Function to save a job for a user
+// export const saveJob = async (userId, jobId) => {
+//   try {
+//     const savedJobsDocRef = doc(db, 'savedJobs', userId);
+//     const savedJobsSnap = await getDoc(savedJobsDocRef);
+//     let savedJobs = [];
+//     if (savedJobsSnap.exists()) {
+//       savedJobs = savedJobsSnap.data().jobs || [];
+//     }
+//     if (!savedJobs.includes(jobId)) {
+//       savedJobs.push(jobId);
+//       await setDoc(savedJobsDocRef, { jobs: savedJobs }, { merge: true });
+//       console.log("Job saved successfully.");
+//     } else {
+//       console.log("Job is already saved.");
+//     }
+//   } catch (e) {
+//     console.error("Error saving job: ", e);
+//   }
+// };
+
+
+// Function to save a job for a user and increment save count
 export const saveJob = async (userId, jobId) => {
   try {
     const savedJobsDocRef = doc(db, 'savedJobs', userId);
@@ -108,10 +130,18 @@ export const saveJob = async (userId, jobId) => {
     if (savedJobsSnap.exists()) {
       savedJobs = savedJobsSnap.data().jobs || [];
     }
+    
     if (!savedJobs.includes(jobId)) {
       savedJobs.push(jobId);
       await setDoc(savedJobsDocRef, { jobs: savedJobs }, { merge: true });
-      console.log("Job saved successfully.");
+      
+      // Increment save count in the job document
+      const jobDocRef = doc(db, 'jobs', jobId);
+      await updateDoc(jobDocRef, {
+        saveCount: increment(1),
+      });
+
+      console.log("Job saved and save count incremented.");
     } else {
       console.log("Job is already saved.");
     }
@@ -121,7 +151,32 @@ export const saveJob = async (userId, jobId) => {
 };
 
 
-// Function to remove a saved job for a user
+
+// // Function to remove a saved job for a user
+// export const removeSavedJob = async (userId, jobId) => {
+//   try {
+//     const savedJobsDocRef = doc(db, 'savedJobs', userId);
+//     const savedJobsSnap = await getDoc(savedJobsDocRef);
+//     if (savedJobsSnap.exists()) {
+//       let savedJobs = savedJobsSnap.data().jobs || [];
+//       if (savedJobs.includes(jobId)) {
+//         savedJobs = savedJobs.filter(id => id !== jobId);
+//         await setDoc(savedJobsDocRef, { jobs: savedJobs }, { merge: true });
+//         console.log("Job removed successfully.");
+//       } else {
+//         console.log("Job not found in saved jobs.");
+//       }
+//     } else {
+//       console.log("No saved jobs found for this user.");
+//     }
+//   } catch (e) {
+//     console.error("Error removing job: ", e);
+//   }
+// };
+
+
+
+// Function to remove a saved job for a user and decrement save count
 export const removeSavedJob = async (userId, jobId) => {
   try {
     const savedJobsDocRef = doc(db, 'savedJobs', userId);
@@ -131,7 +186,14 @@ export const removeSavedJob = async (userId, jobId) => {
       if (savedJobs.includes(jobId)) {
         savedJobs = savedJobs.filter(id => id !== jobId);
         await setDoc(savedJobsDocRef, { jobs: savedJobs }, { merge: true });
-        console.log("Job removed successfully.");
+
+        // Decrement save count in the job document
+        const jobDocRef = doc(db, 'jobs', jobId);
+        await updateDoc(jobDocRef, {
+          saveCount: increment(-1),
+        });
+
+        console.log("Job removed and save count decremented.");
       } else {
         console.log("Job not found in saved jobs.");
       }
@@ -142,6 +204,24 @@ export const removeSavedJob = async (userId, jobId) => {
     console.error("Error removing job: ", e);
   }
 };
+
+
+
+// Function to increment the view count for a job
+export const incrementJobViewCount = async (jobId) => {
+  try {
+    const jobDocRef = doc(db, 'jobs', jobId);
+    await updateDoc(jobDocRef, {
+      viewCount: increment(1),
+    });
+    console.log("Job view count incremented.");
+  } catch (e) {
+    console.error("Error incrementing view count: ", e);
+    throw e;
+  }
+};
+
+
 
 // Function to get saved jobs for a user
 export const getSavedJobs = async (userId) => {
@@ -155,6 +235,39 @@ export const getSavedJobs = async (userId) => {
     }
   } catch (e) {
     console.error("Error fetching saved jobs: ", e);
+    return [];
+  }
+};
+
+
+// Function to get all saved jobs with their details for a user
+export const getAllSavedJobsWithDetails = async (userId) => {
+  try {
+    const savedJobsDocRef = doc(db, 'savedJobs', userId);
+    const savedJobsSnap = await getDoc(savedJobsDocRef);
+
+    if (savedJobsSnap.exists()) {
+      const savedJobIds = savedJobsSnap.data().jobs || [];
+
+      if (savedJobIds.length === 0) {
+        return []; // No saved jobs
+      }
+
+      // Fetch details of all saved jobs
+      const jobsQuery = query(collection(db, 'jobs'), where('__name__', 'in', savedJobIds));
+      const jobsSnapshot = await getDocs(jobsQuery);
+      const savedJobsDetails = jobsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      return savedJobsDetails;
+    } else {
+      console.log("No saved jobs found for this user.");
+      return [];
+    }
+  } catch (e) {
+    console.error("Error fetching saved jobs with details: ", e);
     return [];
   }
 };
