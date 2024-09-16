@@ -2,7 +2,7 @@ import React from 'react';
 
 const Input = ({ placeholder, type = 'text', className = '', ...props }) => {
   return (
-    <div className='p-1'>
+    <div className='p-1 w-full'>
     <input
       type={type}
       placeholder={placeholder}

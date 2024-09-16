@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { getAllDocuments, getSavedJobs, saveJob, removeSavedJob } from '../../services/firestoreService';
-import { getUserById } from '../../services/authService';
+import { getAllDocuments, getSavedJobs, saveJob, removeSavedJob, fetchFilteredJobs } from '../../services/firestoreService';
 import { Link, useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import animationData from '../../assets/animations/Animation - Jobs.json';
+import noDataAnimation from '../../assets/animations/Animation - No Data Found.json';
 import imageLoadingAnimation from '../../assets/animations/Animation - Image Loading.json';
 import { FaMapMarker, FaUserCircle } from 'react-icons/fa';
 import { UserAuth } from '../../contexts/AuthContext';
@@ -11,15 +11,16 @@ import { timeSince } from '../../utils/timingUtils';
 import Modal from '../common/Modal';
 import JobApplicationForm from '../forms/JobApplicationForm';
 import Toast from '../common/Toast';
-import Pagination from '../common/Pegination';
-import Tooltip from '../common/TooltIP.JSX';
+import Pagination from '../common/Pagination';
+import Tooltip from '../common/Tooltip';
+import { debounce } from 'lodash';
 
 const truncateText = (text, maxLength) => {
   if (!text) return '';
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
 };
 
-const JobList = ({ filters }) => {
+const JobList = ({ filters, jobs: initialJobs = [] }) => {
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [savedJobs, setSavedJobs] = useState(new Set());
@@ -28,6 +29,8 @@ const JobList = ({ filters }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [jobsPerPage] = useState(10);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const { user } = UserAuth();
 
   // Toast state
@@ -38,6 +41,27 @@ const JobList = ({ filters }) => {
   // Modal state for handling job application form
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
+
+
+  useEffect(() => {
+    if (filters) {
+      // Fetch jobs if filters are provided
+      const fetchJobs = async () => {
+        setIsLoading(true);
+        try {
+          const { jobs, totalJobs } = await fetchFilteredJobs(filters, currentPage, jobsPerPage);
+          setJobs(jobs);
+          setTotalPages(Math.ceil(totalJobs / jobsPerPage));
+        } catch (error) {
+          console.error('Error fetching jobs:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchJobs();
+    }
+  }, [filters, currentPage, jobsPerPage]);
+
 
   // Function to handle job saving
   const handleSaveJob = async (jobId) => {
@@ -55,7 +79,9 @@ const JobList = ({ filters }) => {
         setToastVisible(true);
       }
     } else {
-      alert('You must be logged in to save jobs.');
+      setToastMessage('Sign in to get started!');
+      setToastType('error');
+      setToastVisible(true);
     }
   };
 
@@ -79,9 +105,12 @@ const JobList = ({ filters }) => {
         setToastVisible(true);
       }
     } else {
-      alert('You must be logged in to remove jobs.');
+      setToastMessage('Sign in to get started!');
+      setToastType('error');
+      setToastVisible(true);
     }
   };
+  
 
   // Fetch saved jobs when the user logs in or when the component mounts
   useEffect(() => {
@@ -99,65 +128,30 @@ const JobList = ({ filters }) => {
     fetchSavedJobs();
   }, [user]);
 
-  // Fetch jobs with pagination
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const allJobs = await getAllDocuments('jobs');
-        const filteredJobs = await Promise.all(allJobs
-          .filter((job) => {
-            const matchesLocation = filters.location
-              ? job.location?.toLowerCase().includes(filters.location.toLowerCase())
-              : true;
-            const matchesJobType = filters.jobType
-              ? job.jobType === filters.jobType
-              : true;
-            const matchesRemote = filters.remote ? job.remote === true : true;
-            return matchesLocation && matchesJobType && matchesRemote;
-          })
-          .map(async (job) => {
-            const jobPoster = await getUserById(job.postedBy);
-            return {
-              ...job,
-              createdAt: job.createdAt?.toDate ? job.createdAt.toDate() : new Date(job.createdAt),
-              posterUsername: jobPoster ? jobPoster.userName : 'Unknown Author'
-            };
-          }));
-
-        setTotalPages(Math.ceil(filteredJobs.length / jobsPerPage));
-        const paginatedJobs = filteredJobs.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
-        setJobs(paginatedJobs);
-      } catch (error) {
-        console.error('Error fetching jobs: ', error);
-      }
-    };
-
-    fetchJobs();
-  }, [filters, currentPage, jobsPerPage]);
-
 
   // Adjust truncation based on screen size
   useEffect(() => {
-    const handleResize = () => {
+    const handleResize = debounce(() => {
       const screenWidth = window.innerWidth;
       setTitleLength(screenWidth < 640 ? 20 : screenWidth < 1024 ? 25 : 30);
       setSubtitleLength(screenWidth < 640 ? 30 : screenWidth < 1024 ? 40 : 50);
-    };
+    }, 200);
 
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+
   const handleModalOpen = (job) => {
     if (user) {
       setSelectedJob(job);
       setIsModalOpen(true);
     } else {
-      setToastMessage('You must be logged in to apply for a job.');
+      setToastMessage('Sign in to get started!');
       setToastType('error');
       setToastVisible(true);
-      navigate('/login');
+      navigate('/signin');
     }
   };
 
@@ -168,7 +162,16 @@ const JobList = ({ filters }) => {
 
   return (
     <div className="job-list">
-      {jobs.length > 0 ? (
+      {isLoading ? (
+        <div className="loading-indicator mt-6 flex flex-col items-center">
+          <Lottie animationData={animationData} className="w-64 h-64" />
+          <p>Loading jobs...</p>
+        </div>
+      ) : error ? (
+        <div className="error-message mt-6 flex flex-col items-center">
+          <p>{error}</p>
+        </div>
+      ) : jobs.length > 0 ? (
         jobs.map((job) => (
           <div
             key={job.id}
@@ -197,11 +200,18 @@ const JobList = ({ filters }) => {
                   <h2 className="font-semibold leading-tight text-lg">
                     {truncateText(job.title, titleLength)}
                   </h2>
-                  <p className="truncate">{truncateText(job.subtitle, subtitleLength)}</p>
+                  <p className="truncate">
+                    {truncateText(job.subtitle, subtitleLength)}
+                  </p>
                   <span className="px-2 bg-slate-400 rounded-full text-white text-xs font-semibold py-0 inline-flex w-fit md:hidden mt-3">
                     {job.jobType}
                   </span>
-                  <Tooltip position='right' text={`Featured listing posted by Admin ${timeSince(new Date(job.createdAt))}`}>
+                  <Tooltip
+                    position="right"
+                    text={`Featured listing posted by Admin ${timeSince(
+                      new Date(job.createdAt)
+                    )}`}
+                  >
                     <span className="text-xs font-semibold text-slate-700 space-x-1 mt-1 flex items-center gap-1">
                       <FaUserCircle /> {job.posterUsername}
                     </span>
@@ -262,17 +272,20 @@ const JobList = ({ filters }) => {
         ))
       ) : (
         <div className="no-jobs-found mt-6 flex flex-col items-center">
-          <Lottie animationData={animationData} className="w-64 h-64" />
-          <p>No jobs found for this tab.</p>
+          <Lottie animationData={noDataAnimation} className="w-64 h-64" />
+          <p>No jobs found</p>
         </div>
       )}
 
       {/* Pagination Component */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
+      {jobs.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
+
 
       {/* Modal for Job Application */}
       <Modal isOpen={isModalOpen} onClose={handleModalClose} title="Apply for Job">
@@ -281,12 +294,16 @@ const JobList = ({ filters }) => {
 
       {/* Toast Notification */}
       <Toast
+        role="alert"
+        aria-live="assertive"
         visible={toastVisible}
         type={toastType}
         message={toastMessage}
         onClose={() => setToastVisible(false)}
       />
+
     </div>
+
   );
 };
 

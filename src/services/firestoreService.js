@@ -99,28 +99,6 @@ export const listenToCollection = (collectionName, callback) => {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// // Function to save a job for a user
-// export const saveJob = async (userId, jobId) => {
-//   try {
-//     const savedJobsDocRef = doc(db, 'savedJobs', userId);
-//     const savedJobsSnap = await getDoc(savedJobsDocRef);
-//     let savedJobs = [];
-//     if (savedJobsSnap.exists()) {
-//       savedJobs = savedJobsSnap.data().jobs || [];
-//     }
-//     if (!savedJobs.includes(jobId)) {
-//       savedJobs.push(jobId);
-//       await setDoc(savedJobsDocRef, { jobs: savedJobs }, { merge: true });
-//       console.log("Job saved successfully.");
-//     } else {
-//       console.log("Job is already saved.");
-//     }
-//   } catch (e) {
-//     console.error("Error saving job: ", e);
-//   }
-// };
-
-
 // Function to save a job for a user and increment save count
 export const saveJob = async (userId, jobId) => {
   try {
@@ -149,30 +127,6 @@ export const saveJob = async (userId, jobId) => {
     console.error("Error saving job: ", e);
   }
 };
-
-
-
-// // Function to remove a saved job for a user
-// export const removeSavedJob = async (userId, jobId) => {
-//   try {
-//     const savedJobsDocRef = doc(db, 'savedJobs', userId);
-//     const savedJobsSnap = await getDoc(savedJobsDocRef);
-//     if (savedJobsSnap.exists()) {
-//       let savedJobs = savedJobsSnap.data().jobs || [];
-//       if (savedJobs.includes(jobId)) {
-//         savedJobs = savedJobs.filter(id => id !== jobId);
-//         await setDoc(savedJobsDocRef, { jobs: savedJobs }, { merge: true });
-//         console.log("Job removed successfully.");
-//       } else {
-//         console.log("Job not found in saved jobs.");
-//       }
-//     } else {
-//       console.log("No saved jobs found for this user.");
-//     }
-//   } catch (e) {
-//     console.error("Error removing job: ", e);
-//   }
-// };
 
 
 
@@ -271,3 +225,39 @@ export const getAllSavedJobsWithDetails = async (userId) => {
     return [];
   }
 };
+
+
+// Function to fetch filtered jobs
+export const fetchFilteredJobs = async (filters, currentPage, jobsPerPage) => {
+  try {
+    const jobsRef = collection(db, 'jobs');
+    let jobsQuery = query(jobsRef);
+
+    // Apply filters
+    if (filters.location) {
+      jobsQuery = query(jobsQuery, where('location', '==', filters.location));
+    }
+    if (filters.jobType) {
+      jobsQuery = query(jobsQuery, where('jobType', '==', filters.jobType));
+    }
+    if (filters.remote) {
+      jobsQuery = query(jobsQuery, where('remote', '==', filters.remote));
+    }
+
+    const querySnapshot = await getDocs(jobsQuery);
+    const jobs = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    // Calculate pagination
+    const totalJobs = jobs.length;
+    const startIndex = (currentPage - 1) * jobsPerPage;
+    const endIndex = startIndex + jobsPerPage;
+    const paginatedJobs = jobs.slice(startIndex, endIndex);
+
+    return { jobs: paginatedJobs, totalJobs };
+  } catch (e) {
+    console.error("Error fetching filtered jobs: ", e);
+    throw e;
+  }
+};
+
+

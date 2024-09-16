@@ -5,12 +5,12 @@ import Button from '../common/Button';
 import Logo from '../common/Logo';
 import NavAvatar from '../auth/NavAvatar';
 import { UserAuth } from '../../contexts/AuthContext';
-import { FaSearch, FaWindowClose } from 'react-icons/fa';
+import { FaWindowClose } from 'react-icons/fa';
 
 function NavBar() {
   const { user } = UserAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigate = useNavigate(); // For navigation purposes
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -41,8 +41,8 @@ function NavBar() {
           <div className='flex items-center gap-3 ml-auto'>
             <SearchInput/>
             {!user && (
-              <div className='w-max'>
-                <Button className="hidden md:block" onClick={handleSignUpClick}>Sign Up</Button>
+              <div className='w-max md:w-28'>
+                <Button className="hidden md:block w-max" onClick={handleSignUpClick}>Sign Up</Button>
               </div>
             )}
             {user && <NavAvatar />}

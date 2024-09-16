@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getAllDocuments, getSavedJobs, saveJob, removeSavedJob, incrementJobViewCount, updateDocument } from '../../services/firestoreService';
+import { getAllDocuments, getSavedJobs, saveJob, removeSavedJob, incrementJobViewCount } from '../../services/firestoreService';
 import { UserAuth } from '../../contexts/AuthContext';
-import { getUserById } from '../../services/authService'; 
+import { getUserById } from '../../services/authService';
 import { FaWhatsapp, FaFacebook, FaLinkedin, FaLink, FaBookmark, FaEye } from 'react-icons/fa';
 import Lottie from 'lottie-react';
 import LoadingPage from '../../assets/animations/Animation - LoadingPage.json';
@@ -50,9 +50,9 @@ const JobDetails = () => {
             : new Date(jobData.createdAt);
         }
 
-         // Fetch poster's username
-         const jobPoster = await getUserById(jobData.postedBy);
-         setPosterUsername(jobPoster?.userName || 'Unknown Author');
+        // Fetch poster's username
+        const jobPoster = await getUserById(jobData.postedBy);
+        setPosterUsername(jobPoster?.userName || 'Unknown Author');
 
         // Ensure jobData contains viewCount and saveCount
         setJob({
@@ -72,6 +72,72 @@ const JobDetails = () => {
 
     fetchJobBySlug();
   }, [slug]);
+
+
+  // Function to handle job saving
+  const handleSaveJob = async (jobId) => {
+    if (user) {
+      try {
+        await saveJob(user.uid, jobId);
+        setSavedJobs((prevSavedJobs) => new Set([...prevSavedJobs, jobId]));
+
+        // Increment save count after saving
+        setJob((prevJob) => ({
+          ...prevJob,
+          saveCount: prevJob.saveCount + 1,
+        }));
+
+        setToastMessage('Job saved successfully!');
+        setToastType('success');
+        setToastVisible(true);
+      } catch (error) {
+        console.error('Error saving job: ', error);
+        setToastMessage('Failed to save the job.');
+        setToastType('error');
+        setToastVisible(true);
+      }
+    } else {
+      setToastMessage('Sign in to get started!');
+      setToastType('error');
+      setToastVisible(true);
+    }
+  };
+
+
+
+  // Function to handle job removal
+  const handleRemoveJob = async (jobId) => {
+    if (user) {
+      try {
+        await removeSavedJob(user.uid, jobId);
+        setSavedJobs((prevSavedJobs) => {
+          const updatedSavedJobs = new Set(prevSavedJobs);
+          updatedSavedJobs.delete(jobId);
+          return updatedSavedJobs;
+        });
+
+        // Decrement save count after removing
+        setJob((prevJob) => ({
+          ...prevJob,
+          saveCount: prevJob.saveCount - 1,
+        }));
+
+        setToastMessage('Job removed successfully!');
+        setToastType('success');
+        setToastVisible(true);
+      } catch (error) {
+        console.error('Error removing job: ', error);
+        setToastMessage('Failed to remove the job.');
+        setToastType('error');
+        setToastVisible(true);
+      }
+    } else {
+      setToastMessage('Sign in to get started!');
+      setToastType('error');
+      setToastVisible(true);
+    }
+  };
+
 
 
   // Increment the view count when the job is loaded
@@ -107,83 +173,6 @@ const JobDetails = () => {
   }, [user]);
 
 
-  // Function to handle job saving
-  const handleSaveJob = async (jobId) => {
-    if (user) {
-      try {
-        await saveJob(user.uid, jobId);
-        setSavedJobs((prevSavedJobs) => new Set([...prevSavedJobs, jobId]));
-  
-        // Increment save count after saving
-        setJob((prevJob) => ({
-          ...prevJob,
-          saveCount: prevJob.saveCount + 1,
-        }));
-  
-        setToastMessage('Job saved successfully!');
-        setToastType('success');
-        setToastVisible(true);
-      } catch (error) {
-        console.error('Error saving job: ', error);
-        setToastMessage('Failed to save the job.');
-        setToastType('error');
-        setToastVisible(true);
-      }
-    } else {
-      alert('You must be logged in to save jobs.');
-    }
-  };
-  
-  
-
-  // Function to handle job removal
-  const handleRemoveJob = async (jobId) => {
-    if (user) {
-      try {
-        await removeSavedJob(user.uid, jobId);
-        setSavedJobs((prevSavedJobs) => {
-          const updatedSavedJobs = new Set(prevSavedJobs);
-          updatedSavedJobs.delete(jobId);
-          return updatedSavedJobs;
-        });
-  
-        // Decrement save count after removing
-        setJob((prevJob) => ({
-          ...prevJob,
-          saveCount: prevJob.saveCount - 1,
-        }));
-  
-        setToastMessage('Job removed successfully!');
-        setToastType('success');
-        setToastVisible(true);
-      } catch (error) {
-        console.error('Error removing job: ', error);
-        setToastMessage('Failed to remove the job.');
-        setToastType('error');
-        setToastVisible(true);
-      }
-    } else {
-      alert('You must be logged in to remove jobs.');
-    }
-  };  
-
-
-  // Fetch saved jobs when the user logs in or when the component mounts
-  useEffect(() => {
-    const fetchSavedJobs = async () => {
-      if (user) {
-        try {
-          const savedJobsData = await getSavedJobs(user.uid);
-          setSavedJobs(new Set(savedJobsData));
-        } catch (error) {
-          console.error('Error fetching saved jobs: ', error);
-        }
-      }
-    };
-
-    fetchSavedJobs();
-  }, [user]);
-
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     setToast({
@@ -198,10 +187,10 @@ const JobDetails = () => {
       setSelectedJob(job);
       setIsModalOpen(true);
     } else {
-      setToastMessage('You must be logged in to apply for a job.');
+      setToastMessage('Sign in to get started!');
       setToastType('error');
       setToastVisible(true);
-      navigate('/login');
+      navigate('/signin');
     }
   };
 
@@ -446,12 +435,14 @@ const JobDetails = () => {
           </Modal>
 
           {/* Toast Notification */}
-          <Toast
-            visible={toastVisible}
-            type={toastType}
-            message={toastMessage}
-            onClose={() => setToastVisible(false)}
-          />
+      <Toast
+        role="alert"
+        aria-live="assertive"
+        visible={toastVisible}
+        type={toastType}
+        message={toastMessage}
+        onClose={() => setToastVisible(false)}
+      />
         </div>
       </section>
     </main>
