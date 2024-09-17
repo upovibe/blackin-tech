@@ -10,7 +10,6 @@ const Loader = ({ visible }) => {
       <Lottie
         loop
         animationData={AnimationLoader}
-        play
         className="w-32 h-32 sm:w-48 sm:h-48"
       />
     </div>

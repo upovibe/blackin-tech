@@ -164,8 +164,8 @@ const JobApplicationForm = ({ jobId }) => {
       />
 
       {success && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white">
-          <Lottie className="w-full h-full" animationData={successAnimation} loop={false} />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Lottie className="w-1/2" animationData={successAnimation} loop={false} />
         </div>
       )}
     </div>

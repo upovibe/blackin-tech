@@ -15,8 +15,12 @@ const SignInForm = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState({ type: "", message: "", visible: false });
   const [fadeIn, setFadeIn] = useState(false);
+  const [toast, setToast] = useState({
+    visible: false,
+    message: '',
+    type: 'success',
+  });
 
   const navigate = useNavigate();
 

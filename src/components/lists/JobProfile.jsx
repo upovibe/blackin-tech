@@ -36,9 +36,9 @@ const JobProfile = ({ tab }) => {
           const applications = await getAppliedJobs(user.uid);
           jobList = await Promise.all(applications.map(async (application) => {
             const jobDetails = await getJobDetails(application.jobId);
-            return { ...application, ...jobDetails };
+            return { id: application.jobId, applicationId: application.id, ...application, ...jobDetails };
           }));
-        } else if (tab === 'Saved') {
+        }else if (tab === 'Saved') {
           jobList = await getAllSavedJobsWithDetails(user.uid);
           setSavedJobs(new Set(jobList.map(job => job.id)));
         } else if (tab === 'Posted' && user.role === 'admin') {
@@ -170,11 +170,9 @@ const JobProfile = ({ tab }) => {
     <div className="job-profile-results flex flex-wrap gap-5">
       {jobs.map((job) => (
         <div key={job.id} className="job-item flex-1 min-w-[300px] p-4 relative">
-          {/* Job Media */}
-          {job.media && job.media.length > 0 && (
-            <div className="relative w-full h-64 overflow-hidden rounded-md group bg-black bg-opacity-0 transition-opacity duration-300 ease-in-out group-hover:bg-opacity-50">
+          <div className="relative w-full h-64 overflow-hidden rounded-md group bg-black bg-opacity-0 transition-opacity duration-300 ease-in-out group-hover:bg-opacity-50">
               <img
-                src={job.media[0]}
+                src={job.logo}
                 alt={job.title}
                 className="w-full h-full object-cover group-hover:scale-110 transition-all duration-300 ease-in-out"
               />
@@ -190,7 +188,7 @@ const JobProfile = ({ tab }) => {
                   {/* Save Button */}
                   <div className='flex items-center justify-center w-max gap-1'>
                     {buttonLoading === job.id ? (
-                      <Lottie animationData={loadingAnimation} className="w-6 h-6" /> // Show loading animation for this job
+                      <Lottie animationData={loadingAnimation} className="w-6 h-6" />
                     ) : (
                       <button
                         className='p-2 rounded-full bg-white text-black hover:bg-gray-100 transition-all duration-300 ease-in-out'
@@ -203,7 +201,6 @@ const JobProfile = ({ tab }) => {
                 </div>
               </div>
             </div>
-          )}
           {/* Job Details */}
           <div className="flex items-center justify-between text-sm text-black/80 font-semibold mt-2">
             <div className='flex items-center gap-2'>
@@ -212,7 +209,7 @@ const JobProfile = ({ tab }) => {
                 {job.posterUsername || 'Unknown Author'}
               </span>
               {/* Applied Job Details */}
-              {tab === 'Applied Jobs' && (
+              {tab === 'Applied' && (
                 <div className='flex items-center gap-2'>
                   <Tooltip position='right' text={`Application submitted! Applied at ${new Date(job.appliedAt.seconds * 1000).toLocaleDateString()}`}>
                     <span className="flex items-center gap-1 bg-green-600 hover:shadow-md rounded-full px-2 py-1 text-sm font-bold leading-tight text-white cursor-pointer">
@@ -246,99 +243,3 @@ const JobProfile = ({ tab }) => {
 };
 
 export default JobProfile;
-
-
-
-// import React, { useEffect, useState } from 'react';
-// import { getAppliedJobs, getAllSavedJobsWithDetails, getPostedJobsByUser, getJobDetails } from '../../services/firestoreJobManagement';
-// import { UserAuth } from '../../contexts/AuthContext';
-// import LoadingPage from '../../assets/animations/Animation - Loading.json';
-// import noDataAnimation from '../../assets/animations/Animation - No Data Found.json';
-// import pageloading from '../../assets/animations/Animation - LoadingPage.json';
-// import Toast from '../common/Toast';
-// import Pagination from '../common/Pagination';
-// import Tooltip from '../common/Tooltip';
-// import { FaRegBookmark, FaBookmark, FaMapMarker, FaBriefcase, FaEye, FaUserCircle } from 'react-icons/fa';
-// import { getUserById } from '../../services/authService';
-// import { getSavedJobs, saveJob, removeSavedJob, incrementJobViewCount } from '../../services/firestoreJobManagement';
-
-// const JobProfile = ({ tab }) => {
-//   const { user } = UserAuth();
-//   const [jobs, setJobs] = useState([]);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     const fetchJobs = async () => {
-//       if (!user || !user.uid) {
-//         console.error('User is not authenticated or UID is missing');
-//         setLoading(false);
-//         return;
-//       }
-
-//       setLoading(true);
-//       try {
-//         let jobList = [];
-//         console.log('Fetching jobs for user ID:', user.uid);
-//         if (tab === 'Applied Jobs') {
-//           const applications = await getAppliedJobs(user.uid);
-//           jobList = await Promise.all(applications.map(async (application) => {
-//             const jobDetails = await getJobDetails(application.jobId);
-//             return { ...application, ...jobDetails };
-//           }));
-//         } else if (tab === 'Saved Jobs') {
-//           jobList = await getAllSavedJobsWithDetails(user.uid);
-//         } else if (tab === 'Posted Jobs' && user.role === 'admin') {
-//           jobList = await getPostedJobsByUser(user.uid);
-//         }
-//         console.log('Fetched jobs:', jobList);
-//         setJobs(jobList);
-//       } catch (error) {
-//         console.error(`Error fetching ${tab}:`, error);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchJobs();
-//   }, [tab, user, user.uid, user.role]);
-
-//   if (loading) {
-//     return <p>Loading {tab}...</p>;
-//   }
-
-//   if (jobs.length === 0) {
-//     return <p>No jobs found for {tab}</p>;
-//   }
-
-//   return (
-//     <div>
-//       <h3>{tab}</h3>
-//       <ul>
-//         {jobs.map((job) => (
-//           <li key={job.id}>
-//             <h4>{job.title || 'No Title Available'}</h4>
-//             <img
-//                   src={job.media[0]}
-//                   alt={job.title}
-//                   className="w-full h-full object-cover group-hover:scale-110 transition-all duration-300 ease-in-out"
-//                 />
-//             {tab === 'Applied Jobs' && (
-//               <>
-//                 <p>Applied At: {job.appliedAt ? new Date(job.appliedAt.seconds * 1000).toLocaleDateString() : 'Date Not Available'}</p>
-//                 <p>Email: {job.email || 'No Email Available'}</p>
-//                 <p>Phone: {job.phone || 'No Phone Available'}</p>
-//                 <p>Resume: <a href={job.resume} target="_blank" rel="noopener noreferrer">View Resume</a></p>
-//                 {/* Add other applied job-specific details here */}
-//               </>
-//             )}
-//           </li>
-//         ))}
-//       </ul>
-//     </div>
-//   );
-// };
-
-// export default JobProfile;
-
-
-

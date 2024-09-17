@@ -9,7 +9,9 @@ import {
   query,
   where,
   getDocs,
+  addDoc,
 } from "firebase/firestore";
+
 
 // Save a job for a user and increment save count
 export const saveJob = async (userId, jobId) => {
@@ -34,7 +36,7 @@ export const saveJob = async (userId, jobId) => {
   }
 };
 
-// Remove a saved job for a user and decrement save count
+
 export const removeSavedJob = async (userId, jobId) => {
   try {
     const savedJobsDocRef = doc(db, 'savedJobs', userId);
@@ -47,9 +49,13 @@ export const removeSavedJob = async (userId, jobId) => {
         await setDoc(savedJobsDocRef, { jobs: savedJobs }, { merge: true });
 
         const jobDocRef = doc(db, 'jobs', jobId);
-        await updateDoc(jobDocRef, { saveCount: increment(-1) });
-
-        console.log("Job removed and save count decremented.");
+        const jobSnap = await getDoc(jobDocRef);
+        if (jobSnap.exists()) {
+          await updateDoc(jobDocRef, { saveCount: increment(-1) });
+          console.log("Job removed and save count decremented.");
+        } else {
+          console.error(`Error: No job found with ID ${jobId} to update.`);
+        }
       } else {
         console.log("Job not found in saved jobs.");
       }
@@ -61,17 +67,25 @@ export const removeSavedJob = async (userId, jobId) => {
   }
 };
 
+
 // Increment the view count for a job
 export const incrementJobViewCount = async (jobId) => {
   try {
     const jobDocRef = doc(db, 'jobs', jobId);
-    await updateDoc(jobDocRef, { viewCount: increment(1) });
-    console.log("Job view count incremented.");
+    const jobSnap = await getDoc(jobDocRef);
+
+    if (jobSnap.exists()) {
+      await updateDoc(jobDocRef, { viewCount: increment(1) });
+      console.log("Job view count incremented.");
+    } else {
+      console.error("Error: No job found with ID:", jobId);
+    }
   } catch (e) {
-    console.error("Error incrementing view count: ", e);
+    console.error("Error incrementing view count: ", e.message);
     throw e;
   }
 };
+
 
 // Get saved jobs for a user
 export const getSavedJobs = async (userId) => {
@@ -132,12 +146,11 @@ export const getAppliedJobs = async (userId) => {
   }
 };
 
-// Get job details alongside applied status
 export const getJobDetails = async (jobId) => {
   try {
     const jobRef = doc(db, 'jobs', jobId);
     const docSnap = await getDoc(jobRef);
-    return docSnap.exists() ? docSnap.data() : {};
+    return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : {};
   } catch (e) {
     console.error('Error fetching job details:', e.message);
     throw e;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { UserAuth } from '../../contexts/AuthContext';
 import Input from '../common/Input';
 import SelectInput from '../common/SelectInput';
@@ -37,7 +37,9 @@ const JobForm = () => {
   const [success, setSuccess] = useState(false);
   const [media, setMedia] = useState([]);
   const [showMediaUpload, setShowMediaUpload] = useState(false);
-  const [logoError, setLogoError] = useState(false);  // Track if logo is missing
+  const [logoError, setLogoError] = useState(false);
+
+  const quillRef = useRef(null);
 
   useEffect(() => {
     fetchCountries().then(setCountries);
@@ -67,7 +69,7 @@ const JobForm = () => {
 
   const handleLogoUpload = (url) => {
     setFormData({ ...formData, logo: url });
-    setLogoError(false);  // Clear error when logo is uploaded
+    setLogoError(false);
   };
 
   const handleSubmit = async (e) => {
@@ -208,6 +210,7 @@ const JobForm = () => {
         />
 
         <ReactQuill
+          ref={quillRef}
           value={formData.description}
           onChange={(content) => setFormData({ ...formData, description: content })}
           placeholder="Add more info on Salary(optional), Required Qualifications, Company Overview, Benefits, etc."
@@ -233,8 +236,8 @@ const JobForm = () => {
       </form>
 
       {success && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white">
-          <Lottie className='size-full' animationData={successAnimation} loop={false} />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Lottie className='w-1/2' animationData={successAnimation} loop={false} />
         </div>
       )}
 

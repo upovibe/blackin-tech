@@ -185,18 +185,11 @@ const JobList = ({ filters, jobs: initialJobs = [] }) => {
           >
             <div className="flex items-center gap-3 h-full">
               <div className="job-image-wrapper size-20 min-h-20 min-w-20 md:size-16 md:min-h-16 md:min-w-16 relative overflow-hidden rounded-lg shadow cursor-pointer">
-                {job.media && job.media[0] ? (
-                  <img
-                    src={job.media[0]}
+              <img
+                    src={job.logo}
                     alt={job.title}
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                   />
-                ) : (
-                  <Lottie
-                    animationData={imageLoadingAnimation}
-                    className="w-full h-full"
-                  />
-                )}
               </div>
 
               {/* Content wrapper */}

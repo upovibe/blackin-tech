@@ -162,11 +162,9 @@ const handleRemoveJob = async (jobId) => {
       {jobs.length > 0 ? (
         jobs.map((job) => (
           <div key={job.id} className="job-item flex-1 min-w-[300px] mb-4 p-4 relative">
-            {/* Show media if available */}
-            {job.media && job.media.length > 0 && (
-              <div className='relative w-full h-64 overflow-hidden rounded-md group bg-black bg-opacity-0 transition-opacity duration-300 ease-in-out group-hover:bg-opacity-50'>
+            <div className='relative w-full h-64 overflow-hidden rounded-md group bg-black bg-opacity-0 transition-opacity duration-300 ease-in-out group-hover:bg-opacity-50'>
                 <img
-                  src={job.media[0]}
+                  src={job.logo}
                   alt={job.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-all duration-300 ease-in-out"
                 />
@@ -195,7 +193,6 @@ const handleRemoveJob = async (jobId) => {
                   </div>
                 </div>
               </div>
-            )}
             <div className='flex items-center justify-between text-sm text-black/80 font-semibold'>
               {/* Display posterUsername from state */}
               <span className='flex items-center gap-1'>

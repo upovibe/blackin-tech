@@ -20,12 +20,12 @@ const Modal = ({ isOpen, onClose, title, children }) => {
         </div>
 
         {/* Modal Content */}
-        <div className="flex-grow overflow-y-auto">
+        <div className="flex-grow overflow-y-auto py-5">
           {children} {/* Dynamic content passed as children */}
         </div>
 
         {/* Modal Footer */}
-        <div className="flex justify-end py-2">
+        <div className="flex justify-end py-2 border-t-2">
           <Button
             onClick={onClose}
             className="px-4 py-2 text-white bg-slate-800 rounded hover:bg-slate-900"

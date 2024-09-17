@@ -4,15 +4,16 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 import avatarDefault from "../../assets/images/avatar-default.png";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import Lottie from "lottie-react";
-import animationData from "../../assets/animations/Animation - AvatarLoader.json"; // Your Lottie file
+import animationData from "../../assets/animations/Animation - AvatarLoader.json";
 
 const AvatarUpload = ({ onUpload }) => {
   const [image, setImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState("");
 
-  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-  const MAX_DIMENSION = 500; // 500x500 pixels
+
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  const MAX_DIMENSION = 1000;
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -23,7 +24,7 @@ const AvatarUpload = ({ onUpload }) => {
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      setError("File size exceeds the 2MB limit.");
+      setError("File size exceeds the 5MB limit.");
       return;
     }
 
@@ -32,7 +33,7 @@ const AvatarUpload = ({ onUpload }) => {
 
     img.onload = () => {
       if (img.width > MAX_DIMENSION || img.height > MAX_DIMENSION) {
-        setError("Image dimensions should not exceed 500x500 pixels.");
+        setError(`Image dimensions should not exceed ${MAX_DIMENSION}x${MAX_DIMENSION} pixels.`);
         return;
       }
 
