@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SearchInput from '../components/filters/SearchInput';
-import SearchResult from '../components/views/SearchResult';
+import SearchResult from '../components/lists/SearchResult';
 import { getAllDocuments } from '../services/firestoreCRUD';
 import Lottie from 'lottie-react';
 import noDataAnimation from '../assets/animations/Animation - No Data Found.json';

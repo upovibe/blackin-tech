@@ -158,7 +158,7 @@ const handleRemoveJob = async (jobId) => {
   }, [jobs]);
 
   return (
-    <div className="job-results mt-6 flex flex-wrap gap-10">
+    <div className="job-results flex flex-wrap gap-2">
       {jobs.length > 0 ? (
         jobs.map((job) => (
           <div key={job.id} className="job-item flex-1 min-w-[300px] mb-4 p-4 relative">
@@ -203,9 +203,7 @@ const handleRemoveJob = async (jobId) => {
                 {posterUsernames[job.id] || 'Unknown Author'}
               </span>
               <div className='flex items-center justify-center gap-2'>
-                {/* Views count */}
                 <span className='flex items-center gap-1'>{jobStates[job.id]?.viewCount || 0}<FaEye /></span>
-                {/* Save Counts */}
                 <span className='flex items-center gap-1'>{jobStates[job.id]?.saveCount || 0}<FaBookmark /></span>
               </div>
             </div>

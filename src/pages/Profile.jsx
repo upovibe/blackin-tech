@@ -12,9 +12,9 @@ function Profile() {
   const { user } = UserAuth();
 
   const tabs = [
-    user.role === "admin" && { label: "Posted Jobs", content: <JobProfile tab="Posted Jobs" /> },
-    { label: "Applied Jobs", content: <JobProfile tab="Applied Jobs" /> },
-    { label: "Saved Jobs", content: <JobProfile tab="Saved Jobs" /> },
+    user.role === "admin" && { label: "Posted", content: <JobProfile tab="Posted" /> },
+    { label: "Applied", content: <JobProfile tab="Applied" /> },
+    { label: "Saved", content: <JobProfile tab="Saved" /> },
   ].filter(Boolean); // Remove falsey values to avoid rendering null
 
   const handleTabChange = (tab) => {
@@ -76,7 +76,7 @@ function Profile() {
               <div className="size-full">
                 <TabComponent
                   tabs={tabs}
-                  defaultActiveTab="Applied Jobs"
+                  defaultActiveTab="Saved"
                   onTabChange={handleTabChange}
                 />
               </div>
