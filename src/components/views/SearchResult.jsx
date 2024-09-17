@@ -5,9 +5,9 @@ import Lottie from 'lottie-react';
 import noDataAnimation from '../../assets/animations/Animation - No Data Found.json';
 import loadingAnimation from '../../assets/animations/Animation - Loading.json';
 import { FaRegBookmark, FaBookmark, FaMapMarker, FaBriefcase, FaEye, FaUserCircle } from 'react-icons/fa';
-import { getUserById } from '../../services/authService'; // Import getUserById
-import { getSavedJobs, saveJob, removeSavedJob, incrementJobViewCount } from '../../services/firestoreService';
-import Toast from '../common/Toast'; // Import Toast
+import { getUserById } from '../../services/authService';
+import { getSavedJobs, saveJob, removeSavedJob, incrementJobViewCount } from '../../services/firestoreJobManagement';
+import Toast from '../common/Toast';
 
 const SearchResult = ({ jobs, query }) => {
   const [savedJobs, setSavedJobs] = useState(new Set());

@@ -44,7 +44,7 @@ const Jobs = () => {
             <Lottie animationData={animationData} loop={true} className="size-48 md:hidden block" />
           </div>
           <div className='w-full flex justify-center items-center mt-16'>
-          <HorizontalLineWithText text='Opportunities Await' />
+          <HorizontalLineWithText>Opportunities Await</HorizontalLineWithText>
           </div>
         </div>
       </section>

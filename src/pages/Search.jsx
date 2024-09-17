@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SearchInput from '../components/filters/SearchInput';
 import SearchResult from '../components/views/SearchResult';
-import { getAllDocuments } from '../services/firestoreService';
+import { getAllDocuments } from '../services/firestoreCRUD';
 import Lottie from 'lottie-react';
 import noDataAnimation from '../assets/animations/Animation - No Data Found.json';
 import pageloading from '../assets/animations/Animation - LoadingPage.json';
@@ -56,11 +56,9 @@ const Search = () => {
       </section>
       <section className='flex items-center justify-center'>
         <div className="container py-20 px-2 md:px-0">
-          <div className='py-10'>
-          <HorizontalLineWithText
-            htmlText={`You searched for <span class="font-bold">${query}</span>`}
-          />
-          </div>
+          <HorizontalLineWithText className='py-10'>
+            You searched for <span className="font-bold">{query}</span>
+          </HorizontalLineWithText>
 
           <div className="search-results">
             {/* Handle Loading State */}
@@ -76,8 +74,8 @@ const Search = () => {
             {/* Display Search Results or No Results Message */}
             {!loading && !error && (
               jobs.length > 0 ? (
-                <div className=''>                  
-                <SearchResult jobs={jobs} query={query} />
+                <div className=''>
+                  <SearchResult jobs={jobs} query={query} />
                 </div>
               ) : (
                 <div>

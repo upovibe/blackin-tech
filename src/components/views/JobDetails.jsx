@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getAllDocuments, getSavedJobs, saveJob, removeSavedJob, incrementJobViewCount } from '../../services/firestoreService';
+import { getSavedJobs, saveJob, removeSavedJob, incrementJobViewCount } from '../../services/firestoreJobManagement';
+import { getAllDocuments } from '../../services/firestoreCRUD'
 import { UserAuth } from '../../contexts/AuthContext';
 import { getUserById } from '../../services/authService';
 import { FaWhatsapp, FaFacebook, FaLinkedin, FaLink, FaBookmark, FaEye } from 'react-icons/fa';
@@ -182,9 +183,10 @@ const JobDetails = () => {
     });
   };
 
+  // Inside the JobList component's handleModalOpen method:
   const handleModalOpen = (job) => {
     if (user) {
-      setSelectedJob(job);
+      setSelectedJob(job); // Pass the job object
       setIsModalOpen(true);
     } else {
       setToastMessage('Sign in to get started!');
@@ -193,6 +195,7 @@ const JobDetails = () => {
       navigate('/signin');
     }
   };
+
 
   const handleModalClose = () => {
     setIsModalOpen(false);
@@ -271,7 +274,7 @@ const JobDetails = () => {
             )}
 
             {/* Social Sharing Buttons */}
-            <HrizontalLineWithText text='Share' className='my-4' />
+            <HrizontalLineWithText className='my-4'>Share</HrizontalLineWithText>
             <div className='flex items-center justify-between'>
               <div className="flex items-center gap-4">
                 <a
@@ -403,10 +406,9 @@ const JobDetails = () => {
                 <p className=""><strong>Job Type:</strong> {job.jobType}</p>
               </div>
               <div className='flex flex-col items-center justify-start mt-5'>
-                <HorizontalLineWithText
-                  className='text-sm font-semibold'
-                  text={`${posterUsername} ${timeSince(new Date(job.createdAt))}`}
-                />
+              <HorizontalLineWithText>
+                <span className='text-sm font-semibold'>{`${posterUsername} ${timeSince(new Date(job.createdAt))}`}</span>
+              </HorizontalLineWithText>
               </div>
             </div>
 
@@ -431,18 +433,18 @@ const JobDetails = () => {
 
           {/* Modal for Job Application */}
           <Modal isOpen={isModalOpen} onClose={handleModalClose} title="Apply for Job">
-            <JobApplicationForm job={selectedJob} />
+            {selectedJob && <JobApplicationForm jobId={selectedJob.id} />}
           </Modal>
 
           {/* Toast Notification */}
-      <Toast
-        role="alert"
-        aria-live="assertive"
-        visible={toastVisible}
-        type={toastType}
-        message={toastMessage}
-        onClose={() => setToastVisible(false)}
-      />
+          <Toast
+            role="alert"
+            aria-live="assertive"
+            visible={toastVisible}
+            type={toastType}
+            message={toastMessage}
+            onClose={() => setToastVisible(false)}
+          />
         </div>
       </section>
     </main>

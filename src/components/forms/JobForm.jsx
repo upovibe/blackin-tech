@@ -9,7 +9,7 @@ import Button from '../common/Button';
 import Toast from '../common/Toast';
 import Lottie from 'lottie-react';
 import successAnimation from '../../assets/animations/Animation - JobPosted.json';
-import { createDocument } from '../../services/firestoreService';
+import { createDocument } from '../../services/firestoreCRUD';
 import { getUserById } from '../../services/authService';
 import { fetchCountries, fetchJobTypes } from '../../api/jobsApi';
 import ImagesUpload from '../common/ImagesUpload';

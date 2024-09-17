@@ -54,7 +54,7 @@ const NavAvatar = () => {
       <img
         src={user.avatarUrl || defaultAvatar}
         alt="User Avatar"
-        className="w-10 h-10 rounded-full cursor-pointer hover:ring-2 hover:ring-slate-300 transition-all duration-300"
+        className="w-10 h-10 min-w-10 min-h-10 rounded-full cursor-pointer hover:ring-2 hover:ring-slate-300 transition-all duration-300"
         onClick={handleClick}
         onMouseEnter={() => setIsOpen(true)}
       />
@@ -67,7 +67,7 @@ const NavAvatar = () => {
             <img
               src={user.avatarUrl || defaultAvatar}
               alt="User Profile Pic"
-              className="w-[80px] h-[80px] rounded-full"
+              className="w-[80px] h-[80px] min-w-[80px] min-h-[80px] rounded-full"
             />
             <span className="text-sm font-medium">{user.fullName || "User Name"}</span>
           </div>

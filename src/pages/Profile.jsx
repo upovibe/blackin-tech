@@ -1,22 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../contexts/AuthContext";
 import defaultAvatar from "../assets/images/avatar-default.png";
 import { FaInfoCircle, FaMapMarker } from "react-icons/fa";
 import Divider from "../components/common/Divider";
 import TabComponent from "../components/common/TabComponent";
-import JobList from "../components/lists/JobList";
+import JobProfile from "../components/lists/JobProfile";
 
 function Profile() {
   const navigate = useNavigate();
   const { user } = UserAuth();
+
   const tabs = [
-    // Only Admin
-    { label: "Posted Jobs", content: <div>Jobs posted by admins</div> },
-    //Users and Admin
-    { label: "Applied Jobs", content: <div>Jobs applied by user</div> },
-    { label: "Saved Jobs", content: <div>Jobs saved by user</div> },
-  ];
+    user.role === "admin" && { label: "Posted Jobs", content: <JobProfile tab="Posted Jobs" /> },
+    { label: "Applied Jobs", content: <JobProfile tab="Applied Jobs" /> },
+    { label: "Saved Jobs", content: <JobProfile tab="Saved Jobs" /> },
+  ].filter(Boolean); // Remove falsey values to avoid rendering null
 
   const handleTabChange = (tab) => {
     console.log("Selected Tab:", tab);
@@ -69,15 +68,18 @@ function Profile() {
               <div className="w-full md:w-max ml-auto mt-5">
                 <button
                   className="w-full hover:bg-gray-100 p-2 px-3 border-2 rounded-lg text-slate-700 text-center"
-                  onClick={() => navigate("/edit-profile")}> Edit Profile</button>
+                  onClick={() => navigate("/edit-profile")}
+                > Edit Profile</button>
               </div>
             </div>
             <div className="flex items-center flex-col gap-2 mb-4 rounded-xl size-full border-slate-300/80 p-3">
               <div className="size-full">
-                <TabComponent tabs={tabs} defaultActiveTab="Job Listings" onTabChange={handleTabChange} orientation="horizontal" />
+                <TabComponent
+                  tabs={tabs}
+                  defaultActiveTab="Applied Jobs"
+                  onTabChange={handleTabChange}
+                />
               </div>
-               {/* Vertical Tabs (full width) */}
-            {/* <TabComponent tabs={tabs} defaultActiveTab="Jobs Applied" onTabChange={handleTabChange} orientation="vertical" />  */}
             </div>
           </div>
         </section>

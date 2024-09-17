@@ -3,7 +3,6 @@ import Input from '../common/Input';
 import SelectInput from '../common/SelectInput';
 import { fetchJobTypes } from '../../api/jobsApi'; 
 import HorizontalLineWithText from '../common/HorizontalLineWithText';
-import Button from '../common/Button';
 
 const JobFilter = ({ onFilterChange }) => {
   const [filters, setFilters] = useState({
@@ -59,7 +58,7 @@ const JobFilter = ({ onFilterChange }) => {
 
   return (
     <div className=" bg-slate-100 p-2 border-2 border-slate-500/10 rounded-lg">
-      <HorizontalLineWithText text="Filter by location" />
+      <HorizontalLineWithText>Filter by location</HorizontalLineWithText>
       <div className="">
         <Input
           name="location"
@@ -69,7 +68,7 @@ const JobFilter = ({ onFilterChange }) => {
           className="border mt-2 p-2 w-full rounded"
         />
       </div>
-      <HorizontalLineWithText text="Filter by Job Type" />
+      <HorizontalLineWithText>Filter by Job Type</HorizontalLineWithText>
       <div className="">
         <SelectInput
           name="jobType"

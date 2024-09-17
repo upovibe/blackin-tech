@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getAllDocuments, getSavedJobs, saveJob, removeSavedJob, fetchFilteredJobs } from '../../services/firestoreService';
+import { getSavedJobs, saveJob, removeSavedJob, } from '../../services/firestoreJobManagement';
+import { fetchFilteredJobs } from '../../services/firestoreJobSearch';
 import { Link, useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import animationData from '../../assets/animations/Animation - Jobs.json';
@@ -110,7 +111,7 @@ const JobList = ({ filters, jobs: initialJobs = [] }) => {
       setToastVisible(true);
     }
   };
-  
+
 
   // Fetch saved jobs when the user logs in or when the component mounts
   useEffect(() => {
@@ -143,9 +144,10 @@ const JobList = ({ filters, jobs: initialJobs = [] }) => {
   }, []);
 
 
+  // Inside the JobList component's handleModalOpen method:
   const handleModalOpen = (job) => {
     if (user) {
-      setSelectedJob(job);
+      setSelectedJob(job); // Pass the job object
       setIsModalOpen(true);
     } else {
       setToastMessage('Sign in to get started!');
@@ -155,10 +157,13 @@ const JobList = ({ filters, jobs: initialJobs = [] }) => {
     }
   };
 
+
   const handleModalClose = () => {
     setIsModalOpen(false);
     setSelectedJob(null);
   };
+
+
 
   return (
     <div className="job-list">
@@ -289,8 +294,9 @@ const JobList = ({ filters, jobs: initialJobs = [] }) => {
 
       {/* Modal for Job Application */}
       <Modal isOpen={isModalOpen} onClose={handleModalClose} title="Apply for Job">
-        <JobApplicationForm job={selectedJob} />
+        {selectedJob && <JobApplicationForm jobId={selectedJob.id} />}
       </Modal>
+
 
       {/* Toast Notification */}
       <Toast
