@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Input from '../common/Input';
+import Input from './Input';
 
 const TagInput = ({ options, placeholder, onChange, maxTags }) => {
   const [inputValue, setInputValue] = useState('');

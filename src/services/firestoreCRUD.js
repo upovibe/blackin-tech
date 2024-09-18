@@ -23,13 +23,17 @@ export const createDocument = async (collectionName, data) => {
 };
 
 // Read a document by ID
-export const getDocumentById = async (collectionName, docId) => {
-  try {
+export const getDocumentByID = async (collectionName, docId) => {
+   try {
     const docRef = doc(db, collectionName, docId);
-    const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data() : null;
+    const docSnap = await getDoc(docRef);    
+    // Check if the document exists
+    if (!docSnap.exists()) {
+      return null;
+    }
+    return docSnap.data();
   } catch (e) {
-    console.error("Error getting document: ", e);
+    console.error("Error getting document:", e);
     throw e;
   }
 };

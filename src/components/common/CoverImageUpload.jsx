@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { storage } from "../../services/firebase";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import avatarDefault from "../../assets/images/avatar-default.png";
+import coverDefault from "../../assets/images/banner.png";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import Lottie from "lottie-react";
 import animationData from "../../assets/animations/Animation - AvatarLoader.json";
@@ -81,7 +81,7 @@ const CoverImageUpload = ({ onUpload }) => {
             />
           ) : (
             <img
-              src={image || avatarDefault}
+              src={image || coverDefault}
               alt="Uploaded"
               className="w-[16rem] h-[9rem] lg:w-[20rem] lg:h-[11rem] xl:w-[24rem] xl:h-[13rem] max-w-60 max-h-35 rounded-lg object-cover border-2 border-opacity-20 border-gray-300"
             />
