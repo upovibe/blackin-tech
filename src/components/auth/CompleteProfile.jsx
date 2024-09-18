@@ -10,6 +10,7 @@ import TextArea from "../common/TextArea";
 import SelectInput from "../common/SelectInput";
 import TagInput from "../common/TagInput";
 import AvatarUpload from "../common/AvatarUpload";
+import CoverImageUpload from "../common/CoverImageUpload";
 import Button from "../common/Button";
 import { updateProfile } from "../../services/authService";
 import Lottie from "lottie-react";
@@ -25,6 +26,7 @@ import {
 const CompleteProfile = () => {
   const [formValues, setFormValues] = useState({
     avatarUrl: "",
+    coverImageUrl: "",
     userName: "",
     bio: "",
     pronouns: "",
@@ -91,15 +93,24 @@ const CompleteProfile = () => {
     }));
   };
 
+  const handleCoverImageUpload = (url) => {
+    setFormValues((prev) => ({
+      ...prev,
+      coverImageUrl: url,
+    }));
+  };
+
   const validateStep = () => {
     switch (step) {
       case 1:
         return formValues.avatarUrl !== "";
       case 2:
-        return formValues.userName !== "" && formValues.bio !== "";
+        return formValues.coverImageUrl !== "";
       case 3:
-        return formValues.pronouns !== "" && formValues.languages.length > 0;
+        return formValues.userName !== "" && formValues.bio !== "";
       case 4:
+        return formValues.pronouns !== "" && formValues.languages.length > 0;
+      case 5:
         return formValues.country !== "" && formValues.city !== "";
       default:
         return false;
@@ -190,26 +201,52 @@ const CompleteProfile = () => {
                 {/* Step 1: Avatar Upload */}
                 {step === 1 && (
                   <div className="space-y-10 text-center">
-                  <span className="text-xl font-bold">
-                  Tap to choose a photo
-                  </span>
-                  <AvatarUpload onUpload={handleAvatarUpload} />
-                  <Button
-                    iconLeft={<FaArrowAltCircleRight />}
-                    onClick={nextStep}
-                    className="w-full"
-                  >
-                    Next
-                  </Button>
-                </div>
-                
+                    <span className="text-xl font-bold">
+                      Tap to choose a photo
+                    </span>
+                    <AvatarUpload onUpload={handleAvatarUpload} />
+                    <Button
+                      iconLeft={<FaArrowAltCircleRight />}
+                      onClick={nextStep}
+                      className="w-full"
+                    >
+                      Next
+                    </Button>
+                  </div>
                 )}
 
-                {/* Step 2: Username and Bio */}
+                {/* Step 2: Cover Image Upload */}
                 {step === 2 && (
                   <div className="space-y-10 text-center">
-                  <span className="text-xl font-bold">
-                    Tell us more about your</span>
+                    <span className="text-xl font-bold">
+                      Upload a cover image
+                    </span>
+                    <CoverImageUpload onUpload={handleCoverImageUpload} />
+                    <div className="flex justify-between gap-5">
+                      <Button
+                        iconLeft={<FaArrowAltCircleLeft />}
+                        onClick={prevStep}
+                        className="w-full"
+                      >
+                        Back
+                      </Button>
+                      <Button
+                        iconLeft={<FaArrowAltCircleRight />}
+                        onClick={nextStep}
+                        className="w-full"
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 3: Username and Bio */}
+                {step === 3 && (
+                  <div className="space-y-10 text-center">
+                    <span className="text-xl font-bold">
+                      Tell us more about your
+                    </span>
                     <div className="space-y-5">
                       <Input
                         type="text"
@@ -246,11 +283,11 @@ const CompleteProfile = () => {
                   </div>
                 )}
 
-                {/* Step 3: Pronouns and Languages */}
-                {step === 3 && (
+                {/* Step 4: Pronouns and Languages */}
+                {step === 4 && (
                   <div className="space-y-10 text-center">
-                  <span className="text-xl font-bold">
-                    What's your Pronouns and Language?
+                    <span className="text-xl font-bold">
+                      What's your Pronouns and Language?
                     </span>
                     <div className="space-y-5">
                       <SelectInput
@@ -281,7 +318,7 @@ const CompleteProfile = () => {
                         Back
                       </Button>
                       <Button
-                        iconRight={<FaArrowAltCircleRight />}
+                        iconLeft={<FaArrowAltCircleRight />}
                         onClick={nextStep}
                         className="w-full"
                       >
@@ -291,11 +328,12 @@ const CompleteProfile = () => {
                   </div>
                 )}
 
-                {/* Step 4: Country and City */}
-                {step === 4 && (
+                {/* Step 5: Country and City */}
+                {step === 5 && (
                   <div className="space-y-10 text-center">
-                  <span className="text-xl font-bold">
-                    Where from you?</span>
+                    <span className="text-xl font-bold">
+                      Where from you?
+                    </span>
                     <div className="space-y-5">
                       <SelectInput
                         name="country"
@@ -319,7 +357,7 @@ const CompleteProfile = () => {
                     </div>
                     <div className="flex justify-between gap-5">
                       <Button
-                        iconRight={<FaArrowAltCircleLeft />}
+                        iconLeft={<FaArrowAltCircleLeft />}
                         onClick={prevStep}
                         className="w-full"
                       >

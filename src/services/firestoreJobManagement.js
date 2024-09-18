@@ -146,6 +146,7 @@ export const getAppliedJobs = async (userId) => {
   }
 };
 
+// Get job details by job ID
 export const getJobDetails = async (jobId) => {
   try {
     const jobRef = doc(db, 'jobs', jobId);
