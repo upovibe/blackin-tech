@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainLayout from './components/Layout/MainLayout';
+import AdminLayout from './components/Layout/AdminLayout';
 import PrivateRoute from './routes/PrivateRoute';
 import PublicRoute from './routes/PublicRoute';
 import Home from './pages/Home';
@@ -42,7 +43,7 @@ function App() {
 
         {/* Admin route */}
         <Route element={<PrivateRoute requiredRole="admin" />}>
-          <Route path="/dashboard" element={<MainLayout><Dashboard /></MainLayout>} />
+          <Route path="/dashboard" element={<AdminLayout><Dashboard /></AdminLayout>} />
         </Route>
 
         {/* Catch-all route */}

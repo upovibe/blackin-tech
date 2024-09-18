@@ -8,9 +8,9 @@ const Toast = ({ type = 'success', message, visible, onClose }) => {
     if (visible) {
       const timer = setTimeout(() => {
         onClose();
-      }, 3000); // Auto-close after 3 seconds
+      }, 3000);
 
-      return () => clearTimeout(timer); // Cleanup timer if component unmounts
+      return () => clearTimeout(timer);
     }
   }, [visible, onClose]);
 
