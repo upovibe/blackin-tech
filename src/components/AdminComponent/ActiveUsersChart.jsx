@@ -8,22 +8,36 @@ const ActiveUsersChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       const users = await getAllDocuments('users');
-      const activeUsersByDay = {}; // To track active users over time (e.g., daily)
+      const usersOverTime = {}; // Tracks total users over time
 
       users.forEach(user => {
-        const lastActiveDate = new Date(user.lastActive).toLocaleDateString();
-        activeUsersByDay[lastActiveDate] = (activeUsersByDay[lastActiveDate] || 0) + 1;
+        // Assuming user has a Firestore timestamp field like `user.createdAt`
+        if (user.createdAt && user.createdAt.toDate) {
+          const registrationDate = user.createdAt.toDate(); // Convert Firestore timestamp to JS Date
+          const formattedDate = registrationDate.toLocaleDateString(); // Format date as 'MM/DD/YYYY' or similar
+          
+          // Increment the user count for the registration date
+          usersOverTime[formattedDate] = (usersOverTime[formattedDate] || 0) + 1;
+        } else {
+          console.warn(`Invalid or missing createdAt field for user: ${user.id}`);
+        }
       });
 
-      const labels = Object.keys(activeUsersByDay);
-      const data = Object.values(activeUsersByDay);
+      // Sort dates in ascending order and calculate cumulative user count
+      const sortedDates = Object.keys(usersOverTime).sort((a, b) => new Date(a) - new Date(b));
+      let cumulativeUsers = 0;
+      const cumulativeData = sortedDates.map(date => {
+        cumulativeUsers += usersOverTime[date];
+        return cumulativeUsers;
+      });
 
+      // Set the chart data
       setChartData({
-        labels,
+        labels: sortedDates,
         datasets: [
           {
-            label: 'Active Users Over Time',
-            data,
+            label: 'Total Users Over Time',
+            data: cumulativeData,
             borderColor: 'rgba(75,192,192,1)',
             fill: false,
           },
@@ -35,14 +49,18 @@ const ActiveUsersChart = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Active Users Over Time</h2>
-      {chartData && (
-        <BaseChart
-          chartType="line"
-          data={chartData}
-          options={{ responsive: true, maintainAspectRatio: false }}
-        />
+    <div className="p-4 bg-white rounded-lg shadow-md">
+      <h2 className="text-xl font-semibold mb-4">Total Users Over Time</h2>
+      {chartData ? (
+        <div className="w-full h-80">
+          <BaseChart
+            chartType="line"
+            data={chartData}
+            options={{ responsive: true, maintainAspectRatio: false }}
+          />
+        </div>
+      ) : (
+        <p>Loading chart...</p>
       )}
     </div>
   );

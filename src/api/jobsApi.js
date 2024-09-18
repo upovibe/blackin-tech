@@ -214,6 +214,7 @@ export const fetchJobTypes = async () => {
     "Volunteer",
     "Freelance",
     "Contract to Hire",
+    "Freelancer",
   ];
   return jobTypes;
 };
