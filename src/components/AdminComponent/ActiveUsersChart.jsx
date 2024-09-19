@@ -3,6 +3,7 @@ import BaseChart from "../common/BaseChart";
 import { getAllDocuments } from "../../services/firestoreCRUD";
 import Lottie from "lottie-react";
 import ChartLoadingAnimation from "../../assets/animations/Animation - ChartLoading.json";
+import { FaChartLine } from "react-icons/fa";
 
 const generateRandomColor = () => {
   const letters = "0123456789ABCDEF";
@@ -21,7 +22,7 @@ const ActiveUsersChart = () => {
     const fetchData = async () => {
       setLoading(true); // Start loading
       const users = await getAllDocuments("users");
-      const usersOverTime = {}; 
+      const usersOverTime = {};
 
       users.forEach((user) => {
         if (user.createdAt && user.createdAt.toDate) {
@@ -68,8 +69,11 @@ const ActiveUsersChart = () => {
   }, []);
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Total Users Over Time</h2>
+    <div className="size-full">
+      <div className="mb-4">
+      <h2 className="text-xl text-black/70 font-semibold flex items-center gap-2"><FaChartLine/>Total Users Over Time</h2>        
+      <p className="text-sm text-black/70">This Shows user growth and engagement trends.</p>
+      </div>
       {loading ? (
         <div className="flex items-center justify-center size-full">
           <Lottie
@@ -80,11 +84,14 @@ const ActiveUsersChart = () => {
         </div>
       ) : (
         chartData && (
-          <div className="size-full">
+          <div className="w-full h-ful h-[300px]">
             <BaseChart
               chartType="line"
               data={chartData}
-              options={{ responsive: true, maintainAspectRatio: false }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+              }}
             />
           </div>
         )

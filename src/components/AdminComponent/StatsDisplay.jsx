@@ -1,6 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { getAllDocuments, listenToCollection } from '../../services/firestoreCRUD';
-import { fetchJobTypes } from '../../api/jobsApi';
+import React, { useState, useEffect } from "react";
+import {
+  getAllDocuments,
+  listenToCollection,
+} from "../../services/firestoreCRUD";
+import { fetchJobTypes } from "../../api/jobsApi";
+import {
+  FaBriefcase,
+  FaFileAlt,
+  FaUsers,
+  FaUserPlus,
+  FaSave,
+  FaUserCheck,
+  FaChartLine,
+} from "react-icons/fa"; // Icons from react-icons
 
 const StatsDisplay = () => {
   const [totalJobs, setTotalJobs] = useState(0);
@@ -12,133 +24,131 @@ const StatsDisplay = () => {
   const [jobsWithNoApplications, setJobsWithNoApplications] = useState(0);
   const [jobTypesCount, setJobTypesCount] = useState(0);
 
+  // Function to generate random colors
+  const generateRandomColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch total jobs
-        const jobs = await getAllDocuments('jobs');
+        const jobs = await getAllDocuments("jobs");
         setTotalJobs(jobs.length);
 
-        // Fetch total applications
-        const applications = await getAllDocuments('jobApplications');
+        const applications = await getAllDocuments("jobApplications");
         setTotalApplications(applications.length);
 
-        // Fetch job types from the API and set the job type count
-        const jobTypes = await fetchJobTypes();
-        setJobTypesCount(jobTypes.length);
-
-        // Calculate jobs with no applications
-        const jobsWithNoAppsCount = jobs.filter(job => {
-          const jobApps = applications.filter(app => app.jobId === job.id);
-          return jobApps.length === 0;
-        }).length;
-        setJobsWithNoApplications(jobsWithNoAppsCount);
-
-        // Fetch total users
-        const users = await getAllDocuments('users');
+        const users = await getAllDocuments("users");
         setTotalUsers(users.length);
 
-        // Calculate active users (those currently online)
-        const activeUsersCount = users.filter(user => user.isOnline).length;
+        const activeUsersCount = users.filter((user) => user.isOnline).length;
         setActiveUsers(activeUsersCount);
 
-        // Calculate new registrations (within the last 30 days)
-        const today = new Date();
-        const newRegistrationsCount = users.filter(user => {
+        const newRegistrationsCount = users.filter((user) => {
           const registrationDate = new Date(user.registrationDate);
-          return (today - registrationDate) / (1000 * 60 * 60 * 24) <= 30; // Last 30 days
+          const today = new Date();
+          return (today - registrationDate) / (1000 * 60 * 60 * 24) <= 30;
         }).length;
         setNewRegistrations(newRegistrationsCount);
 
-        // Fetch saved jobs and calculate total saved jobs
-        const savedJobs = await getAllDocuments('savedJobs');
+        const savedJobs = await getAllDocuments("savedJobs");
         let totalSaves = 0;
-        savedJobs.forEach(doc => {
+        savedJobs.forEach((doc) => {
           totalSaves += Array.isArray(doc.jobs) ? doc.jobs.length : 0;
         });
         setTotalSavedJobs(totalSaves);
 
+        const jobTypes = await fetchJobTypes();
+        setJobTypesCount(jobTypes.length);
+
+        const jobsWithNoAppsCount = jobs.filter((job) => {
+          const jobApps = applications.filter((app) => app.jobId === job.id);
+          return jobApps.length === 0;
+        }).length;
+        setJobsWithNoApplications(jobsWithNoAppsCount);
       } catch (error) {
-        console.error("Error fetching data: ", error);
+        console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-
-    // Set up real-time listeners
-    const unsubscribeJobs = listenToCollection('jobs', (data) => setTotalJobs(data.length));
-    const unsubscribeApplications = listenToCollection('jobApplications', (data) => {
-      setTotalApplications(data.length);
-
-      // Calculate jobs with no applications
-      const jobsWithNoAppsCount = data.filter(job => {
-        const jobApps = data.filter(app => app.jobId === job.id);
-        return jobApps.length === 0;
-      }).length;
-      setJobsWithNoApplications(jobsWithNoAppsCount);
-    });
-    const unsubscribeUsers = listenToCollection('users', (data) => {
-      setTotalUsers(data.length);
-      const activeUsersCount = data.filter(user => user.isOnline).length;
-      setActiveUsers(activeUsersCount);
-      const today = new Date();
-      const newRegistrationsCount = data.filter(user => {
-        const registrationDate = new Date(user.registrationDate);
-        return (today - registrationDate) / (1000 * 60 * 60 * 24) <= 30; // Last 30 days
-      }).length;
-      setNewRegistrations(newRegistrationsCount);
-    });
-
-    const unsubscribeSavedJobs = listenToCollection('savedJobs', (data) => {
-      let totalSaves = 0;
-      data.forEach(doc => {
-        totalSaves += Array.isArray(doc.jobs) ? doc.jobs.length : 0;
-      });
-      setTotalSavedJobs(totalSaves);
-    });
-
-    return () => {
-      unsubscribeJobs();
-      unsubscribeApplications();
-      unsubscribeUsers();
-      unsubscribeSavedJobs();
-    };
   }, []);
+
+  const stats = [
+    {
+      title: "Total Jobs Posted",
+      value: totalJobs,
+      icon: <FaBriefcase />,
+      color: generateRandomColor(),
+    },
+    {
+      title: "Total Applications",
+      value: totalApplications,
+      icon: <FaFileAlt />,
+      color: generateRandomColor(),
+    },
+    {
+      title: "Total Job Types",
+      value: jobTypesCount,
+      icon: <FaChartLine />,
+      color: generateRandomColor(),
+    },
+    {
+      title: "Jobs with No Applications",
+      value: jobsWithNoApplications,
+      icon: <FaFileAlt />,
+      color: generateRandomColor(),
+    },
+    {
+      title: "Active Users",
+      value: activeUsers,
+      icon: <FaUsers />,
+      color: generateRandomColor(),
+    },
+    {
+      title: "Total Registered Users",
+      value: totalUsers,
+      icon: <FaUserCheck />,
+      color: generateRandomColor(),
+    },
+    {
+      title: "New Registrations",
+      value: newRegistrations,
+      icon: <FaUserPlus />,
+      color: generateRandomColor(),
+    },
+    {
+      title: "Total Saved Jobs",
+      value: totalSavedJobs,
+      icon: <FaSave />,
+      color: generateRandomColor(),
+    },
+  ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 bg-slate-100">
-      <div className="p-4 bg-slate-200 rounded shadow">
-        <h2 className="text-lg font-bold">Total Jobs Posted</h2>
-        <p className="text-3xl">{totalJobs}</p>
-      </div>
-      <div className="p-4 bg-slate-200 rounded shadow">
-        <h2 className="text-lg font-bold">Total Applications</h2>
-        <p className="text-3xl">{totalApplications}</p>
-      </div>
-      <div className="p-4 bg-slate-200 rounded shadow">
-        <h2 className="text-lg font-bold">Total Job Types</h2>
-        <p className="text-3xl">{jobTypesCount}</p> {/* Displaying Job Type count */}
-      </div>
-      <div className="p-4 bg-slate-200 rounded shadow">
-        <h2 className="text-lg font-bold">Jobs with No Applications</h2>
-        <p className="text-3xl">{jobsWithNoApplications}</p>
-      </div>
-      <div className="p-4 bg-slate-200 rounded shadow">
-        <h2 className="text-lg font-bold">Active Users</h2>
-        <p className="text-3xl">{activeUsers}</p>
-      </div>
-      <div className="p-4 bg-slate-200 rounded shadow">
-        <h2 className="text-lg font-bold">Total Registered Users</h2>
-        <p className="text-3xl">{totalUsers}</p>
-      </div>
-      <div className="p-4 bg-slate-200 rounded shadow">
-        <h2 className="text-lg font-bold">New Registrations</h2>
-        <p className="text-3xl">{newRegistrations}</p>
-      </div>
-      <div className="p-4 bg-slate-200 rounded shadow">
-        <h2 className="text-lg font-bold">Total Saved Jobs</h2>
-        <p className="text-3xl">{totalSavedJobs}</p>
-      </div>
+      {stats.map((stat, index) => (
+        <div
+          key={index}
+          className={`p-4 bg-slate-200 rounded shadow border-l-4 transition-all duration-300 hover:bg-gradient-to-r hover:from-slate-300`}
+          style={{ borderColor: stat.color }}
+        >
+          <h2 className="text-lg font-bold mb-3">{stat.title}</h2>
+          <div className="flex items-center justify-between space-x-4">
+            <div className="text-3xl" style={{ color: stat.color }}>
+              {stat.icon}
+            </div>
+            <div>
+            <p className="text-xl font-semibold text-white bg-slate-600 flex items-center justify-center size-10 min-h-10 min-w-10 rounded-full ">{stat.value}</p>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

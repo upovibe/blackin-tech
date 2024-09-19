@@ -4,6 +4,7 @@ import { getAllDocuments } from '../../services/firestoreCRUD';
 import { fetchJobTypes } from '../../api/jobsApi';
 import Lottie from 'lottie-react';
 import ChartLoadingAnimation from '../../assets/animations/Animation - ChartLoading.json';
+import { FaChartPie } from "react-icons/fa";
 
 // Function to generate random colors
 const generateRandomColor = () => {
@@ -60,8 +61,8 @@ const JobTypesChart = ({ chartType = 'pie' }) => {
   }, []);
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Job Types by Employment Type</h2>
+    <div className="">
+      <h2 className="text-xl font-semibold mb-4"><FaChartPie />Job Types by Employment Type</h2>
       {loading ? (
         <div className="flex items-center justify-center size-full">
           <Lottie

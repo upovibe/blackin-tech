@@ -29,7 +29,7 @@ function App() {
         {/* Public routes with MainLayout */}
         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
         <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />
-        <Route path="/jobs/:slug" element={<MainLayout><JobDetails /></MainLayout>} /> {/* Job details route */}
+        <Route path="/jobs/:slug" element={<MainLayout><JobDetails /></MainLayout>} />
         <Route path="/search" element={<MainLayout><Search /></MainLayout>} />
         <Route path="/terms" element={<MainLayout><Terms /></MainLayout>} />
         <Route path="/about" element={<MainLayout><About /></MainLayout>} />
@@ -37,6 +37,7 @@ function App() {
         {/* Private routes with MainLayout */}
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
+          <Route path="/profile/:userName" element={<MainLayout><Profile /></MainLayout>} />
           <Route path="/settings" element={<MainLayout><Settings /></MainLayout>} />
           <Route path="/completeprofile" element={<CompleteProfile />} />
         </Route>

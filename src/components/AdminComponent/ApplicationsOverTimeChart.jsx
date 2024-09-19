@@ -3,6 +3,7 @@ import BaseChart from '../common/BaseChart';
 import { getAllDocuments } from '../../services/firestoreCRUD';
 import Lottie from 'lottie-react';
 import ChartLoadingAnimation from '../../assets/animations/Animation - ChartLoading.json'
+import { FaChartBar } from "react-icons/fa";
 
 // Function to generate random colors
 const generateRandomColor = () => {
@@ -55,8 +56,8 @@ const ApplicationsOverTimeChart = () => {
   }, []);
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Applications Over Time</h2>
+    <div className="">
+      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><FaChartBar/>Applications Over Time</h2>
       {loading ? (
         <div className="flex items-center justify-center size-full">
           <Lottie

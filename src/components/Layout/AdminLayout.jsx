@@ -9,8 +9,12 @@ import {
   FaAngleDoubleRight,
   FaEye,
   FaEyeSlash,
+  FaBars,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import NavAvatar from '../auth/NavAvatar'
+import SearchInput from '../filters/SearchInput'
+import { FaBarsStaggered,  } from "react-icons/fa6";
 
 const AdminLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false); // Handles sidebar collapse
@@ -166,8 +170,9 @@ const AdminLayout = ({ children }) => {
       {/* Main Content */}
       <div className="flex-grow">
         <header className="bg-white shadow-md flex items-center justify-between h-16 px-2">
+          <div className="flex flex-tems-center gap-10">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center">
             {/* Hidden Sidebar - Show "BT" for small screens */}
             {isHidden && windowWidth < 768 && (
               <div className="flex items-center gap-1">
@@ -196,8 +201,12 @@ const AdminLayout = ({ children }) => {
                 </span>
               </div>
             )}
-          </Link>
+          </Link>          
+            <SearchInput/>
+          </div>
 
+          <div  className="flex items-center gap-4">
+            <NavAvatar/>
           <div className="flex items-center size-max justify-center">
             {/* Hide/Show Sidebar Button */}
             {!isHidden && (
@@ -205,7 +214,7 @@ const AdminLayout = ({ children }) => {
                 className="text-gray-700 hover:bg-gray-300 p-2 rounded-full"
                 onClick={toggleHide}
               >
-                <FaEyeSlash className="text-lg" title="Hide Sidebar" />
+                <FaBarsStaggered className="text-lg" title="Hide Sidebar" />
               </button>
             )}
             {isHidden && (
@@ -213,9 +222,10 @@ const AdminLayout = ({ children }) => {
                 className="text-gray-700 hover:bg-gray-300 p-2 rounded-full"
                 onClick={toggleHide}
               >
-                <FaEye className="text-lg" title="Show Sidebar" />
+                <FaBars className="text-lg" title="Show Sidebar" />
               </button>
             )}
+          </div>
           </div>
         </header>
         <div className="flex-grow relative overflow-y-auto">         
