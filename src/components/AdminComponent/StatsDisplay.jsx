@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAllDocuments, listenToCollection } from '../../services/firestoreCRUD';
+import { fetchJobTypes } from '../../api/jobsApi';
 
 const StatsDisplay = () => {
   const [totalJobs, setTotalJobs] = useState(0);
@@ -8,6 +9,8 @@ const StatsDisplay = () => {
   const [totalUsers, setTotalUsers] = useState(0);
   const [newRegistrations, setNewRegistrations] = useState(0);
   const [totalSavedJobs, setTotalSavedJobs] = useState(0);
+  const [jobsWithNoApplications, setJobsWithNoApplications] = useState(0);
+  const [jobTypesCount, setJobTypesCount] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,6 +22,17 @@ const StatsDisplay = () => {
         // Fetch total applications
         const applications = await getAllDocuments('jobApplications');
         setTotalApplications(applications.length);
+
+        // Fetch job types from the API and set the job type count
+        const jobTypes = await fetchJobTypes();
+        setJobTypesCount(jobTypes.length);
+
+        // Calculate jobs with no applications
+        const jobsWithNoAppsCount = jobs.filter(job => {
+          const jobApps = applications.filter(app => app.jobId === job.id);
+          return jobApps.length === 0;
+        }).length;
+        setJobsWithNoApplications(jobsWithNoAppsCount);
 
         // Fetch total users
         const users = await getAllDocuments('users');
@@ -53,7 +67,16 @@ const StatsDisplay = () => {
 
     // Set up real-time listeners
     const unsubscribeJobs = listenToCollection('jobs', (data) => setTotalJobs(data.length));
-    const unsubscribeApplications = listenToCollection('jobApplications', (data) => setTotalApplications(data.length));
+    const unsubscribeApplications = listenToCollection('jobApplications', (data) => {
+      setTotalApplications(data.length);
+
+      // Calculate jobs with no applications
+      const jobsWithNoAppsCount = data.filter(job => {
+        const jobApps = data.filter(app => app.jobId === job.id);
+        return jobApps.length === 0;
+      }).length;
+      setJobsWithNoApplications(jobsWithNoAppsCount);
+    });
     const unsubscribeUsers = listenToCollection('users', (data) => {
       setTotalUsers(data.length);
       const activeUsersCount = data.filter(user => user.isOnline).length;
@@ -83,7 +106,7 @@ const StatsDisplay = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 bg-slate-100">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 bg-slate-100">
       <div className="p-4 bg-slate-200 rounded shadow">
         <h2 className="text-lg font-bold">Total Jobs Posted</h2>
         <p className="text-3xl">{totalJobs}</p>
@@ -91,6 +114,14 @@ const StatsDisplay = () => {
       <div className="p-4 bg-slate-200 rounded shadow">
         <h2 className="text-lg font-bold">Total Applications</h2>
         <p className="text-3xl">{totalApplications}</p>
+      </div>
+      <div className="p-4 bg-slate-200 rounded shadow">
+        <h2 className="text-lg font-bold">Total Job Types</h2>
+        <p className="text-3xl">{jobTypesCount}</p> {/* Displaying Job Type count */}
+      </div>
+      <div className="p-4 bg-slate-200 rounded shadow">
+        <h2 className="text-lg font-bold">Jobs with No Applications</h2>
+        <p className="text-3xl">{jobsWithNoApplications}</p>
       </div>
       <div className="p-4 bg-slate-200 rounded shadow">
         <h2 className="text-lg font-bold">Active Users</h2>

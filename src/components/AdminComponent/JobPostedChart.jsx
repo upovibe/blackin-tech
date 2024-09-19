@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import BaseChart from '../common/BaseChart';
 import { getAllDocuments } from '../../services/firestoreCRUD';
+import Lottie from 'lottie-react';
+import ChartLoadingAnimation from '../../assets/animations/Animation - ChartLoading.json'
 
 // Function to generate random colors
 const generateRandomColor = () => {
@@ -14,9 +16,11 @@ const generateRandomColor = () => {
 
 const JobsPostedChart = () => {
   const [chartData, setChartData] = useState(null);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true); // Start loading
       const jobs = await getAllDocuments('jobs');
       const jobsByDate = {};
 
@@ -46,6 +50,7 @@ const JobsPostedChart = () => {
           },
         ],
       });
+      setLoading(false); // End loading
     };
 
     fetchData();
@@ -54,16 +59,24 @@ const JobsPostedChart = () => {
   return (
     <div className="p-4 bg-white rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">Jobs Posted Over Time</h2>
-      {chartData ? (
-        <div className="w-full h-80">
-          <BaseChart
-            chartType="bar"
-            data={chartData}
-            options={{ responsive: true, maintainAspectRatio: false }}
+      {loading ? (
+        <div className="flex items-center justify-center size-full">
+          <Lottie
+            animationData={ChartLoadingAnimation}
+            loop={true}
+            className="w-full h-full"
           />
         </div>
       ) : (
-        <p>Loading chart...</p>
+        chartData && (
+          <div className="size-full">
+            <BaseChart
+              chartType="bar"
+              data={chartData}
+              options={{ responsive: true, maintainAspectRatio: false }}
+            />
+          </div>
+        )
       )}
     </div>
   );
