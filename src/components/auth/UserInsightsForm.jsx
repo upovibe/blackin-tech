@@ -10,17 +10,17 @@ import Lottie from "lottie-react";
 import successAnimation from "../../assets/animations/Animation - JobPosted.json";
 import formLoading from "../../assets/animations/Animation - FormLoading.json";
 import Toast from "../common/Toast";
+import HorizontalLineWithText from "../common/HorizontalLineWithText";
+import Divider from "../common/Divider";
 import {
   fetchSkills,
   fetchAbilities,
   fetchAvailabilityStatuses,
   fetchEducationalCategories,
 } from "../../api/usersInsight";
-import {
-  updateDocument, 
-  getDocumentByID,
-} from "../../services/firestoreCRUD";
+import { updateDocument, getDocumentByID } from "../../services/firestoreCRUD";
 import { UserAuth } from "../../contexts/AuthContext";
+import { FaMinus, FaPlus } from "react-icons/fa6";
 
 const UserInsightsForm = () => {
   const { user } = UserAuth();
@@ -64,13 +64,13 @@ const UserInsightsForm = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       if (!userID) return;
-  
+
       try {
         setLoading(true);
-        
+
         // Get the user's document by ID
         const userDoc = await getDocumentByID("users", userID);
-        
+
         if (userDoc) {
           // Populate the form with the user's existing data
           setFormValues((prev) => ({ ...prev, ...userDoc }));
@@ -81,7 +81,7 @@ const UserInsightsForm = () => {
         setLoading(false);
       }
     };
-  
+
     fetchUserData();
   }, [userID]);
 
@@ -203,9 +203,14 @@ const UserInsightsForm = () => {
   // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const { professionalTitle, summary, skills, abilities } = formValues;
-    if (!professionalTitle || !summary || skills.length === 0 || abilities.length === 0) {
+    if (
+      !professionalTitle ||
+      !summary ||
+      skills.length === 0 ||
+      abilities.length === 0
+    ) {
       setToast({
         visible: true,
         message: "Please fill all required fields",
@@ -213,7 +218,7 @@ const UserInsightsForm = () => {
       });
       return;
     }
-  
+
     if (!userID) {
       setToast({
         visible: true,
@@ -222,11 +227,11 @@ const UserInsightsForm = () => {
       });
       return;
     }
-  
+
     setLoading(true); // Start loading
     const currentDate = new Date().toISOString();
     const updatedFormValues = { ...formValues, dateSubmitted: currentDate };
-  
+
     try {
       // Update the existing document in Firestore
       await updateDocument("users", userID, updatedFormValues);
@@ -246,7 +251,6 @@ const UserInsightsForm = () => {
       setLoading(false); // End loading
     }
   };
-  
 
   return (
     <>
@@ -262,263 +266,342 @@ const UserInsightsForm = () => {
       ) : (
         <>
           {!formSubmitted ? (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="">
               {/* Professional Information */}
-              <div>
-                <h3 className="text-lg font-semibold">
-                  Professional Information
-                </h3>
-                <Input
-                  name="professionalTitle"
-                  placeholder="Professional Title"
-                  value={formValues.professionalTitle}
-                  onChange={handleChange}
-                  className="mb-2"
-                />
-                <TextArea
-                  name="summary"
-                  placeholder="Summary/Objective"
-                  value={formValues.summary}
-                  onChange={handleChange}
-                  className="mb-2"
-                />
+              <HorizontalLineWithText>
+                <span className="text-sm font-semibold">
+                  {" "}
+                  Professional Information{" "}
+                </span>
+              </HorizontalLineWithText>
+              <div className="flex flex-col items-center justify-between gap-3 my-5 mb-14">
+                <div className="w-full">
+                  <Input
+                    name="professionalTitle"
+                    placeholder="Professional Title"
+                    value={formValues.professionalTitle}
+                    onChange={handleChange}
+                    className=""
+                  />
+                </div>
+                <div className="w-full">
+                  <TextArea
+                    name="summary"
+                    placeholder="Summary/Objective"
+                    value={formValues.summary}
+                    onChange={handleChange}
+                    className=""
+                  />
+                </div>
               </div>
 
               {/* Skills and Expertise */}
-              <div>
-                <h3 className="text-lg font-semibold">Skills and Expertise</h3>
-                <TagInput
-                  options={skillsOptions.map((o) => o.label)}
-                  placeholder="Select skills"
-                  value={formValues.skills} // Make sure this is correctly set
-                  onChange={(tags) => handleTagChange("skills", tags)}
-                  maxTags={5}
-                  className="mb-2"
-                />
-
-                <TagInput
-                  options={abilitiesOptions.map((o) => o.label)}
-                  placeholder="Select abilities"
-                  value={formValues.abilities}
-                  onChange={(tags) => handleTagChange("abilities", tags)}
-                  maxTags={5}
-                  className="mb-2"
-                />
+              <HorizontalLineWithText>
+                <span className="text-sm font-semibold my-8">
+                  Skills and Expertise
+                </span>
+              </HorizontalLineWithText>
+              <div className="flex items-center justify-between gap-3 my-5 mb-14">
+                <div className="w-full">
+                  <TagInput
+                    options={skillsOptions.map((o) => o.label)}
+                    placeholder="Select skills"
+                    value={formValues.skills} // Make sure this is correctly set
+                    onChange={(tags) => handleTagChange("skills", tags)}
+                    maxTags={5}
+                    className="mb-2"
+                  />
+                </div>
+                <div className="w-full">
+                  <TagInput
+                    options={abilitiesOptions.map((o) => o.label)}
+                    placeholder="Select abilities"
+                    value={formValues.abilities}
+                    onChange={(tags) => handleTagChange("abilities", tags)}
+                    maxTags={5}
+                    className="mb-2"
+                  />
+                </div>
               </div>
 
               {/* Work History */}
-              <div>
-                <h3 className="text-lg font-semibold">Work History</h3>
+              <HorizontalLineWithText>
+                <span className="text-sm font-semibold">Work History</span>
+              </HorizontalLineWithText>
+              <div className="my-5 mb-14">
                 {formValues.workHistory.map((work, index) => (
-                  <div key={index} className="space-y-2 mb-2">
-                    <Input
-                      name="companyName"
-                      placeholder="Company Name"
-                      value={work.companyName}
-                      onChange={(e) => handleWorkHistoryChange(index, e)}
-                    />
-                    <Input
-                      name="jobTitle"
-                      placeholder="Job Title"
-                      value={work.jobTitle}
-                      onChange={(e) => handleWorkHistoryChange(index, e)}
-                    />
-                    <Input
-                      name="startDate"
-                      placeholder="Start Date"
-                      type="date"
-                      value={work.startDate}
-                      onChange={(e) => handleWorkHistoryChange(index, e)}
-                    />
-                    <Input
-                      name="endDate"
-                      placeholder="End Date"
-                      type="date"
-                      value={work.endDate}
-                      onChange={(e) => handleWorkHistoryChange(index, e)}
-                    />
-                    <TextArea
-                      name="description"
-                      placeholder="Description"
-                      value={work.description}
-                      onChange={(e) => handleWorkHistoryChange(index, e)}
-                    />
+                  <div
+                    key={index}
+                    className="flex flex-col items-center justify-between gap-3 w-full"
+                  >
+                    <div className="flex items-center justify-between gap-3 w-full">
+                      <div className="w-full">
+                        <Input
+                          name="companyName"
+                          placeholder="Company Name"
+                          value={work.companyName}
+                          onChange={(e) => handleWorkHistoryChange(index, e)}
+                        />
+                      </div>
+                      <div className="w-full">
+                        <Input
+                          name="jobTitle"
+                          placeholder="Job Title"
+                          value={work.jobTitle}
+                          onChange={(e) => handleWorkHistoryChange(index, e)}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 w-full">
+                      <div className="w-full">
+                        <Input
+                          name="startDate"
+                          placeholder="Start Date"
+                          type="date"
+                          value={work.startDate}
+                          onChange={(e) => handleWorkHistoryChange(index, e)}
+                        />
+                      </div>
+                      <div className="w-full">
+                        <Input
+                          name="endDate"
+                          placeholder="End Date"
+                          type="date"
+                          value={work.endDate}
+                          onChange={(e) => handleWorkHistoryChange(index, e)}
+                        />
+                      </div>
+                    </div>
+                    <div className="w-full">
+                      <TextArea
+                        name="description"
+                        placeholder="Description"
+                        value={work.description}
+                        onChange={(e) => handleWorkHistoryChange(index, e)}
+                      />
+                    </div>
                     {index > 0 && (
-                      <Button
-                        type="button"
-                        onClick={() => removeWorkHistory(index)}
-                        className="bg-red-500 text-white"
-                      >
-                        Remove
-                      </Button>
+                      <div className="size-full flex items-end justify-end">
+                        <Button
+                          type="button"
+                          onClick={() => removeWorkHistory(index)}
+                          className="bg-red-500 text-white size-10"
+                        >
+                          <FaMinus />
+                        </Button>
+                      </div>
                     )}
+                    
+                  <Divider className="bg-black/5 mb-3"/>
                   </div>
                 ))}
-                <Button
-                  type="button"
-                  onClick={addWorkHistory}
-                  className="bg-blue-500 text-white"
-                >
-                  Add Work History
-                </Button>
+                <div className="size-full flex items-end justify-end">
+                  <Button
+                    type="button"
+                    onClick={addWorkHistory}
+                    className="bg-blue-500 text-white my-3 size-10"
+                  >
+                    <FaPlus />
+                  </Button>
+                </div>
               </div>
 
               {/* Educational Qualifications */}
-              <div>
-                <h3 className="text-lg font-semibold">
-                  Educational Qualifications
-                </h3>
+              <HorizontalLineWithText>
+                <span className="text-sm font-semibold">Work History</span>
+              </HorizontalLineWithText>
+              <div className="my-5 mb-14">
                 {formValues.education.map((edu, index) => (
-                  <div key={index} className="space-y-2 mb-2">
-                    <SelectInput
-                      name="category"
-                      placeholder="Select Category"
-                      value={edu.category}
-                      onChange={(e) => handleEducationChange(index, e)}
-                      options={educationalCategories}
-                    />
-                    <Input
-                      name="institution"
-                      placeholder="Institution"
-                      value={edu.institution}
-                      onChange={(e) => handleEducationChange(index, e)}
-                    />
-                    <Input
-                      name="startDate"
-                      placeholder="Start Date"
-                      type="date"
-                      value={edu.startDate}
-                      onChange={(e) => handleEducationChange(index, e)}
-                    />
-                    <Input
-                      name="endDate"
-                      placeholder="End Date"
-                      type="date"
-                      value={edu.endDate}
-                      onChange={(e) => handleEducationChange(index, e)}
-                    />
+                  <div
+                    key={index}
+                    className="flex items-center justify-between gap-3"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <div className="w-full">
+                        <SelectInput
+                          name="category"
+                          placeholder="Select Category"
+                          value={edu.category}
+                          onChange={(e) => handleEducationChange(index, e)}
+                          options={educationalCategories}
+                        />
+                      </div>
+                      <div className="w-full">
+                        <Input
+                          name="startDate"
+                          placeholder="Start Date"
+                          type="date"
+                          value={edu.startDate}
+                          onChange={(e) => handleEducationChange(index, e)}
+                        />
+                      </div>
+                      <div className="w-full">
+                        <Input
+                          name="endDate"
+                          placeholder="End Date"
+                          type="date"
+                          value={edu.endDate}
+                          onChange={(e) => handleEducationChange(index, e)}
+                        />
+                      </div>
+                      <div className="size-fit">
+                        <Button
+                          type="button"
+                          onClick={addEducation}
+                          className="bg-blue-500 text-white size-10"
+                        >
+                          <FaPlus />
+                        </Button>
+                      </div>
+                    </div>
                     {index > 0 && (
-                      <Button
-                        type="button"
-                        onClick={() => removeEducation(index)}
-                        className="bg-red-500 text-white"
-                      >
-                        Remove
-                      </Button>
+                      <div className="size-fit my-5">
+                        <Button
+                          type="button"
+                          onClick={() => removeEducation(index)}
+                          className="bg-red-500 text-white ml-auto size-10"
+                        >
+                          <FaMinus />
+                        </Button>
+                      </div>
                     )}
                   </div>
                 ))}
-                <Button
-                  type="button"
-                  onClick={addEducation}
-                  className="bg-blue-500 text-white"
-                >
-                  Add Education
-                </Button>
               </div>
 
               {/* Certifications */}
-              <div>
-                <h3 className="text-lg font-semibold">Certifications</h3>
+              <HorizontalLineWithText>
+                <span className="text-sm font-semibold">Certifications</span>
+              </HorizontalLineWithText>
+              <div className="my-5 mb-14">
                 {formValues.certifications.map((cert, index) => (
-                  <div key={index} className="space-y-2 mb-2">
-                    <Input
-                      name="certName"
-                      placeholder="Certification Name"
-                      value={cert.certName}
-                      onChange={(e) => handleCertificationChange(index, e)}
-                    />
-                    <Input
-                      name="issuingOrg"
-                      placeholder="Issuing Organization"
-                      value={cert.issuingOrg}
-                      onChange={(e) => handleCertificationChange(index, e)}
-                    />
-                    <Input
-                      name="dateObtained"
-                      placeholder="Date Obtained"
-                      type="date"
-                      value={cert.dateObtained}
-                      onChange={(e) => handleCertificationChange(index, e)}
-                    />
+                  <div
+                    key={index}
+                    className="flex items-center justify-between gap-3"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <div className="w-full">
+                        <Input
+                          name="certName"
+                          placeholder="Certification Name"
+                          value={cert.certName}
+                          onChange={(e) => handleCertificationChange(index, e)}
+                        />
+                      </div>
+                      <div className="w-full">
+                        <Input
+                          name="issuingOrg"
+                          placeholder="Issuing Organization"
+                          value={cert.issuingOrg}
+                          onChange={(e) => handleCertificationChange(index, e)}
+                        />
+                      </div>
+                      <div className="w-full">
+                        <Input
+                          name="dateObtained"
+                          placeholder="Date Obtained"
+                          type="date"
+                          value={cert.dateObtained}
+                          onChange={(e) => handleCertificationChange(index, e)}
+                        />
+                      </div>
+                      <div className="size-fit">
+                        <Button
+                          type="button"
+                          onClick={addCertification}
+                          className="bg-blue-500 text-white size-10"
+                        >
+                          <FaPlus />
+                        </Button>
+                      </div>
+                    </div>
                     {index > 0 && (
                       <Button
                         type="button"
                         onClick={() => removeCertification(index)}
-                        className="bg-red-500 text-white"
+                        className="bg-red-500 text-white size-10"
                       >
-                        Remove
+                        <FaMinus />
                       </Button>
                     )}
                   </div>
                 ))}
-                <Button
-                  type="button"
-                  onClick={addCertification}
-                  className="bg-blue-500 text-white"
-                >
-                  Add Certification
-                </Button>
               </div>
 
               {/* Additional Information */}
-              <div>
-                <h3 className="text-lg font-semibold">
+              <HorizontalLineWithText>
+                <span className="text-sm font-semibold">
                   Additional Information
-                </h3>
-                <Input
-                  name="resumeURL"
-                  placeholder="Resume/Portfolio URL"
-                  value={formValues.resumeURL}
-                  onChange={handleChange}
-                  className="mb-2"
-                />
-                {/* Availability */}
-                <SelectInput
-                  name="availability"
-                  placeholder="Current Status"
-                  value={formValues.availability}
-                  onChange={(e) =>
-                    setFormValues((prev) => ({
-                      ...prev,
-                      availability: e.target.value,
-                    }))
-                  }
-                  options={availabilityOptions}
-                  className="mb-2"
-                />
-                {/* Sliding Checkbox for CV Upload */}
-                <div className="flex items-center my-4">
-                  <SlidingCheckbox
-                    id="media-toggle"
-                    name="showDocsUpload"
-                    checked={showDocsUpload}
-                    onChange={() => setShowDocsUpload(!showDocsUpload)}
-                  />
-                  <span className="ml-3 text-sm font-medium text-gray-700">
-                    Upload credential files (Optional)
-                  </span>
+                </span>
+              </HorizontalLineWithText>
+              <div className="my-5">
+                <div className=" flex items-center gap-3 mb-14">
+                  <div className="w-full">
+                    <Input
+                      name="resumeURL"
+                      placeholder="Resume/Portfolio URL"
+                      value={formValues.resumeURL}
+                      onChange={handleChange}
+                      className="mb-2"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <SelectInput
+                      name="availability"
+                      placeholder="Current Status"
+                      value={formValues.availability}
+                      onChange={(e) =>
+                        setFormValues((prev) => ({
+                          ...prev,
+                          availability: e.target.value,
+                        }))
+                      }
+                      options={availabilityOptions}
+                      className="mb-2"
+                    />
+                  </div>
                 </div>
-                {showDocsUpload && (
-                  <>
-                    <DocsUpload setMedia={handleCVUpload} />
-                    {formValues.cvFile && (
-                      <p className="text-gray-500">
-                        CV/Portfolio/Resume: {formValues.cvFile.name}
-                      </p>
-                    )}
-                  </>
-                )}
+                {/* Sliding Checkbox for CV Upload */}
+                <HorizontalLineWithText>
+                  <span className="text-sm font-semibold">
+                    Slide the Checkbox for CV Upload
+                  </span>
+                </HorizontalLineWithText>
+                <div className="flex flex-col items-start justify-start gap-3 my-5 mb-14 ">
+                  <div className="flex items-center gap-3">
+                    <SlidingCheckbox
+                      id="media-toggle"
+                      name="showDocsUpload"
+                      checked={showDocsUpload}
+                      onChange={() => setShowDocsUpload(!showDocsUpload)}
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      Upload credential files (Optional)
+                    </span>
+                  </div>
+                  {showDocsUpload && (
+                    <>
+                      <DocsUpload setMedia={handleCVUpload} />
+                      {formValues.cvFile && (
+                        <p className="text-gray-500">
+                          CV/Portfolio/Resume: {formValues.cvFile.name}
+                        </p>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
 
               {/* Submit Button */}
-              <Button
-                type="submit"
-                className="bg-green-500 text-white"
-                disabled={loading}
-              >
-                {loading ? "Submitting..." : "Submit"}
-              </Button>
+              <div className="w-full flex items-end justify-end">
+                <Button
+                  type="submit"
+                  className="bg-green-500 text-white"
+                  disabled={loading}
+                >
+                  {loading ? "Submitting..." : "Submit"}
+                </Button>
+              </div>
             </form>
           ) : (
             <div className="flex justify-center items-center">

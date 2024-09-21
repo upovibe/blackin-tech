@@ -152,7 +152,7 @@ const CompleteProfile = () => {
           setToastVisible(true);
           setIsSubmitted(true);
           setTimeout(() => {
-            navigate("/profile");
+            navigate("/");
           }, 3000);
         } else {
           setToastMessage("Failed to update profile.");

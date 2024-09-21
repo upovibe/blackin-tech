@@ -139,7 +139,7 @@ const UserProfileList = () => {
       {profiles.map((profile) => (
         <div
           key={profile.id}
-          className="border-2 border-opacity-30 border-slate-400 cursor-pointer flex flex-col group overflow-hidden rounded-xl shadow hover:duration-300 hover:ease-in-out hover:shadow-md hover:transition-all"
+          className="border-2 border-opacity-30 bg-slate-50 border-slate-400 cursor-pointer flex flex-col group overflow-hidden rounded-xl shadow hover:duration-300 hover:ease-in-out hover:shadow-md hover:transition-all"
           style={{ width: "180px", minHeight: "260px" }}
           onClick={() => handleProfileClick(profile.userName)}
         >

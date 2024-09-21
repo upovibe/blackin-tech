@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { UserAuth } from "../contexts/AuthContext";
-import { getUserByUsername, getConnections, saveConnection, removeConnection, listenToConnectionCount } from "../services/firestoreUsersManagement.js"; 
+import {
+  getUserByUsername,
+  getConnections,
+  saveConnection,
+  removeConnection,
+  listenToConnectionCount,
+} from "../services/firestoreUsersManagement.js";
 import Lottie from "lottie-react";
 import pageloading from "../assets/animations/Animation - LoadingPage.json";
 import Modal from "../components/common/Modal";
@@ -10,9 +16,9 @@ import UserInsightsForm from "../components/auth/UserInsightsForm";
 import ProfileProgress from "../components/auth/ProfileProgress";
 import JobProfile from "../components/lists/JobProfile";
 import Divider from "../components/common/Divider";
-import TabComponent from '../components/common/TabComponent.jsx'
-import DefaultCoverImage from '../assets/images/coverimage.jpg'
-import DefaultAvatar from '../assets/images/avatar-default.png'
+import TabComponent from "../components/common/TabComponent.jsx";
+import DefaultCoverImage from "../assets/images/coverimage.jpg";
+import DefaultAvatar from "../assets/images/avatar-default.png";
 import { FaInfoCircle, FaMapMarker, FaUser } from "react-icons/fa";
 import { FaPencil, FaUserMinus, FaUserPlus } from "react-icons/fa6";
 import Toast from "../components/common/Toast"; // Toast component
@@ -76,8 +82,8 @@ function Profile() {
         fullName: profileUser.fullName,
         avatarUrl: profileUser.avatarUrl,
       });
-      setConnections((prevConnections) =>
-        new Set([...prevConnections, profileUser.id])
+      setConnections(
+        (prevConnections) => new Set([...prevConnections, profileUser.id])
       );
       setConnectionCount((prevCount) => prevCount + 1); // Increment count
 
@@ -143,7 +149,6 @@ function Profile() {
     { label: "Saved", content: <JobProfile tab="Saved" /> },
   ].filter(Boolean);
 
-
   return (
     <main>
       <section className="w-screen flex flex-col items-center justify-center">
@@ -158,7 +163,8 @@ function Profile() {
           <div className="flex items-center flex-col gap-2 mb-4 w-full lg:w-3/6 xl:w-2/6 transform -translate-y-16">
             <div className="flex items-center flex-col gap-5 w-full">
               <div className="flex items-start justify-between w-full">
-                <div className="flex items-start lg:items-start flex-col gap-1 w-full">
+                {/* Left Section */}
+                <div className="flex items-start lg:items-start flex-col gap-1 w-1/2">
                   <div className="relative flex flex-col items-center justify-center">
                     <img
                       src={profileUser.avatarUrl || DefaultAvatar}
@@ -171,7 +177,7 @@ function Profile() {
                       </span>
                     )}
                   </div>
-                  <span className="text-2xl font-bold">
+                  <span className="text-2xl font-bold text-wrap">
                     {profileUser.fullName || "Anonymous"}
                   </span>
                   <div className="flex flex-row gap-2 items-center">
@@ -184,12 +190,15 @@ function Profile() {
                     </span>
                   </div>
                 </div>
-                <div className="w-full md:w-max ml-auto mt-5 flex items-center gap-1 transform translate-y-12">
+
+                {/* Right Section */}
+                <div className="flex items-center justify-end md:w-1/2 ml-auto mt-5 gap-1 transform translate-y-12">
                   {user.userName === profileUser.userName ? (
-                    <button onClick={handleNavigateToSettings}
+                    <button
+                      onClick={handleNavigateToSettings}
                       className="flex items-center justify-center gap-2 border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-1 rounded-full text-slate-950 transition-all w-40 px-5 hover:bg-slate-800 hover:text-white/80"
-                      // onClick={handleModalOpen} 
-                    > <FaPencil/>Edit
+                    >
+                      <FaPencil /> Edit
                     </button>
                   ) : (
                     <>
@@ -223,16 +232,15 @@ function Profile() {
                   <FaMapMarker />
                   <span>
                     {profileUser.country}&nbsp;{profileUser.city}
-                    </span>
+                  </span>
                 </div>
                 <div className="flex items-center justify-between w-full">
                   <span className="text-sm font-semibold text-slate-800">
-                    Connections: {connectionCount} {/* Display connection count */}
+                    Connections: {connectionCount}{" "}
+                    {/* Display connection count */}
                   </span>
                 </div>
-                {user.userName === profileUser.userName && (
-                  <ProfileProgress />
-                )}
+                {user.userName === profileUser.userName && <ProfileProgress />}
               </div>
             </div>
           </div>
@@ -262,13 +270,13 @@ function Profile() {
       {/* Toast notifications */}
       {toastVisible && (
         <Toast
-        role="alert"
-        aria-live="assertive"
-        visible={toastVisible}
-        type={toastType}
-        message={toastMessage}
-        onClose={() => setToastVisible(false)}
-      />
+          role="alert"
+          aria-live="assertive"
+          visible={toastVisible}
+          type={toastType}
+          message={toastMessage}
+          onClose={() => setToastVisible(false)}
+        />
       )}
     </main>
   );

@@ -23,8 +23,8 @@ const SettingsPage = () => {
 
   return (
     <main>
-      <section className="flex items-center justify-center">
-        <div className="container">
+      <section className="flex items-center justify-center p-2">
+        <div className="container w-full xl:w-8/12">
           <div className="p-4">
             <h1 className="text-2xl font-bold mb-6">Settings</h1>
             <TabComponent
@@ -33,7 +33,7 @@ const SettingsPage = () => {
               orientation="vertical"
               onTabChange={(activeTab) =>
                 console.log("Active Tab: ", activeTab)
-              } // Optional callback
+              }
             />
           </div>
         </div>
