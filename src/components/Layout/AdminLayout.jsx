@@ -1,43 +1,47 @@
 import React, { useState, useEffect } from "react";
 import {
   FaTachometerAlt,
+  FaBriefcase,
+  FaUserFriends,
+  FaBuilding,
+  FaChartLine,
+  FaCog,
   FaBoxOpen,
   FaUsers,
   FaChartBar,
-  FaCog,
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
   FaEye,
   FaEyeSlash,
   FaBars,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import NavAvatar from '../auth/NavAvatar'
 import SearchInput from '../filters/SearchInput'
 import { FaBarsStaggered,  } from "react-icons/fa6";
 
 const AdminLayout = ({ children }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false); // Handles sidebar collapse
-  const [isHidden, setIsHidden] = useState(false); // Handles full sidebar hide
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth); // Track window width
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   // Responsive behavior: Collapse on medium screens, hide on small screens
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
       if (window.innerWidth < 640) {
-        setIsHidden(true); // Hide sidebar on small screens
+        setIsHidden(true);
       } else if (window.innerWidth < 768) {
-        setIsCollapsed(true); // Collapse sidebar on medium screens
-        setIsHidden(false); // Ensure it's not fully hidden
+        setIsCollapsed(true);
+        setIsHidden(false);
       } else {
-        setIsCollapsed(false); // Full sidebar on larger screens
-        setIsHidden(false); // Show sidebar on larger screens
+        setIsCollapsed(false);
+        setIsHidden(false);
       }
     };
 
     window.addEventListener("resize", handleResize);
-    handleResize(); // Initial check on mount
+    handleResize(); 
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -106,32 +110,43 @@ const AdminLayout = ({ children }) => {
         {/* Sidebar Links */}
         {!isHidden && (
           <ul className="flex-grow flex flex-col gap-3 p-2">
-            {[
-              {
-                to: "/AdminLayout",
-                icon: <FaTachometerAlt />,
-                label: "AdminLayout",
-              },
-              { to: "/products", icon: <FaBoxOpen />, label: "Products" },
-              { to: "/customers", icon: <FaUsers />, label: "Customers" },
-              { to: "/reports", icon: <FaChartBar />, label: "Reports" },
-              { to: "/settings", icon: <FaCog />, label: "Settings" },
-            ].map(({ to, icon, label }) => (
-              <li
-                key={to}
-                className={`flex items-center ${
-                  isCollapsed ? "justify-center p-4" : "p-2"
-                } rounded-lg transition-all duration-300 hover:bg-gray-600`}
-              >
-                <Link to={to} className="flex items-center w-full">
-                  <span className={`text-lg ${isCollapsed ? "mx-auto" : ""}`}>
-                    {icon}
-                  </span>
-                  {!isCollapsed && <span className="ml-4">{label}</span>}
-                </Link>
-              </li>
-            ))}
-          </ul>
+  {[
+    {
+      to: "/dashboard",
+      icon: <FaTachometerAlt />,
+      label: "Dashboard",
+    },
+    { to: "/userportal", icon: <FaUserFriends />, label: "Users" },
+    { to: "/jobs", icon: <FaBriefcase />, label: "Jobs" },
+    { to: "/employers", icon: <FaBuilding />, label: "Employers" },
+    { to: "/reports", icon: <FaChartLine />, label: "Reports" },
+    { to: "/settings", icon: <FaCog />, label: "Settings" },
+  ].map(({ to, icon, label }) => (
+    <li
+      key={to}
+      className={`flex items-center ${
+        isCollapsed ? "justify-center p-4" : "p-2"
+      } rounded-lg transition-all duration-300`}
+    >
+      <NavLink
+        to={to}
+        className={({ isActive }) =>
+          `flex items-center w-full p-2 rounded-lg transition-colors duration-300 ${
+            isActive
+              ? "bg-gray-700 text-white"
+              : "text-gray-400 hover:text-white"
+          }`
+        }
+      >
+        <span className={`text-lg ${isCollapsed ? "mx-auto" : ""}`}>
+          {icon}
+        </span>
+        {!isCollapsed && <span className="ml-4">{label}</span>}
+      </NavLink>
+    </li>
+  ))}
+</ul>
+
         )}
         <div className="p-2">
           {/* Collapse/Hide Buttons */}
@@ -169,7 +184,7 @@ const AdminLayout = ({ children }) => {
 
       {/* Main Content */}
       <div className="flex-grow">
-        <header className="bg-white shadow-md flex items-center justify-between h-16 px-2">
+        <header className=" flex items-center justify-between h-16 px-2">
           <div className="flex flex-tems-center gap-10">
           {/* Logo */}
           <Link to="/" className="flex items-center">

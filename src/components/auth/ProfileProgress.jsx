@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { UserAuth } from "../../contexts/AuthContext";
-import { getDocumentByID } from '../../services/firestoreCRUD'; 
+import { getDocumentByID } from "../../services/firestoreCRUD";
+import { FaCheckCircle } from "react-icons/fa";
+import Tooltip from "../common/Tooltip";
 
 const ProfileProgress = () => {
   const { user } = UserAuth();
@@ -11,7 +13,7 @@ const ProfileProgress = () => {
       if (!user) return;
 
       // Fetch user profile from Firestore
-      const userProfile = await getDocumentByID('users', user.uid);
+      const userProfile = await getDocumentByID("users", user.uid);
 
       if (userProfile) {
         const percentage = calculateCompletion(userProfile);
@@ -34,95 +36,115 @@ const ProfileProgress = () => {
       profileData?.email,
       profileData?.fullName,
       profileData?.profileCompleted,
-      profileData?.pronouns
+      profileData?.pronouns,
     ];
-  
+
     // Professional Information
     const professionalInfoFields = [
       profileData?.professionalTitle,
-      profileData?.summary
+      profileData?.summary,
     ];
-  
+
     // Skills and Expertise
     const skillsAndExpertiseFields = [
       profileData?.skills?.length > 0,
-      profileData?.abilities?.length > 0
+      profileData?.abilities?.length > 0,
     ];
-  
+
     // Work History
-    const workHistoryFields = profileData?.workHistory?.length > 0 
-      ? profileData.workHistory.every(entry =>
-          entry.companyName &&
-          entry.jobTitle &&
-          entry.startDate &&
-          entry.endDate &&
-          entry.description
-        )
-      : false;
-  
+    const workHistoryFields =
+      profileData?.workHistory?.length > 0
+        ? profileData.workHistory.every(
+            (entry) =>
+              entry.companyName &&
+              entry.jobTitle &&
+              entry.startDate &&
+              entry.endDate &&
+              entry.description
+          )
+        : false;
+
     // Educational Qualifications
-    const educationFields = profileData?.education?.length > 0 
-      ? profileData.education.every(entry =>
-          entry.category &&
-          entry.institution &&
-          entry.startDate &&
-          entry.endDate
-        )
-      : false;
-  
+    const educationFields =
+      profileData?.education?.length > 0
+        ? profileData.education.every(
+            (entry) =>
+              entry.category &&
+              entry.institution &&
+              entry.startDate &&
+              entry.endDate
+          )
+        : false;
+
     // Certifications
-    const certificationsFields = profileData?.certifications?.length > 0 
-      ? profileData.certifications.every(entry =>
-          entry.certName &&
-          entry.issuingOrg &&
-          entry.dateObtained
-        )
-      : false;
-  
+    const certificationsFields =
+      profileData?.certifications?.length > 0
+        ? profileData.certifications.every(
+            (entry) => entry.certName && entry.issuingOrg && entry.dateObtained
+          )
+        : false;
+
     // Additional Information
     const additionalInfoFields = [
       profileData?.availability,
-      profileData?.resumeURL || profileData?.cvFile
+      profileData?.resumeURL || profileData?.cvFile,
     ];
-  
+
     // Calculate percentages
-    const initialProfilePercentage = initialProfileFields.every(Boolean) ? 25 : 0;
-    const professionalInfoPercentage = professionalInfoFields.every(Boolean) ? 15 : 0;
-    const skillsAndExpertisePercentage = skillsAndExpertiseFields.every(Boolean) ? 10 : 0;
+    const initialProfilePercentage = initialProfileFields.every(Boolean)
+      ? 25
+      : 0;
+    const professionalInfoPercentage = professionalInfoFields.every(Boolean)
+      ? 15
+      : 0;
+    const skillsAndExpertisePercentage = skillsAndExpertiseFields.every(Boolean)
+      ? 10
+      : 0;
     const workHistoryPercentage = workHistoryFields ? 15 : 0;
     const educationPercentage = educationFields ? 10 : 0;
     const certificationsPercentage = certificationsFields ? 10 : 0;
-    const additionalInfoPercentage = additionalInfoFields.every(Boolean) ? 15 : 0;
-  
+    const additionalInfoPercentage = additionalInfoFields.every(Boolean)
+      ? 15
+      : 0;
+
     // Calculate total completion
-    const totalCompletion = initialProfilePercentage +
+    const totalCompletion =
+      initialProfilePercentage +
       professionalInfoPercentage +
       skillsAndExpertisePercentage +
       workHistoryPercentage +
       educationPercentage +
       certificationsPercentage +
       additionalInfoPercentage;
-  
+
     return totalCompletion;
   };
-  
-  
 
   return (
-    <div>
+    <div className="w-full">
       {completion === 0 ? (
         <p>No progress data available yet. Please complete your profile.</p>
       ) : (
         <div>
-          <div className="w-full bg-gray-200 rounded-full h-4">
+          <div className="w-full bg-gray-200 rounded-full h-2">
             <div
-              className="bg-green-500 h-4 rounded-full transition-all duration-300"
-              style={{ width: `${completion}%` }}
+              className="h-2 rounded-full transition-all duration-300"
+              style={{
+                width: `${completion}%`,
+                background: `linear-gradient(90deg, #34D399 0%, #10B981 ${completion}%, #FBBF24 100%)`,
+              }}
             ></div>
           </div>
-          <p className="mt-2 text-sm font-medium text-gray-700">
-            {completion}% completed
-          </p>
+          <div className="flex items-center justify-between mt-2">
+            <span className="text-sm font-medium text-gray-700">
+              {completion}% completed
+            </span>
+            <Tooltip position="left" text='Complete profile for a standout badge'>
+              <div className="flex items-center">
+                <FaCheckCircle className="text-blue-600 mr-2" />
+              </div>
+            </Tooltip>
+          </div>
         </div>
       )}
     </div>

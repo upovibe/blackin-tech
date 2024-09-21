@@ -166,45 +166,449 @@ const getDocumentByID = async (collectionName, docID) => {
 };
 
 
-Sure! Here’s a comprehensive list of elements that should be on the admin dashboard for BlackInTech:
+        // onView={(user) => navigate(`/profile/@${user.userName}`)}
 
-1. Overview Section
-Total Jobs Posted: The total number of job listings on the platform.
-Total Applications: The total number of job applications submitted.
-Active Users: The current number of active users (both job seekers and employers).
-New Registrations: The number of new user registrations over a specific period.
-Jobs by Category: A breakdown of job postings by different categories (e.g., IT, Marketing, Finance).
-2. User Management
-User List: A detailed list of users with options to view, edit, and delete user profiles.
-User Roles: Management of user roles and permissions (e.g., admin, recruiter, job seeker).
-User Activity: Logs showing recent activities by users (e.g., logins, applications submitted).
-3. Job Management
-Job Listings: A list of all job postings with options to approve, edit, or delete listings.
-Pending Approvals: Jobs that require admin approval before being published.
-Job Expiry: A list of jobs that are nearing expiry or have expired.
-Applications Per Job: The number of applications received for each job listing.
-4. Application Management
-Application Status: Tracking the status of job applications (e.g., pending, reviewed, accepted, rejected).
-Resume Database: Access to resumes submitted by job seekers.
-Application Insights: Metrics and trends on job applications, such as peak application times.
-5. Analytics & Reports
-User Growth: Charts and graphs showing user registration trends over time.
-Job Posting Trends: Visual representation of trends in job postings.
-Application Metrics: Detailed analysis of job applications, categorized by job type, location, etc.
-Conversion Rates: Metrics on how many applications lead to successful hires.
-6. Notifications & Alerts
-System Alerts: Notifications about important system events or updates.
-User Alerts: Alerts for user actions that require admin attention (e.g., flagged content, support requests).
-7. Settings & Configurations
-Platform Settings: General settings for managing platform operations.
-Email Templates: Management of email templates used for notifications sent to users.
-Payment Settings: Management of payment gateways and viewing transaction history (if applicable).
-8. Support & Feedback
-Support Tickets: Management of support requests submitted by users.
-User Feedback: Viewing and responding to feedback provided by users.
-9. Content Management
-Blog/News Management: Management of blog posts or news updates related to the platform.
-Static Pages: Editing content on static pages (e.g., About Us, Contact Us).
-10. Security & Compliance
-Audit Logs: Tracking changes and actions taken by admins and users.
-Compliance Reports: Ensuring adherence to legal and regulatory requirements.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div className="gap-3 grid grid-cols-2 place-items-center place-self-center self-center md:grid-cols-3 lg:grid-cols-4" data-pg-collapsed> 
+    <!-- Card 1 -->     
+    <div style="width: 180px; height: 260px;" className="border-2 border-opacity-30 border-slate-400 cursor-pointer flex flex-col group overflow-hidden rounded-xl shadow hover:duration-300 hover:ease-in-out hover:shadow-md hover:transition-all" data-pg-collapsed> 
+        <div className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-full" style="background-image: url('img/icons/photo-1724123301969-22859c2a3823.jpeg');"></div>         
+        <div className="flex flex-col flex-grow items-center justify-between relative"> 
+            <div className="-translate-y-9 border-4 border-white h-1/6 min-h-20 min-w-20 overflow-hidden rounded-full size-20"> 
+                <img src="https://images.unsplash.com/photo-1723945785190-b6f91da9eceb?ixid=M3wyMDkyMnwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyNjg4MTIwNHw&ixlib=rb-4.0.3q=85&fm=jpg&crop=faces&cs=srgb&w=1000&h=1000&fit=crop"> 
+            </div>             
+            <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full"> 
+                <div className="p-3 size-full text-black"> 
+                    <h2 className="antialiased font-bold leading-tight text-center truncate">FullName</h2> 
+                    <p className="font-normal leading-tight text-center text-sm truncate">This is a paragraph, one or more lines of text. Each paragraph is displayed in a new line.</p> 
+                </div>                 
+                <div className="absolute bg-gradient-to-t bg-slate-100 bottom-0 duration-300 ease-in-out flex flex-grow from-slate-400 h-1/2 items-center justify-center opacity-0 p-3 size-full to-slate-50 transition-opacity via-slate-200 group-hover:opacity-100"> 
+                    <button className="border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-full hover:bg-slate-800 hover:text-white/80">Click me!</button>                     
+                </div>                 
+            </div>             
+        </div>         
+    </div>
+    <div style="width: 180px; height: 260px;" className="border-2 border-opacity-30 border-slate-400 cursor-pointer flex flex-col group overflow-hidden rounded-xl shadow hover:duration-300 hover:ease-in-out hover:shadow-md hover:transition-all" data-pg-collapsed> 
+        <div className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-full" style="background-image: url('img/icons/photo-1724123301969-22859c2a3823.jpeg');"></div>         
+        <div className="flex flex-col flex-grow items-center justify-between relative"> 
+            <div className="-translate-y-9 border-4 border-white h-1/6 min-h-20 min-w-20 overflow-hidden rounded-full size-20"> 
+                <img src="https://images.unsplash.com/photo-1723945785190-b6f91da9eceb?ixid=M3wyMDkyMnwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyNjg4MTIwNHw&ixlib=rb-4.0.3q=85&fm=jpg&crop=faces&cs=srgb&w=1000&h=1000&fit=crop"> 
+            </div>             
+            <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full"> 
+                <div className="p-3 size-full text-black"> 
+                    <h2 className="antialiased font-bold leading-tight text-center truncate">FullName</h2> 
+                    <p className="font-normal leading-tight text-center text-sm truncate">This is a paragraph, one or more lines of text. Each paragraph is displayed in a new line.</p> 
+                </div>                 
+                <div className="absolute bg-gradient-to-t bg-slate-100 bottom-0 duration-300 ease-in-out flex flex-grow from-slate-400 h-1/2 items-center justify-center opacity-0 p-3 size-full to-slate-50 transition-opacity via-slate-200 group-hover:opacity-100"> 
+                    <button className="border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-full hover:bg-slate-800 hover:text-white/80">Click me!</button>                     
+                </div>                 
+            </div>             
+        </div>         
+    </div>
+    <div style="width: 180px; height: 260px;" className="border-2 border-opacity-30 border-slate-400 cursor-pointer flex flex-col group overflow-hidden rounded-xl shadow hover:duration-300 hover:ease-in-out hover:shadow-md hover:transition-all" data-pg-collapsed> 
+        <div className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-full" style="background-image: url('img/icons/photo-1724123301969-22859c2a3823.jpeg');"></div>         
+        <div className="flex flex-col flex-grow items-center justify-between relative"> 
+            <div className="-translate-y-9 border-4 border-white h-1/6 min-h-20 min-w-20 overflow-hidden rounded-full size-20"> 
+                <img src="https://images.unsplash.com/photo-1723945785190-b6f91da9eceb?ixid=M3wyMDkyMnwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyNjg4MTIwNHw&ixlib=rb-4.0.3q=85&fm=jpg&crop=faces&cs=srgb&w=1000&h=1000&fit=crop"> 
+            </div>             
+            <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full"> 
+                <div className="p-3 size-full text-black"> 
+                    <h2 className="antialiased font-bold leading-tight text-center truncate">FullName</h2> 
+                    <p className="font-normal leading-tight text-center text-sm truncate">This is a paragraph, one or more lines of text. Each paragraph is displayed in a new line.</p> 
+                </div>                 
+                <div className="absolute bg-gradient-to-t bg-slate-100 bottom-0 duration-300 ease-in-out flex flex-grow from-slate-400 h-1/2 items-center justify-center opacity-0 p-3 size-full to-slate-50 transition-opacity via-slate-200 group-hover:opacity-100"> 
+                    <button className="border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-full hover:bg-slate-800 hover:text-white/80">Click me!</button>                     
+                </div>                 
+            </div>             
+        </div>         
+    </div>
+    <div style="width: 180px; height: 260px;" className="border-2 border-opacity-30 border-slate-400 cursor-pointer flex flex-col group overflow-hidden rounded-xl shadow hover:duration-300 hover:ease-in-out hover:shadow-md hover:transition-all" data-pg-collapsed> 
+        <div className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-full" style="background-image: url('img/icons/photo-1724123301969-22859c2a3823.jpeg');"></div>         
+        <div className="flex flex-col flex-grow items-center justify-between relative"> 
+            <div className="-translate-y-9 border-4 border-white h-1/6 min-h-20 min-w-20 overflow-hidden rounded-full size-20"> 
+                <img src="https://images.unsplash.com/photo-1723945785190-b6f91da9eceb?ixid=M3wyMDkyMnwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyNjg4MTIwNHw&ixlib=rb-4.0.3q=85&fm=jpg&crop=faces&cs=srgb&w=1000&h=1000&fit=crop"> 
+            </div>             
+            <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full"> 
+                <div className="p-3 size-full text-black"> 
+                    <h2 className="antialiased font-bold leading-tight text-center truncate">FullName</h2> 
+                    <p className="font-normal leading-tight text-center text-sm truncate">This is a paragraph, one or more lines of text. Each paragraph is displayed in a new line.</p> 
+                </div>                 
+                <div className="absolute bg-gradient-to-t bg-slate-100 bottom-0 duration-300 ease-in-out flex flex-grow from-slate-400 h-1/2 items-center justify-center opacity-0 p-3 size-full to-slate-50 transition-opacity via-slate-200 group-hover:opacity-100"> 
+                    <button className="border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-full hover:bg-slate-800 hover:text-white/80">Click me!</button>                     
+                </div>                 
+            </div>             
+        </div>         
+    </div>
+    <div style="width: 180px; height: 260px;" className="border-2 border-opacity-30 border-slate-400 cursor-pointer flex flex-col group overflow-hidden rounded-xl shadow hover:duration-300 hover:ease-in-out hover:shadow-md hover:transition-all" data-pg-collapsed> 
+        <div className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-full" style="background-image: url('img/icons/photo-1724123301969-22859c2a3823.jpeg');"></div>         
+        <div className="flex flex-col flex-grow items-center justify-between relative"> 
+            <div className="-translate-y-9 border-4 border-white h-1/6 min-h-20 min-w-20 overflow-hidden rounded-full size-20"> 
+                <img src="https://images.unsplash.com/photo-1723945785190-b6f91da9eceb?ixid=M3wyMDkyMnwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyNjg4MTIwNHw&ixlib=rb-4.0.3q=85&fm=jpg&crop=faces&cs=srgb&w=1000&h=1000&fit=crop"> 
+            </div>             
+            <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full"> 
+                <div className="p-3 size-full text-black"> 
+                    <h2 className="antialiased font-bold leading-tight text-center truncate">FullName</h2> 
+                    <p className="font-normal leading-tight text-center text-sm truncate">This is a paragraph, one or more lines of text. Each paragraph is displayed in a new line.</p> 
+                </div>                 
+                <div className="absolute bg-gradient-to-t bg-slate-100 bottom-0 duration-300 ease-in-out flex flex-grow from-slate-400 h-1/2 items-center justify-center opacity-0 p-3 size-full to-slate-50 transition-opacity via-slate-200 group-hover:opacity-100"> 
+                    <button className="border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-full hover:bg-slate-800 hover:text-white/80">Click me!</button>                     
+                </div>                 
+            </div>             
+        </div>         
+    </div>
+    <div style="width: 180px; height: 260px;" className="border-2 border-opacity-30 border-slate-400 cursor-pointer flex flex-col group overflow-hidden rounded-xl shadow hover:duration-300 hover:ease-in-out hover:shadow-md hover:transition-all" data-pg-collapsed> 
+        <div className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-full" style="background-image: url('img/icons/photo-1724123301969-22859c2a3823.jpeg');"></div>         
+        <div className="flex flex-col flex-grow items-center justify-between relative"> 
+            <div className="-translate-y-9 border-4 border-white h-1/6 min-h-20 min-w-20 overflow-hidden rounded-full size-20"> 
+                <img src="https://images.unsplash.com/photo-1723945785190-b6f91da9eceb?ixid=M3wyMDkyMnwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyNjg4MTIwNHw&ixlib=rb-4.0.3q=85&fm=jpg&crop=faces&cs=srgb&w=1000&h=1000&fit=crop"> 
+            </div>             
+            <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full"> 
+                <div className="p-3 size-full text-black"> 
+                    <h2 className="antialiased font-bold leading-tight text-center truncate">FullName</h2> 
+                    <p className="font-normal leading-tight text-center text-sm truncate">This is a paragraph, one or more lines of text. Each paragraph is displayed in a new line.</p> 
+                </div>                 
+                <div className="absolute bg-gradient-to-t bg-slate-100 bottom-0 duration-300 ease-in-out flex flex-grow from-slate-400 h-1/2 items-center justify-center opacity-0 p-3 size-full to-slate-50 transition-opacity via-slate-200 group-hover:opacity-100"> 
+                    <button className="border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-full hover:bg-slate-800 hover:text-white/80">Click me!</button>                     
+                </div>                 
+            </div>             
+        </div>         
+    </div>
+    <div style="width: 180px; height: 260px;" className="border-2 border-opacity-30 border-slate-400 cursor-pointer flex flex-col group overflow-hidden rounded-xl shadow hover:duration-300 hover:ease-in-out hover:shadow-md hover:transition-all" data-pg-collapsed> 
+        <div className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-full" style="background-image: url('img/icons/photo-1724123301969-22859c2a3823.jpeg');"></div>         
+        <div className="flex flex-col flex-grow items-center justify-between relative"> 
+            <div className="-translate-y-9 border-4 border-white h-1/6 min-h-20 min-w-20 overflow-hidden rounded-full size-20"> 
+                <img src="https://images.unsplash.com/photo-1723945785190-b6f91da9eceb?ixid=M3wyMDkyMnwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyNjg4MTIwNHw&ixlib=rb-4.0.3q=85&fm=jpg&crop=faces&cs=srgb&w=1000&h=1000&fit=crop"> 
+            </div>             
+            <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full"> 
+                <div className="p-3 size-full text-black"> 
+                    <h2 className="antialiased font-bold leading-tight text-center truncate">FullName</h2> 
+                    <p className="font-normal leading-tight text-center text-sm truncate">This is a paragraph, one or more lines of text. Each paragraph is displayed in a new line.</p> 
+                </div>                 
+                <div className="absolute bg-gradient-to-t bg-slate-100 bottom-0 duration-300 ease-in-out flex flex-grow from-slate-400 h-1/2 items-center justify-center opacity-0 p-3 size-full to-slate-50 transition-opacity via-slate-200 group-hover:opacity-100"> 
+                    <button className="border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-full hover:bg-slate-800 hover:text-white/80">Click me!</button>                     
+                </div>                 
+            </div>             
+        </div>         
+    </div>
+    <div style="width: 180px; height: 260px;" className="border-2 border-opacity-30 border-slate-400 cursor-pointer flex flex-col group overflow-hidden rounded-xl shadow hover:duration-300 hover:ease-in-out hover:shadow-md hover:transition-all" data-pg-collapsed> 
+        <div className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-full" style="background-image: url('img/icons/photo-1724123301969-22859c2a3823.jpeg');"></div>         
+        <div className="flex flex-col flex-grow items-center justify-between relative"> 
+            <div className="-translate-y-9 border-4 border-white h-1/6 min-h-20 min-w-20 overflow-hidden rounded-full size-20"> 
+                <img src="https://images.unsplash.com/photo-1723945785190-b6f91da9eceb?ixid=M3wyMDkyMnwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyNjg4MTIwNHw&ixlib=rb-4.0.3q=85&fm=jpg&crop=faces&cs=srgb&w=1000&h=1000&fit=crop"> 
+            </div>             
+            <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full"> 
+                <div className="p-3 size-full text-black"> 
+                    <h2 className="antialiased font-bold leading-tight text-center truncate">FullName</h2> 
+                    <p className="font-normal leading-tight text-center text-sm truncate">This is a paragraph, one or more lines of text. Each paragraph is displayed in a new line.</p> 
+                </div>                 
+                <div className="absolute bg-gradient-to-t bg-slate-100 bottom-0 duration-300 ease-in-out flex flex-grow from-slate-400 h-1/2 items-center justify-center opacity-0 p-3 size-full to-slate-50 transition-opacity via-slate-200 group-hover:opacity-100"> 
+                    <button className="border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-full hover:bg-slate-800 hover:text-white/80">Click me!</button>                     
+                </div>                 
+            </div>             
+        </div>         
+    </div>
+    <div style="width: 180px; height: 260px;" className="border-2 border-opacity-30 border-slate-400 cursor-pointer flex flex-col group overflow-hidden rounded-xl shadow hover:duration-300 hover:ease-in-out hover:shadow-md hover:transition-all" data-pg-collapsed> 
+        <div className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-full" style="background-image: url('img/icons/photo-1724123301969-22859c2a3823.jpeg');"></div>         
+        <div className="flex flex-col flex-grow items-center justify-between relative"> 
+            <div className="-translate-y-9 border-4 border-white h-1/6 min-h-20 min-w-20 overflow-hidden rounded-full size-20"> 
+                <img src="https://images.unsplash.com/photo-1723945785190-b6f91da9eceb?ixid=M3wyMDkyMnwwfDF8cmFuZG9tfHx8fHx8fHx8MTcyNjg4MTIwNHw&ixlib=rb-4.0.3q=85&fm=jpg&crop=faces&cs=srgb&w=1000&h=1000&fit=crop"> 
+            </div>             
+            <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full"> 
+                <div className="p-3 size-full text-black"> 
+                    <h2 className="antialiased font-bold leading-tight text-center truncate">FullName</h2> 
+                    <p className="font-normal leading-tight text-center text-sm truncate">This is a paragraph, one or more lines of text. Each paragraph is displayed in a new line.</p> 
+                </div>                 
+                <div className="absolute bg-gradient-to-t bg-slate-100 bottom-0 duration-300 ease-in-out flex flex-grow from-slate-400 h-1/2 items-center justify-center opacity-0 p-3 size-full to-slate-50 transition-opacity via-slate-200 group-hover:opacity-100"> 
+                    <button className="border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-full hover:bg-slate-800 hover:text-white/80">Click me!</button>                     
+                </div>                 
+            </div>             
+        </div>         
+    </div>     
+    <!-- Repeat the above div structure for each card -->     
+</div>
+
+
+                {/* <p className="text-center mt-1 text-sm text-gray-400 flex w-full">
+                  {`Connections: ${connectionCounts[profile.id] || 0}`}
+                </p> */}
+
+
+
+
+
+
+
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { UserAuth } from "../contexts/AuthContext";
+import {
+  getUserByUsername,
+  getConnections,
+  saveConnection,
+  removeConnection,
+  listenToConnectionCount,
+} from "../services/firestoreUsersManagement.js";
+import Lottie from "lottie-react";
+import pageloading from "../assets/animations/Animation - LoadingPage.json";
+import Modal from "../components/common/Modal";
+import UserInsightsForm from "../components/auth/UserInsightsForm";
+import ProfileProgress from "../components/auth/ProfileProgress";
+import JobProfile from "../components/lists/JobProfile";
+import Divider from "../components/common/Divider";
+import TabComponent from "../components/common/TabComponent.jsx";
+import DefaultCoverImage from "../assets/images/coverimage.jpg";
+import DefaultAvatar from "../assets/images/avatar-default.png";
+import { FaInfoCircle, FaMapMarker, FaUser } from "react-icons/fa";
+import { FaPencil, FaUserMinus, FaUserPlus } from "react-icons/fa6";
+import Toast from "../components/common/Toast"; // Toast component
+
+function Profile() {
+  const { userName } = useParams(); // Get username from URL
+  const { user } = UserAuth(); // Current logged-in user
+  const [profileUser, setProfileUser] = useState(null); // State for the profile user
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [connections, setConnections] = useState(new Set()); // Store connections
+  const [connectionCount, setConnectionCount] = useState(0); // Store connection count
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastType, setToastType] = useState("success");
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!userName) {
+        console.error("Username is undefined");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const profile = await getUserByUsername(userName);
+        if (profile) {
+          setProfileUser(profile);
+
+          // Fetch connections and connection count
+          const connectionList = await getConnections(profile.id);
+          setConnections(new Set(connectionList.map((conn) => conn.id)));
+          setConnectionCount(connectionList.length); // Set initial connection count
+
+          // Listen to the connection count changes
+          listenToConnectionCount(profile.id, (count) => {
+            setConnectionCount(count);
+          });
+        } else {
+          console.error("User profile not found");
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfileData();
+  }, [userName]);
+
+  // Connect user
+  const handleConnect = async () => {
+    try {
+      await saveConnection(user.uid, profileUser.id, {
+        fullName: profileUser.fullName,
+        avatarUrl: profileUser.avatarUrl,
+      });
+      setConnections((prevConnections) =>
+        new Set([...prevConnections, profileUser.id])
+      );
+      setConnectionCount((prevCount) => prevCount + 1); // Increment count
+
+      setToastMessage("User connected successfully!");
+      setToastType("success");
+      setToastVisible(true);
+    } catch (error) {
+      console.error("Error connecting user:", error);
+      setToastMessage("Failed to connect.");
+      setToastType("error");
+      setToastVisible(true);
+    }
+  };
+
+  // Disconnect user
+  const handleDisconnect = async () => {
+    try {
+      await removeConnection(user.uid, profileUser.id);
+      setConnections((prevConnections) => {
+        const updatedConnections = new Set(prevConnections);
+        updatedConnections.delete(profileUser.id);
+        return updatedConnections;
+      });
+      setConnectionCount((prevCount) => prevCount - 1); // Decrement count
+
+      setToastMessage("User disconnected successfully!");
+      setToastType("success");
+      setToastVisible(true);
+    } catch (error) {
+      console.error("Error disconnecting user:", error);
+      setToastMessage("Failed to disconnect.");
+      setToastType("error");
+      setToastVisible(true);
+    }
+  };
+
+  const handleModalOpen = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center w-full h-screen">
+        <Lottie animationData={pageloading} loop={true} className="w-48 h-48" />
+      </div>
+    );
+  }
+
+  if (!profileUser) {
+    return <p>User not found</p>;
+  }
+
+  const tabs = [
+    profileUser.role === "admin" && {
+      label: "Posted",
+      content: <JobProfile tab="Posted" />,
+    },
+    { label: "Applied", content: <JobProfile tab="Applied" /> },
+    { label: "Saved", content: <JobProfile tab="Saved" /> },
+  ].filter(Boolean);
+
+  return (
+    <main>
+      <section className="w-screen flex flex-col items-center justify-center">
+        <div className="w-full h-64 bg-gray-200 relative">
+          <img
+            src={profileUser.coverImageUrl || DefaultCoverImage}
+            alt="Cover"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="container flex items-start flex-col lg:flex-row p-0 px-2 md:py-2 gap-5 lg:gap-10">
+          <div className="flex items-center flex-col gap-2 mb-4 w-full lg:w-3/6 xl:w-2/6 transform -translate-y-16">
+            <div className="flex items-center flex-col gap-5 w-full">
+              <div className="flex items-start justify-between w-full">
+                <div className="flex items-start lg:items-start flex-col gap-1 w-full">
+                  <div className="relative flex flex-col items-center justify-center">
+                    <img
+                      src={profileUser.avatarUrl || DefaultAvatar}
+                      alt="User Avatar"
+                      className="w-28 h-28 rounded-full border-2 border-opacity-20 border-gray-300"
+                    />
+                    {profileUser.role === "admin" && (
+                      <span className="absolute bottom-0 text-sm px-3 py-[1px] shadow bg-orange-400 text-white rounded-full font-semibold w-max">
+                        {profileUser.role}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-2xl font-bold">
+                    {profileUser.fullName || "Anonymous"}
+                  </span>
+                  <div className="flex flex-row gap-2 items-center">
+                    <span className="font-semibold text-lg lowercase">
+                      @{profileUser.userName}
+                    </span>
+                    &#183;
+                    <span className="text-sm font-semibold underline">
+                      {profileUser.pronouns}
+                    </span>
+                  </div>
+                </div>
+                <div className="w-full md:w-max ml-auto mt-5 flex items-center gap-1 transform translate-y-12">
+                  {user.userName === profileUser.userName ? (
+                    <button
+                      className="flex items-center justify-center gap-2 border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-1 rounded-full text-slate-950 transition-all w-40 px-5 hover:bg-slate-800 hover:text-white/80"
+                      onClick={handleModalOpen}
+                    >
+                      <FaPencil />
+                      Edit
+                    </button>
+                  ) : (
+                    <>
+                      {connections.has(profileUser.id) ? (
+                        <button
+                          className="flex items-center justify-center gap-2 border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-1 rounded-full text-slate-950 transition-all w-40 px-5 hover:bg-slate-800 hover:text-white/80"
+                          onClick={handleDisconnect}
+                        >
+                          <FaUserMinus /> Disconnect
+                        </button>
+                      ) : (
+                        <button
+                          className="flex items-center justify-center gap-2 border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-1 rounded-full text-slate-950 transition-all w-40 px-5 hover:bg-slate-800 hover:text-white/80"
+                          onClick={handleConnect}
+                        >
+                          <FaUserPlus /> Connect
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+              <ProfileProgress profileUser={profileUser} />
+            </div>
+          </div>
+
+          <div className="w-full lg:w-3/6 xl:w-4/6 mt-[-50px]">
+            <section className="w-full flex justify-start items-center flex-wrap md:justify-between p-3 py-3 gap-3 border-t border-gray-200 text-gray-500">
+              <span className="flex items-center gap-2">
+                <FaMapMarker />
+                {profileUser.location || "Location unavailable"}
+              </span>
+              <span className="flex items-center gap-2">
+                <FaUser />
+                {connectionCount}{" "}
+                {connectionCount === 1 ? "Connection" : "Connections"}
+              </span>
+            </section>
+
+            <TabComponent tabs={tabs} />
+            <Divider />
+          </div>
+        </div>
+
+        {isModalOpen && (
+          <Modal
+            title="Edit Your Profile"
+            onClose={handleModalClose}
+            size="full"
+          >
+            <UserInsightsForm onClose={handleModalClose} />
+          </Modal>
+        )}
+
+        {toastVisible && (
+          <Toast
+            type={toastType}
+            message={toastMessage}
+            onClose={() => setToastVisible(false)}
+          />
+        )}
+      </section>
+    </main>
+  );
+}
+
+export default Profile;

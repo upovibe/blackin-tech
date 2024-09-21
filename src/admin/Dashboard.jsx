@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { UserAuth } from "../contexts/AuthContext";
 import UserTable from "../components/tables/UserTable";
@@ -7,10 +7,37 @@ import StatsDisplay from "../components/AdminComponent/StatsDisplay";
 import ActiveUsersChart from "../components/AdminComponent/ActiveUsersChart";
 import JobsPostedChart from "../components/AdminComponent/JobPostedChart";
 import HorizontalLineWithText from "../components/common/HorizontalLineWithText";
+import RightSidebar from "../components/common/RightSidebar";  // Import RightSidebar
 import { FaChartSimple, FaGaugeSimple, FaUserTie } from "react-icons/fa6";
+import Lottie from 'lottie-react';
+import LoadingPage from '../assets/animations/Animation - LoadingPage.json';
 
 const Dashboard = () => {
   const { user } = UserAuth();
+  const [loading, setLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, []);
+
+  const handleOpenSidebar = () => {
+    setIsSidebarOpen(true);
+  };
+
+  const handleCloseSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Lottie animationData={LoadingPage} loop className="w-48 h-48" />
+      </div>
+    );
+  }
 
   return (
     <main className="h-screen overflow-auto pb-20">
@@ -29,15 +56,18 @@ const Dashboard = () => {
               </span>
             </Link>
           </div>
-          <div className="w-full">
-            <div className="">            
-            <UserTable/>
-            {/* <JobTable/> */}
-            </div>
-          </div>
+
+          {/* Sidebar Button */}
+          <button 
+            className="mt-4 p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            onClick={handleOpenSidebar}
+          >
+            Open Sidebar
+          </button>
+
           <HorizontalLineWithText>
             <span className="text-sm font-semibold flex items-center gap-2">
-              <FaGaugeSimple/>statistics
+              <FaGaugeSimple /> statistics
             </span>
           </HorizontalLineWithText>
           <StatsDisplay />
@@ -47,7 +77,6 @@ const Dashboard = () => {
               Charts
             </span>
           </HorizontalLineWithText>
-          {/* Ensure that both charts have equal space allocation */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-lg p-4 shadow w-full">
               <ActiveUsersChart />
@@ -56,9 +85,25 @@ const Dashboard = () => {
               <JobsPostedChart />
             </div>
           </div>
-          
+          <div className="w-full flex items-center gap-6">
+            <div className="w-1/2">
+              <UserTable />
+            </div>
+            <div className="w-1/2">
+              <JobTable />
+            </div>
+          </div>
         </div>
       </section>
+
+      {/* Right Sidebar */}
+      <RightSidebar
+        isOpen={isSidebarOpen}
+        onClose={handleCloseSidebar}
+        title="Sidebar Title"
+      >
+        <p>Content inside the sidebar</p>
+      </RightSidebar>
     </main>
   );
 };

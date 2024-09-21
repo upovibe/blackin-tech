@@ -17,7 +17,9 @@ const NavAvatar = () => {
   const dropdownRef = useRef(null);
 
   const handleClick = () => {
-    navigate('/profile');
+    if (user.userName) {
+      navigate(`/profile/${user.userName}`);
+    }
   };
 
   const handleLogout = async () => {
@@ -37,7 +39,6 @@ const NavAvatar = () => {
     setIsModalOpen(false);
   };
 
-  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -72,7 +73,6 @@ const NavAvatar = () => {
             <span className="text-sm font-medium">{user.fullName || "User Name"}</span>
           </div>
           <ul className="space-y-2">
-            {/* Conditionally render the Apply for Job link if the user is not an admin */}
             {user.role !== 'admin' && (
               <li>
                 <Link to="/jobs"
@@ -83,14 +83,14 @@ const NavAvatar = () => {
               </li>
             )}
             {user.role === 'admin' && (
-            <li>
-              <button
-                className="flex items-center space-x-2 p-2 w-full text-left hover:bg-gray-100 rounded-lg text-slate-700"
-                onClick={handleModalOpen}
-              >
-                <FaBriefcase /> <span>Post Job</span>
-              </button>
-            </li>
+              <li>
+                <button
+                  className="flex items-center space-x-2 p-2 w-full text-left hover:bg-gray-100 rounded-lg text-slate-700"
+                  onClick={handleModalOpen}
+                >
+                  <FaBriefcase /> <span>Post Job</span>
+                </button>
+              </li>
             )}
             <li>
               <Link to="/settings"
@@ -120,9 +120,8 @@ const NavAvatar = () => {
           </ul>
         </div>
       )}
-      {/* Modal Component */}
       <Modal isOpen={isModalOpen} onClose={handleModalClose} title="Post a Job">
-        <JobForm/>
+        <JobForm />
       </Modal>
     </div>
   );

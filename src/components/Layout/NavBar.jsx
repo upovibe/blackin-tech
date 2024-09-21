@@ -33,6 +33,9 @@ function NavBar() {
                 <Link to="/jobs">Job</Link>
               </li>
               <li className='block w-full hover:bg-slate-700/50 hover:text-white md:hover:text-slate-950 md:hover:bg-transparent transition-all duration-300 ease-in-out md:border-b-2 border-transparent md:hover:border-slate-700 p-2 md:p-0 md:pb-[1px]'>
+                <Link to="/nodes">Nodes</Link>
+              </li>
+              <li className='block w-full hover:bg-slate-700/50 hover:text-white md:hover:text-slate-950 md:hover:bg-transparent transition-all duration-300 ease-in-out md:border-b-2 border-transparent md:hover:border-slate-700 p-2 md:p-0 md:pb-[1px]'>
                 <Link to="/about">About</Link>
               </li>
             </ul>
@@ -72,6 +75,9 @@ function NavBar() {
             <ul className="mt-4 space-y-4 p-3">
               <li className="hover:bg-slate-500 rounded-md transition-all w-full">
                 <Link to="/jobs" className='block w-full h-full p-2'>Jobs</Link>
+              </li>
+              <li className="hover:bg-slate-500 rounded-md transition-all w-full">
+                <Link to="/nodes" className='block w-full h-full p-2'>Nodes</Link>
               </li>
               <li className="hover:bg-slate-500 rounded-md transition-all w-full">
                 <Link to="/about" className='block w-full h-full p-2'>About</Link>

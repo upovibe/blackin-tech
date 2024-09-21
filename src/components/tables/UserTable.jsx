@@ -1,96 +1,241 @@
-import React, { useState, useEffect } from "react";
-import { getAllDocuments, updateDocument } from "../../services/firestoreCRUD"; // Import your update function
-import Table from "../common/Table";
+// import React, { useEffect, useState } from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import { listenToCollection, updateDocument, deleteDocument } from '../../services/firestoreCRUD'; 
+// import Table from '../common/Table';
+// import { FaUsers } from 'react-icons/fa';
+// import RightSidebar from '../common/RightSidebar'; // Adjust the path as needed
+
+// const UserTable = () => {
+//   const [users, setUsers] = useState([]);
+//   const [selectedRows, setSelectedRows] = useState(new Set());
+//   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar state
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     const unsubscribe = listenToCollection('users', (data) => {
+//       console.log(data);
+//       setUsers(data); 
+//     });
+
+//     return () => unsubscribe();
+//   }, []);
+
+//   const columns = [
+//     { Header: 'Full Name', accessor: 'fullName', type: 'text' },
+//     { Header: 'Email', accessor: 'email', type: 'text' },
+//     { Header: 'Username', accessor: 'userName', type: 'text' },
+//     { Header: 'Role', accessor: 'role', type: 'text' },
+//     {
+//       Header: 'Avatar',
+//       accessor: 'avatarUrl',
+//       type: 'image',
+//       Cell: ({ value }) => (
+//         <div>
+//           <img
+//             src={value || 'https://via.placeholder.com/50'}
+//             alt="Avatar"
+//           />
+//         </div>
+//       ),
+//     },
+//   ];
+
+//   const handleUpdate = (user, updatedData) => {
+//     const updatedUser = { ...user, ...updatedData };
+//     updateDocument('users', updatedUser.id, updatedUser)
+//       .then(() => console.log('User updated successfully'))
+//       .catch((error) => console.error('Error updating user:', error));
+//   };
+
+//   const handleDelete = (user) => {
+//     deleteDocument('users', user.id)
+//       .then(() => console.log('User deleted successfully'))
+//       .catch((error) => console.error('Error deleting user:', error));
+//   };
+
+//   const handleBulkDelete = () => {
+//     selectedRows.forEach((rowId) => {
+//       const userToDelete = users.find((user) => user.id === rowId);
+//       if (userToDelete) {
+//         deleteDocument('users', userToDelete.id)
+//           .then(() => console.log(`User ${userToDelete.id} deleted successfully`))
+//           .catch((error) => console.error('Error deleting user:', error));
+//       }
+//     });
+
+//     setUsers((prevUsers) => prevUsers.filter((user) => !selectedRows.has(user.id)));
+//     setSelectedRows(new Set());
+//   };
+
+//   const handleDisable = (user) => {
+//     handleUpdate(user, { active: false });
+//   };
+
+//   const toggleSidebar = () => {
+//     setIsSidebarOpen(!isSidebarOpen);
+//   };
+
+//   return (
+//     <>
+//       <Table
+//         title="Users Table"
+//         icon={<FaUsers />}
+//         columns={columns}
+//         data={users}
+//         selectedRows={selectedRows} 
+//         setSelectedRows={setSelectedRows}
+//         sortable={true}
+//         filterable={true}
+//         pagination={true}
+//         onEdit={(user) => console.log('Editing user:', user)}
+//         onDelete={handleDelete}
+//         handleBulkDelete={handleBulkDelete}
+//         onDisable={handleDisable}
+//         onView={toggleSidebar}
+//         className="w-full text-sm text-gray-700"
+//       />
+//       <RightSidebar
+//         isOpen={isSidebarOpen}
+//         onClose={toggleSidebar}
+//         title="User Details"
+//       >
+//         {/* You can pass any content here, e.g., user information or forms */}
+//         <p>Sidebar content goes here.</p>
+//       </RightSidebar>
+//     </>
+//   );
+// };
+
+// export default UserTable;
+
+
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { listenToCollection, updateDocument, deleteDocument } from '../../services/firestoreCRUD'; 
+import Table from '../common/Table';
+import { FaUsers } from 'react-icons/fa';
+import RightSidebar from '../common/RightSidebar'; // Adjust the path as needed
 
 const UserTable = () => {
   const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [actionType, setActionType] = useState("");
+  const [selectedRows, setSelectedRows] = useState(new Set());
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar state
+  const [selectedUser, setSelectedUser] = useState(null); // Selected user for sidebar details
+  const navigate = useNavigate();
 
-  // Fetch users from Firestore
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const usersData = await getAllDocuments("users");
-        setUsers(usersData);
-      } catch (error) {
-        console.error("Error fetching users: ", error);
-      }
-    };
-    fetchUsers();
+    const unsubscribe = listenToCollection('users', (data) => {
+      setUsers(data); 
+    });
+    return () => unsubscribe();
   }, []);
 
-  // Handle the action (edit, delete, change role, etc.)
-  const handleAction = async (updatedUser) => {
-    try {
-      if (actionType === "edit" || actionType === "changeRole") {
-        await updateDocument("users", updatedUser.id, {
-          fullName: updatedUser.fullName,
-          userName: updatedUser.userName, // Ensure userName is updated
-          role: updatedUser.role,
-          status: updatedUser.status,
-        });
-        setUsers(users.map((u) => (u.id === updatedUser.id ? updatedUser : u)));
-      } else if (actionType === "delete") {
-        await deleteDocument("users", updatedUser.id);
-        setUsers(users.filter((u) => u.id !== updatedUser.id));
-      } else if (actionType === "disable") {
-        const newStatus = updatedUser.status === "active" ? "disabled" : "active";
-        await updateDocument("users", updatedUser.id, { status: newStatus });
-        setUsers(users.map((u) => (u.id === updatedUser.id ? { ...u, status: newStatus } : u)));
-      }
-      setIsModalOpen(false); // Close the modal after action
-    } catch (error) {
-      console.error("Error performing action: ", error);
-    }
-  };
-  
-
-  // Define columns for the Table component
-  const userColumns = [
+  const columns = [
+    { Header: 'Full Name', accessor: 'fullName', type: 'text' },
+    { Header: 'Email', accessor: 'email', type: 'text' },
+    { Header: 'Username', accessor: 'userName', type: 'text' },
+    { Header: 'Role', accessor: 'role', type: 'text' },
     {
       Header: 'Avatar',
       accessor: 'avatarUrl',
-      Cell: ({ value }) => <img src={value} alt="avatar" className="w-10 h-10 rounded-full" />
-    },
-    { Header: 'Full Name', accessor: 'fullName' },
-    { Header: 'Email', accessor: 'email' },
-    { Header: 'Username', accessor: 'userName' },
-    { Header: 'Role', accessor: 'role' },
-    { Header: 'Status', accessor: 'status', Cell: ({ value }) => value || "active" },
-    {
-      Header: 'Actions',
-      accessor: 'actions',
-      Cell: ({ row }) => (
-        <DropdownActions user={row.original} onActionSelect={(user, actionType) => {
-          setSelectedUser(user);
-          setActionType(actionType);
-          setIsModalOpen(true);
-        }} />
-      )
+      type: 'image',
+      Cell: ({ value }) => (
+        <div>
+          <img
+            src={value || 'https://via.placeholder.com/50'}
+            alt="Avatar"
+          />
+        </div>
+      ),
     },
   ];
 
+  const handleUpdate = (user, updatedData) => {
+    const updatedUser = { ...user, ...updatedData };
+    updateDocument('users', updatedUser.id, updatedUser)
+      .then(() => console.log('User updated successfully'))
+      .catch((error) => console.error('Error updating user:', error));
+  };
+
+  const handleDelete = (user) => {
+    deleteDocument('users', user.id)
+      .then(() => console.log('User deleted successfully'))
+      .catch((error) => console.error('Error deleting user:', error));
+  };
+
+  const handleBulkDelete = () => {
+    selectedRows.forEach((rowId) => {
+      const userToDelete = users.find((user) => user.id === rowId);
+      if (userToDelete) {
+        deleteDocument('users', userToDelete.id)
+          .then(() => console.log(`User ${userToDelete.id} deleted successfully`))
+          .catch((error) => console.error('Error deleting user:', error));
+      }
+    });
+
+    setUsers((prevUsers) => prevUsers.filter((user) => !selectedRows.has(user.id)));
+    setSelectedRows(new Set());
+  };
+
+  const handleDisable = (user) => {
+    handleUpdate(user, { active: false });
+  };
+
+  // When a user clicks "View", open the sidebar and show the selected user
+  const handleViewUser = (user) => {
+    setSelectedUser(user); // Set the clicked user details
+    setIsSidebarOpen(true); // Open the sidebar
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
-    <div className="overflow-x-auto">
+    <>
       <Table
-        columns={userColumns}
+        title="Users Table"
+        icon={<FaUsers />}
+        columns={columns}
         data={users}
+        selectedRows={selectedRows} 
+        setSelectedRows={setSelectedRows}
         sortable={true}
         filterable={true}
         pagination={true}
+        onEdit={(user) => console.log('Editing user:', user)}
+        onDelete={handleDelete}
+        handleBulkDelete={handleBulkDelete}
+        onDisable={handleDisable}
+        onView={handleViewUser} // Updated to call handleViewUser
+        className="w-full text-sm text-gray-700"
       />
 
-      {/* Reusable Action Modal */}
-      <ActionModal
-        isOpen={isModalOpen}
-        actionType={actionType}
-        user={selectedUser}
-        onClose={() => setIsModalOpen(false)}
-        onAction={handleAction}
-      />
-    </div>
+      {/* RightSidebar Component */}
+      <RightSidebar
+        isOpen={isSidebarOpen}
+        onClose={toggleSidebar}
+        title={selectedUser ? `Details for ${selectedUser.fullName}` : 'User Details'} // Dynamically change the sidebar title
+      >
+        {selectedUser ? (
+          <div className="space-y-4">
+            <p><strong>Full Name:</strong> {selectedUser.fullName}</p>
+            <p><strong>Email:</strong> {selectedUser.email}</p>
+            <p><strong>Username:</strong> {selectedUser.userName}</p>
+            <p><strong>Role:</strong> {selectedUser.role}</p>
+            <p><strong>Avatar:</strong></p>
+            <img
+              src={selectedUser.avatarUrl || 'https://via.placeholder.com/50'}
+              alt="Avatar"
+              className="w-16 h-16 rounded-full"
+            />
+            {/* Add more fields as needed */}
+          </div>
+        ) : (
+          <p>No user selected.</p>
+        )}
+      </RightSidebar>
+    </>
   );
 };
 
