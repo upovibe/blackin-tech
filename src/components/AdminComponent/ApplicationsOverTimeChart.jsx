@@ -56,28 +56,34 @@ const ApplicationsOverTimeChart = () => {
   }, []);
 
   return (
-    <div className="">
-      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><FaChartBar/>Applications Over Time</h2>
-      {loading ? (
-        <div className="flex items-center justify-center size-full">
-          <Lottie
-            animationData={ChartLoadingAnimation}
-            loop={true}
-            className="w-full h-full"
+    <div className="size-full">
+    <div className="mb-4">
+    <h2 className="text-xl text-black/70 font-semibold flex items-center gap-2"><FaChartBar/>Applications Over Time</h2>        
+    <p className="text-sm text-black/70">This Shows user growth applications</p>
+    </div>
+    {loading ? (
+      <div className="flex items-center justify-center size-full">
+        <Lottie
+          animationData={ChartLoadingAnimation}
+          loop={true}
+          className="w-full h-full"
+        />
+      </div>
+    ) : (
+      chartData && (
+        <div className="w-full h-ful h-[300px]">
+          <BaseChart
+            chartType="bar"
+            data={chartData}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+            }}
           />
         </div>
-      ) : (
-        chartData && (
-          <div className="size-full">
-            <BaseChart
-              chartType="bar"
-              data={chartData}
-              options={{ responsive: true, maintainAspectRatio: false }}
-            />
-          </div>
-        )
-      )}
-    </div>
+      )
+    )}
+  </div>
   );
 };
 

@@ -27,6 +27,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
         {/* Modal Footer */}
         <div className="flex justify-end py-2 border-t-2">
           <Button
+          type="button"          
             onClick={onClose}
             className="px-4 py-2 text-white bg-slate-800 rounded hover:bg-slate-900"
           >

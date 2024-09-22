@@ -11,6 +11,7 @@ import RightSidebar from "../components/common/RightSidebar";  // Import RightSi
 import { FaChartSimple, FaGaugeSimple, FaUserTie } from "react-icons/fa6";
 import Lottie from 'lottie-react';
 import LoadingPage from '../assets/animations/Animation - LoadingPage.json';
+import { FaTable } from "react-icons/fa";
 
 const Dashboard = () => {
   const { user } = UserAuth();
@@ -85,6 +86,12 @@ const Dashboard = () => {
               <JobsPostedChart />
             </div>
           </div>
+          <HorizontalLineWithText>
+            <span className="text-sm font-semibold flex items-center gap-2">
+              <FaTable/>
+              Table Management
+            </span>
+          </HorizontalLineWithText>
           <div className="w-full flex items-center gap-6">
             <div className="w-1/2">
               <UserTable />

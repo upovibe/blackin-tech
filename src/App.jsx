@@ -17,8 +17,11 @@ import Search from './pages/Search';
 import Settings from './pages/Settings';
 import CompleteProfile from './components/auth/CompleteProfile';
 import Dashboard from './admin/Dashboard';
-import JobDetails from './components/views/JobDetails'; // Import JobDetails component
+import JobDetails from './components/views/JobDetails';
 import UserPortal from './admin/UserPortal';
+import JobPortal from './admin/JobPortal';
+import DataSettings from './admin/DataSettings';
+import StartReports from './admin/StartReports';
 
 function App() {
   return (
@@ -49,6 +52,9 @@ function App() {
         <Route element={<PrivateRoute requiredRole="admin" />}>
           <Route path="/dashboard" element={<AdminLayout><Dashboard /></AdminLayout>} />
           <Route path="/userportal" element={<AdminLayout><UserPortal /></AdminLayout>} />
+          <Route path="/jobportal" element={<AdminLayout><JobPortal /></AdminLayout>} />
+          <Route path="/stat-reports" element={<AdminLayout><StartReports /></AdminLayout>} />
+          <Route path="/data-settings" element={<AdminLayout><DataSettings /></AdminLayout>} />
         </Route>
 
         {/* Catch-all route */}

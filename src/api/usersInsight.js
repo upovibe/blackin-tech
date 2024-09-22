@@ -69,9 +69,7 @@ export const fetchSkills = async () => {
       "SEO (Search Engine Optimization)", "Content Management Systems (CMS)"
     ];
     return skills;
-  };
-
-  
+  };  
 
   // Function to fetch professional and soft skills
 export const fetchAbilities = async () => {
