@@ -6,6 +6,7 @@ import JobTypeTable from "../components/tables/JobTypeTable";
 import JobAvailTable from "../components/tables/JobAvailTable";
 import JobSkillsTable from "../components/tables/JobSkillsTable";
 import JobAbilitiesTable from "../components/tables/JobAbilitiesTable";
+import EduCategoriesTable from "../components/tables/EduCategoriesTable";
 import PronounsTable from "../components/tables/PronounsTable";
 
 const DataSettings = () => {
@@ -33,31 +34,39 @@ const DataSettings = () => {
           <JobAvailTable />
         </div>
       ),
-    },    
+    },
     {
       label: "Job Skills",
       content: (
         <div>
-          <JobSkillsTable/>
+          <JobSkillsTable />
         </div>
       ),
-    },    
+    },
     {
       label: "Job Abilities",
       content: (
         <div>
-          <JobAbilitiesTable/>
+          <JobAbilitiesTable />
         </div>
       ),
-    },    
+    },
+    {
+      label: "Education Category",
+      content: (
+        <div>
+          <EduCategoriesTable />
+        </div>
+      ),
+    },
     {
       label: "Pronounce",
       content: (
         <div>
-          <PronounsTable/>
+          <PronounsTable />
         </div>
       ),
-    },    
+    },
   ];
   if (loading) {
     return (
@@ -68,20 +77,16 @@ const DataSettings = () => {
   }
 
   return (
-    <main className="min-h-screen">
-      <section className="flex items-center justify-center p-2">
-        <div className="container w-full">
-          <div className="p-4">
-            <h1 className="text-2xl font-bold mb-6">Settings</h1>
-            <TabComponent
-              tabs={tabs}
-              defaultActiveTab="Job Tpes"
-              onTabChange={() => {}}
-            />
-          </div>
-        </div>
-      </section>
-    </main>
+    <>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-6">Settings</h1>
+      <TabComponent
+        tabs={tabs}
+        defaultActiveTab="Job Tpes"
+        onTabChange={() => {}}
+      />
+    </div>
+    </>
   );
 };
 

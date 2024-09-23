@@ -666,51 +666,54 @@ const Table = ({
   };
 
   return (
-    <div className="relative p-3 bg-white shadow-md rounded-lg mb-2">
-      {title && (
-        <div className="flex items-center justify-between gap-3 h-14 pb-3">
-          <div className="flex items-center gap-2 text-bold text-slate-900 text-xl font-bold">
-            {icon && <span>{icon}</span>}
-            <h2>{title}</h2>
-          </div>
-          <div className="flex items-center gap-2 transition-all duration-200 ease-in-out">
-            <button
-              type="button"
-              onClick={onAdd}
-              className="bg-green-500 text-white p-2 text-sm font-semibold rounded-md hover:bg-green-600 flex items-center gap-2"
-            >
-              <FaPlusCircle />
-              <span className="hidden lg:block">Add New</span>
-            </button>
-            {selectedRows.size > 0 && (
-              <button
-                onClick={handleBulkDeleteClick}
-                className="bg-red-500 text-white p-2 flex items-center gap-2 rounded-md hover:bg-red-600 text-sm font-semibold"
-              >
-                <FaTrash />
-                <span className="hidden lg:block">Delete Selected</span>
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-      <table className="min-w-full bg-white border border-gray-300">
-        <thead>{renderHeaders()}</thead>
-        <tbody>
-          {data.length === 0 ? (
-            <tr>
-              <td colSpan={columns.length + 2} className="text-center p-4">
-                No data available.
-              </td>
-            </tr>
-          ) : (
-            renderRows()
-          )}
-        </tbody>
-      </table>
-      {pagination && renderPagination()}
-      {renderModal()}
+    <div className="relative p-3 bg-white shadow-md rounded-lg mb-2 overflow-x-auto">
+  {title && (
+    <div className="flex items-center justify-between gap-3 h-14 pb-3">
+      <div className="flex items-center gap-2 text-bold text-slate-900 text-xl font-bold">
+        {icon && <span>{icon}</span>}
+        <h2>{title}</h2>
+      </div>
+      <div className="flex items-center gap-2 transition-all duration-200 ease-in-out">
+        <button
+          type="button"
+          onClick={onAdd}
+          className="bg-green-500 text-white p-2 text-sm font-semibold rounded-md hover:bg-green-600 flex items-center gap-2"
+        >
+          <FaPlusCircle />
+          <span className="hidden lg:block">Add New</span>
+        </button>
+        {selectedRows.size > 0 && (
+          <button
+            onClick={handleBulkDeleteClick}
+            className="bg-red-500 text-white p-2 flex items-center gap-2 rounded-md hover:bg-red-600 text-sm font-semibold"
+          >
+            <FaTrash />
+            <span className="hidden lg:block">Delete Selected</span>
+          </button>
+        )}
+      </div>
     </div>
+  )}
+  <div className="overflow-auto">
+    <table className="min-w-full max-w-full border-collapse border border-gray-200">
+      <thead>{renderHeaders()}</thead>
+      <tbody>
+        {data.length === 0 ? (
+          <tr>
+            <td colSpan={columns.length + 2} className="text-center p-4">
+              No data available.
+            </td>
+          </tr>
+        ) : (
+          renderRows()
+        )}
+      </tbody>
+    </table>
+  </div>
+  {pagination && renderPagination()}
+  {renderModal()}
+</div>
+
   );
 };
 

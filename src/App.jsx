@@ -7,7 +7,7 @@ import PublicRoute from './routes/PublicRoute';
 import Home from './pages/Home';
 import About from './pages/About';
 import Jobs from './pages/Jobs';
-import Nodes from './pages/Nodes';
+import Connect from './pages/Connect';
 import Terms from './pages/Terms';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
@@ -22,6 +22,7 @@ import UserPortal from './admin/UserPortal';
 import JobPortal from './admin/JobPortal';
 import DataSettings from './admin/DataSettings';
 import StartReports from './admin/StartReports';
+import JobManagementPage from './pages/JobManagementPage'
 
 function App() {
   return (
@@ -35,7 +36,9 @@ function App() {
         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
         <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />
         <Route path="/jobs/:slug" element={<MainLayout><JobDetails /></MainLayout>} />
-        <Route path="/nodes" element={<MainLayout><Nodes /></MainLayout>} />
+        <Route path="/jobmanagementpage" element={<MainLayout><JobManagementPage /></MainLayout>} />
+        <Route path="/connect" element={<MainLayout><Connect /></MainLayout>} />
+        <Route path="/search" element={<MainLayout><Search /></MainLayout>} />
         <Route path="/search" element={<MainLayout><Search /></MainLayout>} />
         <Route path="/terms" element={<MainLayout><Terms /></MainLayout>} />
         <Route path="/about" element={<MainLayout><About /></MainLayout>} />

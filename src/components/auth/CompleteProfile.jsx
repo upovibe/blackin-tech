@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  fetchPronouns,
-  fetchCountries,
-  fetchLanguages,
-} from "../../api/usersApi";
+import { fetchCountries, fetchLanguages } from "../../api/fetchStaticData";
+import { getAllDocuments, getDocumentByID  } from "../../services/firestoreCRUD";
+import { toLowerCase } from "../../utils/stringUtils";
 import { useNavigate } from "react-router-dom";
 import Input from "../common/Input";
 import TextArea from "../common/TextArea";
@@ -50,17 +48,25 @@ const CompleteProfile = () => {
   const [toastType, setToastType] = useState("error");
 
   const navigate = useNavigate();
+  const userID = user?.uid; 
 
   useEffect(() => {
     setAnimationClass("opacity-100 translate-y-0");
     const fetchData = async () => {
       try {
-        const pronounsData = await fetchPronouns();
-        setPronounsOptions(pronounsData);
+        // Fetch pronouns from Firestore
+        const pronounsData = await getAllDocuments("pronouns");
+        const formattedPronouns = pronounsData.map((pronoun) => ({
+          label: pronoun.name,
+          value: pronoun.slug,
+        }));
+        setPronounsOptions(formattedPronouns);
 
+        // Fetch countries from the existing API
         const countriesData = await fetchCountries();
         setCountriesOptions(countriesData);
 
+        // Fetch languages from the existing API
         const languagesData = await fetchLanguages();
         setLanguagesOptions(languagesData);
       } catch (error) {
@@ -143,9 +149,18 @@ const CompleteProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Use the utility function to convert the username to lowercase
+    const formValuesWithLowercaseUsername = {
+      ...formValues,
+      userName: toLowerCase(formValues.userName),
+    };
+
     if (validateStep()) {
       try {
-        const result = await updateProfile(formValues);
+        // Now using formValuesWithLowercaseUsername for submission
+        const result = await updateProfile(formValuesWithLowercaseUsername);
+
         if (result.success) {
           setToastMessage("Profile updated successfully!");
           setToastType("success");
@@ -295,10 +310,7 @@ const CompleteProfile = () => {
                         placeholder="Select Pronouns"
                         value={formValues.pronouns}
                         onChange={handleInputChange}
-                        options={pronounsOptions.map((p) => ({
-                          label: p,
-                          value: p,
-                        }))}
+                        options={pronounsOptions} // Using the fetched options
                         className="w-full"
                       />
                       <TagInput
@@ -331,9 +343,7 @@ const CompleteProfile = () => {
                 {/* Step 5: Country and City */}
                 {step === 5 && (
                   <div className="space-y-10 text-center">
-                    <span className="text-xl font-bold">
-                      Where from you?
-                    </span>
+                    <span className="text-xl font-bold">Where from you?</span>
                     <div className="space-y-5">
                       <SelectInput
                         name="country"

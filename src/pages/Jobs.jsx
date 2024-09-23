@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useNavigate  } from 'react';
 import JobList from '../components/lists/JobList';
 import JobFilter from '../components/filters/JobFilter';
 import Lottie from 'lottie-react';
@@ -6,8 +6,11 @@ import animationData from '../assets/animations/Animation - TechJobs.json';
 import pageloading from '../assets/animations/Animation - LoadingPage.json'; // Your loading animation
 import HorizontalLineWithText from '../components/common/HorizontalLineWithText';
 import { FaFilter, FaBriefcase } from 'react-icons/fa6';
+import { FaFileUpload } from 'react-icons/fa';
+import Button from '../components/common/Button'
 
 const Jobs = () => {
+  // const navigate = useNavigate();
   const [filters, setFilters] = useState({
     location: '',
     specialties: [],
@@ -42,6 +45,10 @@ const Jobs = () => {
     setRefreshKey((prevKey) => prevKey + 1);
   };
 
+  // const handleNavigateToJobManagement = () => {
+  //   navigate("/jobmanagementpage");
+  // };
+
 
   if (loading) {
     return (
@@ -64,12 +71,20 @@ const Jobs = () => {
             </p>
             <Lottie animationData={animationData} loop={true} className="size-48 md:hidden block" />
           </div>
+          <div className='w-full flex items-center justify-center my-5 mt-10'>
+            <Button 
+              className="flex gap-2 items-center font-semibold border rounded-full text-sm font-sm transition-all duration-300 h-14 w-40"              
+              
+            >
+              <FaFileUpload />
+              <span>Post Job</span>
+            </Button>
+          </div>
           <div className='w-full flex justify-center items-center mt-16'>
             <HorizontalLineWithText>Opportunities Await</HorizontalLineWithText>
           </div>
         </div>
       </section>
-
       <section className='flex justify-center items-center'>
         <div className="container flex md:items-start flex-col md:flex-row py-16 px-2 md:px-0 w-full gap-10">
           {/* Filter button for small screens */}

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { UserAuth } from "../contexts/AuthContext";
 import {
   getUserByUsername,
-  getConnections,
-  saveConnection,
+  addConnection,
   removeConnection,
+  getConnectionsByUserId,
   listenToConnectionCount,
-} from "../services/firestoreUsersManagement.js";
+  checkConnectionStatus,
+  listenToConnectionStatus,
+} from "../services/firestoreUsersManagement";
 import Lottie from "lottie-react";
 import pageloading from "../assets/animations/Animation - LoadingPage.json";
 import Modal from "../components/common/Modal";
@@ -21,24 +22,22 @@ import DefaultCoverImage from "../assets/images/coverimage.jpg";
 import DefaultAvatar from "../assets/images/avatar-default.png";
 import { FaInfoCircle, FaMapMarker, FaUser } from "react-icons/fa";
 import { FaPencil, FaUserMinus, FaUserPlus } from "react-icons/fa6";
-import Toast from "../components/common/Toast"; // Toast component
+import Toast from "../components/common/Toast";
 
 function Profile() {
-  const { userName } = useParams(); // Get username from URL
+  const { userName } = useParams();
   const navigate = useNavigate();
-  const { user } = UserAuth(); // Current logged-in user
-  const [profileUser, setProfileUser] = useState(null); // State for the profile user
+  const { user } = UserAuth();
+  const [profileUser, setProfileUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [connections, setConnections] = useState(new Set()); // Store connections
-  const [connectionCount, setConnectionCount] = useState(0); // Store connection count
+  const [connections, setConnections] = useState(new Set());
+  const [connectionCount, setConnectionCount] = useState(0);
   const [toastMessage, setToastMessage] = useState("");
   const [toastVisible, setToastVisible] = useState(false);
   const [toastType, setToastType] = useState("success");
-
-  const handleNavigateToSettings = () => {
-    navigate(`/settings`);
-  };
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -52,15 +51,33 @@ function Profile() {
         const profile = await getUserByUsername(userName);
         if (profile) {
           setProfileUser(profile);
+          // Fetch current connections and update count
+          const connectionList = await getConnectionsByUserId(profile.id);
+          setConnections(
+            new Set(connectionList.map((conn) => conn.connectedUserId))
+          );
+          setConnectionCount(connectionList.length);
 
-          // Fetch connections and connection count
-          const connectionList = await getConnections(profile.id);
-          setConnections(new Set(connectionList.map((conn) => conn.id)));
-          setConnectionCount(connectionList.length); // Set initial connection count
+          // Set up listeners for real-time updates
+          listenToConnectionCount(profile.id, setConnectionCount);
 
-          // Listen to the connection count changes
-          listenToConnectionCount(profile.id, (count) => {
-            setConnectionCount(count);
+          // Check initial connection status
+          const isConnected = await checkConnectionStatus(user.uid, profile.id);
+          setConnections((prev) =>
+            isConnected ? new Set(prev).add(profile.id) : prev
+          );
+
+          // Listen to connection status in real-time
+          listenToConnectionStatus(user.uid, profile.id, (isConnected) => {
+            setConnections((prev) => {
+              const updatedConnections = new Set(prev);
+              if (isConnected) {
+                updatedConnections.add(profile.id);
+              } else {
+                updatedConnections.delete(profile.id);
+              }
+              return updatedConnections;
+            });
           });
         } else {
           console.error("User profile not found");
@@ -75,31 +92,31 @@ function Profile() {
     fetchProfileData();
   }, [userName]);
 
-  // Connect user
   const handleConnect = async () => {
+    setIsConnecting(true); // Start loading
     try {
-      await saveConnection(user.uid, profileUser.id, {
-        fullName: profileUser.fullName,
-        avatarUrl: profileUser.avatarUrl,
-      });
+      await addConnection(
+        user.uid,
+        profileUser.id,
+        profileUser.avatarUrl,
+        profileUser.fullName
+      );
       setConnections(
         (prevConnections) => new Set([...prevConnections, profileUser.id])
       );
-      setConnectionCount((prevCount) => prevCount + 1); // Increment count
-
-      setToastMessage("User connected successfully!");
+      setToastMessage("Connected successfully!");
       setToastType("success");
-      setToastVisible(true);
     } catch (error) {
-      console.error("Error connecting user:", error);
-      setToastMessage("Failed to connect.");
+      setToastMessage("Error connecting.");
       setToastType("error");
+    } finally {
+      setIsConnecting(false); // End loading
       setToastVisible(true);
     }
   };
 
-  // Disconnect user
   const handleDisconnect = async () => {
+    setIsDisconnecting(true); // Start loading
     try {
       await removeConnection(user.uid, profileUser.id);
       setConnections((prevConnections) => {
@@ -107,17 +124,19 @@ function Profile() {
         updatedConnections.delete(profileUser.id);
         return updatedConnections;
       });
-      setConnectionCount((prevCount) => prevCount - 1); // Decrement count
-
-      setToastMessage("User disconnected successfully!");
+      setToastMessage("Disconnected successfully!");
       setToastType("success");
-      setToastVisible(true);
     } catch (error) {
-      console.error("Error disconnecting user:", error);
-      setToastMessage("Failed to disconnect.");
+      setToastMessage("Error disconnecting.");
       setToastType("error");
+    } finally {
+      setIsDisconnecting(false); // End loading
       setToastVisible(true);
     }
+  };
+
+  const handleNavigateToSettings = () => {
+    navigate(`/settings`);
   };
 
   const handleModalOpen = () => {
@@ -163,13 +182,12 @@ function Profile() {
           <div className="flex items-center flex-col gap-2 mb-4 w-full lg:w-3/6 xl:w-2/6 transform -translate-y-16">
             <div className="flex items-center flex-col gap-5 w-full">
               <div className="flex items-start justify-between w-full">
-                {/* Left Section */}
                 <div className="flex items-start lg:items-start flex-col gap-1 w-1/2">
                   <div className="relative flex flex-col items-center justify-center">
                     <img
                       src={profileUser.avatarUrl || DefaultAvatar}
                       alt="User Avatar"
-                      className="w-28 h-28 rounded-full border-2 border-opacity-20 border-gray-300"
+                      className="w-28 h-28 rounded-full border-2 border-opacity-20 border-white"
                     />
                     {profileUser.role === "admin" && (
                       <span className="absolute bottom-0 text-sm px-3 py-[1px] shadow bg-orange-400 text-white rounded-full font-semibold w-max">
@@ -191,7 +209,6 @@ function Profile() {
                   </div>
                 </div>
 
-                {/* Right Section */}
                 <div className="flex items-center justify-end md:w-1/2 ml-auto mt-5 gap-1 transform translate-y-12">
                   {user.userName === profileUser.userName ? (
                     <button
@@ -206,15 +223,19 @@ function Profile() {
                         <button
                           className="flex items-center justify-center gap-2 border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-1 rounded-full text-slate-950 transition-all w-40 px-5 hover:bg-slate-800 hover:text-white/80"
                           onClick={handleDisconnect}
+                          disabled={isDisconnecting} // Disable button while loading
                         >
-                          <FaUserMinus /> Disconnect
+                          <FaUserMinus />{" "}
+                          {isDisconnecting ? "Disconnecting..." : "Disconnect"}
                         </button>
                       ) : (
                         <button
                           className="flex items-center justify-center gap-2 border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-1 rounded-full text-slate-950 transition-all w-40 px-5 hover:bg-slate-800 hover:text-white/80"
                           onClick={handleConnect}
+                          disabled={isConnecting} // Disable button while loading
                         >
-                          <FaUserPlus /> Connect
+                          <FaUserPlus />
+                          {isConnecting ? "Connecting..." : "Connect"}
                         </button>
                       )}
                     </>
@@ -236,8 +257,7 @@ function Profile() {
                 </div>
                 <div className="flex items-center justify-between w-full">
                   <span className="text-sm font-semibold text-slate-800">
-                    Connections: {connectionCount}{" "}
-                    {/* Display connection count */}
+                    Connections: {connectionCount}
                   </span>
                 </div>
                 {user.userName === profileUser.userName && <ProfileProgress />}
@@ -257,7 +277,6 @@ function Profile() {
         </div>
       </section>
 
-      {/* Modal for editing user insights */}
       <Modal
         isOpen={isModalOpen}
         onClose={handleModalClose}
@@ -267,7 +286,6 @@ function Profile() {
         <UserInsightsForm />
       </Modal>
 
-      {/* Toast notifications */}
       {toastVisible && (
         <Toast
           role="alert"

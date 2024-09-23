@@ -81,7 +81,7 @@ const AvatarUpload = ({ onUpload }) => {
             />
           ) : (
             <img
-              src={image || avatarDefault}
+              src={image || "https://via.placeholder.com/150"}
               alt="Uploaded"
               className="w-[6rem] h-[6rem] lg:w-[7rem] lg:h-[7rem] xl:w-[8rem] xl:h-[8rem] max-w-40 max-h-40 rounded-full object-cover border-2 border-opacity-20 border-gray-300"
             />

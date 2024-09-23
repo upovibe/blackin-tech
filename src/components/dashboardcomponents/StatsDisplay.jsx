@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  getAllDocuments,
-  listenToCollection,
-} from "../../services/firestoreCRUD";
-import { fetchJobTypes } from "../../api/jobsApi";
+import { getAllDocuments } from "../../services/firestoreCRUD";
 import {
   FaBriefcase,
   FaFileAlt,
@@ -46,8 +42,26 @@ const StatsDisplay = () => {
         const users = await getAllDocuments("users");
         setTotalUsers(users.length);
 
-        const activeUsersCount = users.filter((user) => user.isOnline).length;
-        setActiveUsers(activeUsersCount);
+        // Calculate active users based on activities
+        const userActivities = await getAllDocuments("userActivities"); // Assume you have a userActivities collection
+        const activeUserIds = new Set();
+
+        users.forEach((user) => {
+          const userActivity = userActivities.find((activity) => activity.userId === user.id);
+          const today = new Date();
+          const activityThreshold = 30; // Active if they did something in the last 30 days
+
+          if (userActivity) {
+            const lastActiveDate = new Date(userActivity.lastActive); // Assume lastActive field exists
+            const daysActive = (today - lastActiveDate) / (1000 * 60 * 60 * 24);
+            
+            if (daysActive <= activityThreshold || userActivity.savedJobs.length > 0 || userActivity.postedJobs.length > 0) {
+              activeUserIds.add(user.id);
+            }
+          }
+        });
+
+        setActiveUsers(activeUserIds.size);
 
         const newRegistrationsCount = users.filter((user) => {
           const registrationDate = new Date(user.registrationDate);
@@ -63,7 +77,7 @@ const StatsDisplay = () => {
         });
         setTotalSavedJobs(totalSaves);
 
-        const jobTypes = await fetchJobTypes();
+        const jobTypes = await getAllDocuments("jobTypes");
         setJobTypesCount(jobTypes.length);
 
         const jobsWithNoAppsCount = jobs.filter((job) => {
@@ -144,7 +158,9 @@ const StatsDisplay = () => {
               {stat.icon}
             </div>
             <div>
-            <p className="text-xl font-semibold text-white bg-slate-600 flex items-center justify-center size-10 min-h-10 min-w-10 rounded-full ">{stat.value}</p>
+              <p className="text-xl font-semibold text-white bg-slate-600 flex items-center justify-center size-10 min-h-10 min-w-10 rounded-full ">
+                {stat.value}
+              </p>
             </div>
           </div>
         </div>

@@ -12,13 +12,7 @@ import formLoading from "../../assets/animations/Animation - FormLoading.json";
 import Toast from "../common/Toast";
 import HorizontalLineWithText from "../common/HorizontalLineWithText";
 import Divider from "../common/Divider";
-import {
-  fetchSkills,
-  fetchAbilities,
-  fetchAvailabilityStatuses,
-  fetchEducationalCategories,
-} from "../../api/usersInsight";
-import { updateDocument, getDocumentByID } from "../../services/firestoreCRUD";
+import { updateDocument, getDocumentByID, getAllDocuments } from "../../services/firestoreCRUD";
 import { UserAuth } from "../../contexts/AuthContext";
 import { FaMinus, FaPlus } from "react-icons/fa6";
 
@@ -88,26 +82,45 @@ const UserInsightsForm = () => {
   useEffect(() => {
     const loadOptions = async () => {
       try {
-        const skills = await fetchSkills();
-        const abilities = await fetchAbilities();
-        const availability = await fetchAvailabilityStatuses();
-        const educationalCategories = await fetchEducationalCategories();
-
-        setSkillsOptions(skills.map((s) => ({ label: s, value: s })));
-        setAbilitiesOptions(abilities.map((a) => ({ label: a, value: a })));
-        setAvailabilityOptions(
-          availability.map((a) => ({ label: a, value: a }))
-        );
-        setEducationalCategories(
-          educationalCategories.map((e) => ({ label: e, value: e }))
-        );
+        // Fetch skills from Firestore
+        const skillsData = await getAllDocuments("jobSkills");
+        const formattedSkills = skillsData.map((skill) => ({
+          label: skill.name,
+          value: skill.slug,
+        }));
+        setSkillsOptions(formattedSkills);
+  
+        // Fetch abilities from Firestore
+        const abilitiesData = await getAllDocuments("jobAbilities");
+        const formattedAbilities = abilitiesData.map((ability) => ({
+          label: ability.name,
+          value: ability.slug,
+        }));
+        setAbilitiesOptions(formattedAbilities);
+  
+        // Fetch availability statuses from Firestore
+        const availabilityData = await getAllDocuments("jobAvailabilities");
+        const formattedAvailability = availabilityData.map((availability) => ({
+          label: availability.name,
+          value: availability.slug,
+        }));
+        setAvailabilityOptions(formattedAvailability);
+  
+        // Fetch educational categories from the existing API
+        const educationalCategoriesData = await getAllDocuments("eduCategories");
+        const formattedEducationalCategories = educationalCategoriesData.map((category) => ({
+          label: category.name,
+          value: category.slug,
+        }));
+        setEducationalCategories(formattedEducationalCategories);
       } catch (error) {
         console.error("Failed to load options:", error);
       }
     };
-
+  
     loadOptions();
   }, []);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;

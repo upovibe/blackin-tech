@@ -1,11 +1,16 @@
 import TabComponent from "../components/common/TabComponent";
+import EditProfile from "../components/edit/EditProfile";
 import UserInsightsForm from "../components/auth/UserInsightsForm";
 
 const SettingsPage = () => {
   const tabs = [
     {
-      label: "Profile",
-      content: <div>Your Profile settings go here...</div>,
+      label: "Basic Info",
+      content: (
+        <div>
+          <EditProfile />
+        </div>
+      ),
     },
     {
       label: "Account",

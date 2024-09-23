@@ -2,22 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { listenToCollection, updateDocument, deleteDocument } from '../../services/firestoreCRUD'; 
 import Table from '../common/Table';
-import { FaTools } from 'react-icons/fa';
+import { FaUserTag } from 'react-icons/fa'; // Changed icon to something related to pronouns
 import RightSidebar from '../common/RightSidebar';
 import Modal from '../common/Modal';
-import PronounsForm from '../forms/PronounsForm';
+import PronounsForm from '../forms/PronounsForm'; // Import the PronounsForm
 
 const PronounsTable = () => {
-  const [jobPronouns, setJobPronouns] = useState([]);
+  const [pronouns, setPronouns] = useState([]);
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedJobPronoun, setSelectedJobPronoun] = useState(null);
+  const [selectedPronoun, setSelectedPronoun] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = listenToCollection('jobPronouns', (data) => {
-      setJobPronouns(data); 
+    const unsubscribe = listenToCollection('pronouns', (data) => {
+      setPronouns(data); 
     });
     return () => unsubscribe();
   }, []);
@@ -27,40 +27,40 @@ const PronounsTable = () => {
     { Header: 'Slug', accessor: 'slug', type: 'text' },
   ];
 
-  const handleUpdate = (jobPronoun, updatedData) => {
-    const updatedJobPronoun = { ...jobPronoun, ...updatedData };
-    updateDocument('jobPronouns', updatedJobPronoun.id, updatedJobPronoun)
-      .then(() => console.log('Job Pronoun updated successfully'))
-      .catch((error) => console.error('Error updating job pronoun:', error));
+  const handleUpdate = (pronoun, updatedData) => {
+    const updatedPronoun = { ...pronoun, ...updatedData };
+    updateDocument('pronouns', updatedPronoun.id, updatedPronoun)
+      .then(() => console.log('Pronoun updated successfully'))
+      .catch((error) => console.error('Error updating pronoun:', error));
   };
 
-  const handleDelete = (jobPronoun) => {
-    deleteDocument('jobPronouns', jobPronoun.id)
-      .then(() => console.log('Job Pronoun deleted successfully'))
-      .catch((error) => console.error('Error deleting job pronoun:', error));
+  const handleDelete = (pronoun) => {
+    deleteDocument('pronouns', pronoun.id)
+      .then(() => console.log('Pronoun deleted successfully'))
+      .catch((error) => console.error('Error deleting pronoun:', error));
   };
 
   const handleBulkDelete = () => {
     selectedRows.forEach((rowId) => {
-      const jobPronounToDelete = jobPronouns.find((jobPronoun) => jobPronoun.id === rowId);
-      if (jobPronounToDelete) {
-        deleteDocument('jobPronouns', jobPronounToDelete.id)
-          .then(() => console.log(`Job Pronoun ${jobPronounToDelete.id} deleted successfully`))
-          .catch((error) => console.error('Error deleting job pronoun:', error));
+      const pronounToDelete = pronouns.find((pronoun) => pronoun.id === rowId);
+      if (pronounToDelete) {
+        deleteDocument('pronouns', pronounToDelete.id)
+          .then(() => console.log(`Pronoun ${pronounToDelete.id} deleted successfully`))
+          .catch((error) => console.error('Error deleting pronoun:', error));
       }
     });
 
-    setJobPronouns((prevJobPronouns) => prevJobPronouns.filter((jobPronoun) => !selectedRows.has(jobPronoun.id)));
+    setPronouns((prevPronouns) => prevPronouns.filter((pronoun) => !selectedRows.has(pronoun.id)));
     setSelectedRows(new Set());
   };
 
-  const handleViewJobPronoun = (jobPronoun) => {
-    setSelectedJobPronoun(jobPronoun); 
+  const handleViewPronoun = (pronoun) => {
+    setSelectedPronoun(pronoun); 
     setIsSidebarOpen(true); 
   };
 
   const handleOpenModal = () => {
-    setSelectedJobPronoun(null); 
+    setSelectedPronoun(null); 
     setIsModalOpen(true);
   };
 
@@ -75,10 +75,10 @@ const PronounsTable = () => {
   return (
     <>
       <Table
-        title="Job Pronouns Table"
-        icon={<FaTools />} // Change the icon if desired
+        title="Pronouns Table"
+        icon={<FaUserTag />} // Icon related to pronouns
         columns={columns}
-        data={jobPronouns}
+        data={pronouns}
         selectedRows={selectedRows}
         setSelectedRows={setSelectedRows}
         sortable={true}
@@ -87,7 +87,7 @@ const PronounsTable = () => {
         onEdit={handleUpdate}
         onDelete={handleDelete}
         handleBulkDelete={handleBulkDelete}
-        onView={handleViewJobPronoun}
+        onView={handleViewPronoun}
         onAdd={handleOpenModal}
         className="w-full text-sm text-gray-700"
       />
@@ -96,12 +96,12 @@ const PronounsTable = () => {
       <RightSidebar
         isOpen={isSidebarOpen}
         onClose={toggleSidebar}
-        title="Job Pronoun Details"
+        title="Pronoun Details"
       >
-        {selectedJobPronoun ? (
+        {selectedPronoun ? (
           <div>
-            <p><strong>Name:</strong> {selectedJobPronoun.name}</p>
-            <p><strong>Slug:</strong> {selectedJobPronoun.slug}</p>
+            <p><strong>Name:</strong> {selectedPronoun.name}</p>
+            <p><strong>Slug:</strong> {selectedPronoun.slug}</p>
             {/* Add more fields as needed */}
           </div>
         ) : (
@@ -109,14 +109,14 @@ const PronounsTable = () => {
         )}
       </RightSidebar>
 
-      {/* Modal for adding Job Pronouns */}
+      {/* Modal for adding Pronouns */}
       <Modal 
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         title="Add New Pronoun"
       >
         <PronounsForm 
-          jobPronoun={selectedJobPronoun} 
+          pronoun={selectedPronoun} 
           onClose={handleCloseModal}
         />
       </Modal>

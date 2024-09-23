@@ -49,6 +49,29 @@ export const getAllDocuments = async (collectionName) => {
   }
 };
 
+
+// Function to get documents with pagination
+export const getAllDocumentsWithLimit = async (collectionName, pageSize, page) => {
+  const collectionRef = collection(db, collectionName);
+  const q = query(
+    collectionRef,
+    orderBy("fullName"), // Adjust field if needed
+    limit(pageSize)
+  );
+
+  let snapshot;
+  if (page === 1) {
+    snapshot = await getDocs(q);
+  } else {
+    const previousSnapshots = await getDocs(query(collectionRef, orderBy("fullName"), limit((page - 1) * pageSize)));
+    const lastVisible = previousSnapshots.docs[previousSnapshots.docs.length - 1];
+    snapshot = await getDocs(query(collectionRef, orderBy("fullName"), startAfter(lastVisible), limit(pageSize)));
+  }
+
+  const docs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  return docs;
+}
+
 // Update a document
 export const updateDocument = async (collectionName, docId, updatedData) => {
   try {

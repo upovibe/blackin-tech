@@ -3,11 +3,10 @@ import { Link } from "react-router-dom";
 import { UserAuth } from "../contexts/AuthContext";
 import UserTable from "../components/tables/UserTable";
 import JobTable from "../components/tables/JobTable";
-import StatsDisplay from "../components/AdminComponent/StatsDisplay";
-import ActiveUsersChart from "../components/AdminComponent/ActiveUsersChart";
-import JobsPostedChart from "../components/AdminComponent/JobPostedChart";
+import StatsDisplay from "../components/dashboardcomponents/StatsDisplay";
+import ActiveUsersChart from "../components/dashboardcomponents/ActiveUsersChart";
+import JobsPostedChart from "../components/dashboardcomponents/JobPostedChart";
 import HorizontalLineWithText from "../components/common/HorizontalLineWithText";
-import RightSidebar from "../components/common/RightSidebar";  // Import RightSidebar
 import { FaChartSimple, FaGaugeSimple, FaUserTie } from "react-icons/fa6";
 import Lottie from 'lottie-react';
 import LoadingPage from '../assets/animations/Animation - LoadingPage.json';
@@ -16,21 +15,12 @@ import { FaTable } from "react-icons/fa";
 const Dashboard = () => {
   const { user } = UserAuth();
   const [loading, setLoading] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
     }, 2000);
   }, []);
-
-  const handleOpenSidebar = () => {
-    setIsSidebarOpen(true);
-  };
-
-  const handleCloseSidebar = () => {
-    setIsSidebarOpen(false);
-  };
 
   if (loading) {
     return (
@@ -57,15 +47,6 @@ const Dashboard = () => {
               </span>
             </Link>
           </div>
-
-          {/* Sidebar Button */}
-          <button 
-            className="mt-4 p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            onClick={handleOpenSidebar}
-          >
-            Open Sidebar
-          </button>
-
           <HorizontalLineWithText>
             <span className="text-sm font-semibold flex items-center gap-2">
               <FaGaugeSimple /> statistics
@@ -92,25 +73,16 @@ const Dashboard = () => {
               Table Management
             </span>
           </HorizontalLineWithText>
-          <div className="w-full flex items-center gap-6">
-            <div className="w-1/2">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className="w-full">
               <UserTable />
             </div>
-            <div className="w-1/2">
+            <div className="w-full">
               <JobTable />
             </div>
           </div>
         </div>
       </section>
-
-      {/* Right Sidebar */}
-      <RightSidebar
-        isOpen={isSidebarOpen}
-        onClose={handleCloseSidebar}
-        title="Sidebar Title"
-      >
-        <p>Content inside the sidebar</p>
-      </RightSidebar>
     </main>
   );
 };

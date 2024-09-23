@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import BaseChart from '../common/BaseChart';
-import { getAllDocuments } from '../../services/firestoreCRUD';
-import { fetchJobTypes } from '../../api/jobsApi';
+import { getAllDocuments } from '../../services/firestoreCRUD'; // Firestore CRUD service
 import Lottie from 'lottie-react';
 import ChartLoadingAnimation from '../../assets/animations/Animation - ChartLoading.json';
 import { FaChartPie } from "react-icons/fa";
@@ -23,37 +22,48 @@ const JobTypesChart = ({ chartType = 'pie' }) => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true); // Start loading
-      const jobs = await getAllDocuments('jobs');
-      const jobTypesList = await fetchJobTypes();
-      const jobTypesCount = {};
-      const backgroundColors = {};
+      
+      try {
+        // Fetch all jobs from Firestore
+        const jobs = await getAllDocuments('jobs');
+        // Fetch all job types from Firestore
+        const jobTypes = await getAllDocuments('jobTypes');
+        
+        const jobTypesCount = {};
+        const backgroundColors = {};
 
-      // Initialize jobTypesCount with all job types and assign random colors
-      jobTypesList.forEach(type => {
-        jobTypesCount[type] = 0;
-        backgroundColors[type] = generateRandomColor();
-      });
+        // Initialize jobTypesCount with all job types and assign random colors
+        jobTypes.forEach(type => {
+          jobTypesCount[type.name] = 0; // Assuming "name" field in jobTypes collection
+          backgroundColors[type.name] = generateRandomColor();
+        });
 
-      // Count jobs by type
-      jobs.forEach(job => {
-        const type = job.jobType || 'Other';
-        if (jobTypesCount[type] !== undefined) {
-          jobTypesCount[type]++;
-        } else {
-          jobTypesCount['Other'] = (jobTypesCount['Other'] || 0) + 1;
-          backgroundColors['Other'] = backgroundColors['Other'] || generateRandomColor();
-        }
-      });
+        // Count jobs by jobType
+        jobs.forEach(job => {
+          const type = job.jobType || 'Other';
+          if (jobTypesCount[type] !== undefined) {
+            jobTypesCount[type]++;
+          } else {
+            // Count jobs with unspecified job types as "Other"
+            jobTypesCount['Other'] = (jobTypesCount['Other'] || 0) + 1;
+            backgroundColors['Other'] = backgroundColors['Other'] || generateRandomColor();
+          }
+        });
 
-      setChartData({
-        labels: Object.keys(jobTypesCount),
-        datasets: [
-          {
-            data: Object.values(jobTypesCount),
-            backgroundColor: Object.values(backgroundColors),
-          },
-        ],
-      });
+        // Set chart data for rendering
+        setChartData({
+          labels: Object.keys(jobTypesCount),
+          datasets: [
+            {
+              data: Object.values(jobTypesCount),
+              backgroundColor: Object.values(backgroundColors),
+            },
+          ],
+        });
+      } catch (error) {
+        console.error('Error fetching data from Firestore:', error);
+      }
+
       setLoading(false); // End loading
     };
 

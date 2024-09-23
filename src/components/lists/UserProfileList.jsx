@@ -1,31 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  getConnections,
-  saveConnection,
+  addConnection,
   removeConnection,
+  getConnectionsByUserId,
   listenToConnectionCount,
 } from "../../services/firestoreUsersManagement";
+import { truncateText } from "../../utils/truncate";
 import { getAllDocuments } from "../../services/firestoreCRUD";
 import { UserAuth } from "../../contexts/AuthContext";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/animations/Animation - Loading.json";
 import noDataAnimation from "../../assets/animations/Animation - No Data Found.json";
 import Toast from "../common/Toast";
-import { FaUserPlus, FaUserMinus } from "react-icons/fa";
-import { FaEye } from "react-icons/fa6";
+import { FaUserPlus, FaUserMinus, FaEye, FaTimes } from "react-icons/fa";
 
-const UserProfileList = () => {
+const UserProfileList = ({ profiles, keywords, selectedAvailability, selectedLocation }) => {
   const { user } = UserAuth();
-  const [profiles, setProfiles] = useState([]);
+  const [profileList, setProfileList] = useState([]); // Renamed this state variable to 'profileList'
   const [loading, setLoading] = useState(true);
   const [connections, setConnections] = useState(new Set());
   const [connectionCounts, setConnectionCounts] = useState({});
+  const [removedProfiles, setRemovedProfiles] = useState(new Set());
   const [toastMessage, setToastMessage] = useState("");
   const [toastVisible, setToastVisible] = useState(false);
   const [toastType, setToastType] = useState("success");
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
   const navigate = useNavigate();
 
+  // Fetch profiles and listen for real-time connection counts
   useEffect(() => {
     const fetchProfiles = async () => {
       if (!user || !user.uid) {
@@ -33,16 +37,21 @@ const UserProfileList = () => {
         return;
       }
 
-      setLoading(true);
       try {
-        const connectionList = await getConnections(user.uid);
-        setConnections(new Set(connectionList.map((conn) => conn.id)));
+        const connectionList = await getConnectionsByUserId(user.uid);
+        setConnections(new Set(connectionList.map((conn) => conn.connectedUserId)));
 
         const allProfiles = await getAllDocuments("users");
-        const validProfiles = allProfiles.filter((profile) => profile.fullName);
-        setProfiles(validProfiles);
+        const validProfiles = allProfiles.filter(
+          (profile) => profile.fullName && profile.id !== user.uid
+        );
 
-        validProfiles.forEach((profile) => {
+        // Shuffle profiles for random arrangement
+        const shuffledProfiles = validProfiles.sort(() => Math.random() - 0.5);
+        setProfileList(shuffledProfiles); // Updated to use 'setProfileList'
+
+        // Set up real-time listener for connection counts
+        shuffledProfiles.forEach((profile) => {
           listenToConnectionCount(profile.id, (count) => {
             setConnectionCounts((prevCounts) => ({
               ...prevCounts,
@@ -53,61 +62,49 @@ const UserProfileList = () => {
       } catch (error) {
         console.error("Error fetching profiles:", error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Move this to the end
       }
     };
 
     fetchProfiles();
   }, [user]);
 
+  const handleRemove = (profileId) => {
+    setRemovedProfiles((prevRemoved) => new Set([...prevRemoved, profileId]));
+  };
+
   const handleConnect = async (profileId, profile) => {
-    if (user) {
-      try {
-        const fullName = profile.fullName || "Anonymous User";
-        await saveConnection(user.uid, profileId, {
-          fullName,
-          avatarUrl: profile.avatarUrl,
-        });
-        setConnections(
-          (prevConnections) => new Set([...prevConnections, profileId])
-        );
-        setToastMessage("Connected successfully!");
-        setToastType("success");
-        setToastVisible(true);
-      } catch (error) {
-        console.error("Error connecting user: ", error);
-        setToastMessage("Failed to connect.");
-        setToastType("error");
-        setToastVisible(true);
-      }
-    } else {
-      setToastMessage("Sign in to get started!");
+    setIsConnecting(true);
+    try {
+      await addConnection(user.uid, profileId, profile.avatarUrl, profile.fullName);
+      setConnections((prevConnections) => new Set(prevConnections).add(profileId));
+      setToastMessage("Connection added successfully!");
+      setToastType("success");
+    } catch (error) {
+      setToastMessage("Error adding connection.");
       setToastType("error");
+    } finally {
+      setIsConnecting(false);
       setToastVisible(true);
     }
   };
 
   const handleDisconnect = async (profileId) => {
-    if (user) {
-      try {
-        await removeConnection(user.uid, profileId);
-        setConnections((prevConnections) => {
-          const updatedConnections = new Set(prevConnections);
-          updatedConnections.delete(profileId);
-          return updatedConnections;
-        });
-        setToastMessage("Disconnected successfully!");
-        setToastType("success");
-        setToastVisible(true);
-      } catch (error) {
-        console.error("Error disconnecting user: ", error);
-        setToastMessage("Failed to disconnect.");
-        setToastType("error");
-        setToastVisible(true);
-      }
-    } else {
-      setToastMessage("Sign in to get started!");
+    setIsDisconnecting(true);
+    try {
+      await removeConnection(user.uid, profileId);
+      setConnections((prevConnections) => {
+        const updatedConnections = new Set(prevConnections);
+        updatedConnections.delete(profileId);
+        return updatedConnections;
+      });
+      setToastMessage("Connection removed successfully!");
+      setToastType("success");
+    } catch (error) {
+      setToastMessage("Error removing connection.");
       setToastType("error");
+    } finally {
+      setIsDisconnecting(false);
       setToastVisible(true);
     }
   };
@@ -115,6 +112,28 @@ const UserProfileList = () => {
   const handleProfileClick = (username) => {
     navigate(`/profile/${username}`);
   };
+
+  // Filter profiles based on keywords, availability, and location
+  const filteredProfiles = profileList.filter((profile) => {
+    const keywordMatch = keywords
+      ? profile.fullName.toLowerCase().includes(keywords.toLowerCase()) ||
+        profile.professionalTitle?.toLowerCase().includes(keywords.toLowerCase()) ||
+        profile.skills?.some((skill) =>
+          skill.toLowerCase().includes(keywords.toLowerCase())
+        )
+      : true;
+
+    const availabilityMatch = selectedAvailability
+      ? profile.availability === selectedAvailability
+      : true;
+
+    const locationMatch = selectedLocation
+      ? profile.location?.toLowerCase() === selectedLocation.toLowerCase()
+      : true;
+
+    return keywordMatch && availabilityMatch && locationMatch && !removedProfiles.has(profile.id);
+  });
+
 
   if (loading) {
     return (
@@ -125,7 +144,7 @@ const UserProfileList = () => {
     );
   }
 
-  if (profiles.length === 0) {
+  if (filteredProfiles.length === 0) {
     return (
       <div className="flex flex-col items-center">
         <Lottie animationData={noDataAnimation} className="w-64 h-64" />
@@ -136,42 +155,56 @@ const UserProfileList = () => {
 
   return (
     <div className="profile-list-results gap-3 grid grid-cols-2 place-items-center place-self-center self-center md:grid-cols-3 lg:grid-cols-4">
-      {profiles.map((profile) => (
+      {filteredProfiles.map((profile) => (
         <div
           key={profile.id}
           className="border-2 border-opacity-30 bg-slate-50 border-slate-400 cursor-pointer flex flex-col group overflow-hidden rounded-xl shadow hover:duration-300 hover:ease-in-out hover:shadow-md hover:transition-all"
           style={{ width: "180px", minHeight: "260px" }}
           onClick={() => handleProfileClick(profile.userName)}
         >
-          <div
-            className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-fulls"
-            style={{
-              backgroundImage:
-                `url(${profile.coverImageUrl})` ||
-                "https://via.placeholder.com/150",
-            }}
-          />
+          <div className="relative">
+            <div
+              className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-full z-"
+              style={{
+                backgroundImage: `url(${profile.coverImageUrl || "https://via.placeholder.com/150"})`,
+              }}
+            />
+            <button
+              className="absolute top-1 right-1 p-2 text-white bg-black/25 hover:bg-black/50 rounded-full transition-all duration-200 ease-in-out"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRemove(profile.id);
+              }}
+            >
+              <FaTimes />
+            </button>
+          </div>
+
           <div className="flex flex-col flex-grow items-center justify-between relative">
             <div className="-translate-y-9 border-4 border-white h-1/6 min-h-20 min-w-20 overflow-hidden rounded-full size-20">
               <img
                 src={profile.avatarUrl || "https://via.placeholder.com/150"}
                 alt={profile.fullName}
-                className=""
               />
             </div>
-            <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full"> 
+            <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full">
               <div className="p-3 size-full text-center">
-                <h3 className="text-center font-semibold truncate">
+                <h3 className="text-center font-semibold truncate mt-1">
                   {profile.fullName}
                 </h3>
-                <p className="text-xm truncate">
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                <span className="text-sm truncate">
+                  {profile.professionalTitle || "No title"}
+                </span>
+                <p className="text-sm text-slate-500">
+                  {truncateText((profile.skills || []).join(" | "), 100)}
                 </p>
               </div>
+
               <div className="absolute bg-gradient-to-t bg-slate-100 bottom-0 duration-300 ease-in-out flex flex-grow from-slate-400 h-1/2 items-center justify-center opacity-0 p-3 size-full to-slate-50 transition-opacity via-slate-200 group-hover:opacity-100">
                 <div className="flex justify-center">
                   {user.uid === profile.id ? (
                     <button
+                      type="button"
                       className="flex items-center justify-center gap-2 border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-36 hover:bg-slate-800 hover:text-white/80"
                       onClick={() => navigate(`/profile/${profile.userName}`)}
                     >
@@ -180,16 +213,19 @@ const UserProfileList = () => {
                     </button>
                   ) : connections.has(profile.id) ? (
                     <button
+                      type="button"
                       className="flex items-center justify-center gap-2 border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-36 hover:bg-slate-800 hover:text-white/80"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDisconnect(profile.id);
                       }}
+                      disabled={isDisconnecting}
                     >
-                      <FaUserMinus /> Disconnect
+                      <FaUserMinus /> {isDisconnecting ? "Disconnecting..." : "Disconnect"} 
                     </button>
                   ) : (
                     <button
+                      type="button"
                       className="flex items-center justify-center gap-2 border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-36 hover:bg-slate-800 hover:text-white/80"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -198,8 +234,9 @@ const UserProfileList = () => {
                           avatarUrl: profile.avatarUrl,
                         });
                       }}
+                      disabled={isConnecting}
                     >
-                      <FaUserPlus /> Connect
+                      <FaUserPlus /> {isConnecting ? "Connecting..." : "Connect"}
                     </button>
                   )}
                 </div>

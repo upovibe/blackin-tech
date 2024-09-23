@@ -8,41 +8,41 @@ import generateSlug from "../../utils/slugUtil";
 import { capitalizeWords } from "../../utils/stringUtils";
 import { formatDate } from "../../utils/dateUtils";
 
-const PronounsForm = () => {
-  const [pronouns, setPronouns] = useState([{ name: "", slug: "" }]);
+const EduCategoriesForm = () => {
+  const [eduCategories, setEduCategories] = useState([{ name: "", slug: "" }]);
   const [toast, setToast] = useState({ visible: false, message: "", type: "success" });
   const [existingNames, setExistingNames] = useState([]);
 
   useEffect(() => {
-    const fetchPronouns = async () => {
+    const fetchEduCategories = async () => {
       try {
-        const pronounsSnapshot = await getAllDocuments("pronouns");
-        const names = pronounsSnapshot.map(doc => doc.name.toLowerCase());
+        const eduCategoriesSnapshot = await getAllDocuments("eduCategories");
+        const names = eduCategoriesSnapshot.map(doc => doc.name.toLowerCase());
         setExistingNames(names);
       } catch (error) {
-        console.error("Error fetching pronouns:", error);
+        console.error("Error fetching educational categories:", error);
       }
     };
 
-    fetchPronouns();
+    fetchEduCategories();
   }, []);
 
-  const handlePronounChange = (index, e) => {
-    const newPronouns = [...pronouns];
-    const name = capitalizeWords(e.target.value); // Capitalize words
-    newPronouns[index][e.target.name] = name;
-    newPronouns[index].slug = generateSlug(name);
-    setPronouns(newPronouns);
+  const handleEduCategoryChange = (index, e) => {
+    const newEduCategories = [...eduCategories];
+    const name = capitalizeWords(e.target.value);
+    newEduCategories[index][e.target.name] = name;
+    newEduCategories[index].slug = generateSlug(name);
+    setEduCategories(newEduCategories);
   };
 
-  const addPronoun = () => {
-    setPronouns([...pronouns, { name: "", slug: "" }]);
+  const addEduCategory = () => {
+    setEduCategories([...eduCategories, { name: "", slug: "" }]);
   };
 
-  const removePronoun = (index) => {
-    const newPronouns = [...pronouns];
-    newPronouns.splice(index, 1);
-    setPronouns(newPronouns);
+  const removeEduCategory = (index) => {
+    const newEduCategories = [...eduCategories];
+    newEduCategories.splice(index, 1);
+    setEduCategories(newEduCategories);
   };
 
   const showToast = (message, type = "success") => {
@@ -54,51 +54,51 @@ const PronounsForm = () => {
     e.preventDefault();
 
     try {
-      for (const pronoun of pronouns) {
-        const { name } = pronoun;
+      for (const eduCategory of eduCategories) {
+        const { name } = eduCategory;
         if (name.trim() !== "") {
           if (existingNames.includes(name.toLowerCase())) {
-            showToast(`Pronoun "${name}" already exists.`, "error");
+            showToast(`Educational category "${name}" already exists.`, "error");
             continue;
           }
 
           const timestamp = new Date();
-          const formattedTimestamp = formatDate(timestamp); // Format the date
-          const newPronoun = {
-            name: pronoun.name,
-            slug: pronoun.slug,
-            createdAt: formattedTimestamp, // Use formatted date
+          const formattedTimestamp = formatDate(timestamp);
+          const newEduCategory = {
+            name: eduCategory.name,
+            slug: eduCategory.slug,
+            createdAt: formattedTimestamp,
           };
 
-          await createDocument("pronouns", newPronoun);
-          showToast(`Pronoun "${name}" added successfully!`);
+          await createDocument("eduCategories", newEduCategory);
+          showToast(`Educational category "${name}" added successfully!`);
         }
       }
-      setPronouns([{ name: "", slug: "" }]);
+      setEduCategories([{ name: "", slug: "" }]);
     } catch (error) {
-      console.error("Error adding pronouns to Firestore:", error);
-      showToast("Error adding pronouns.", "error");
+      console.error("Error adding educational categories to Firestore:", error);
+      showToast("Error adding educational categories.", "error");
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <div className="my-5">
-        {pronouns.map((pronoun, index) => (
+        {eduCategories.map((eduCategory, index) => (
           <div key={index} className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 w-full">
               <div className="w-full">
                 <Input
                   name="name"
-                  placeholder="Pronoun"
-                  value={pronoun.name}
-                  onChange={(e) => handlePronounChange(index, e)}
+                  placeholder="Educational Category"
+                  value={eduCategory.name}
+                  onChange={(e) => handleEduCategoryChange(index, e)}
                 />
               </div>
               <div className="size-fit">
                 <Button
                   type="button"
-                  onClick={addPronoun}
+                  onClick={addEduCategory}
                   className="bg-blue-500 text-white size-10"
                 >
                   <FaPlus />
@@ -109,7 +109,7 @@ const PronounsForm = () => {
               <div className="size-fit">
                 <Button
                   type="button"
-                  onClick={() => removePronoun(index)}
+                  onClick={() => removeEduCategory(index)}
                   className="bg-red-500 text-white ml-auto size-10"
                 >
                   <FaMinus />
@@ -120,7 +120,7 @@ const PronounsForm = () => {
         ))}
       </div>
       <Button type="submit" className="bg-green-500 text-white">
-        Save Pronouns
+        Save Educational Categories
       </Button>
 
       <Toast
@@ -133,4 +133,4 @@ const PronounsForm = () => {
   );
 };
 
-export default PronounsForm;
+export default EduCategoriesForm;

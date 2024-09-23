@@ -3,9 +3,9 @@ import { getSavedJobs, saveJob, removeSavedJob, } from '../../services/firestore
 import { fetchFilteredJobs } from '../../services/firestoreJobSearch';
 import { Link, useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
+import { truncateText } from '../../utils/truncate';
 import animationData from '../../assets/animations/Animation - Jobs.json';
 import noDataAnimation from '../../assets/animations/Animation - No Data Found.json';
-import imageLoadingAnimation from '../../assets/animations/Animation - Image Loading.json';
 import { FaMapMarker, FaUserCircle } from 'react-icons/fa';
 import { UserAuth } from '../../contexts/AuthContext';
 import { timeSince } from '../../utils/timingUtils';
@@ -15,11 +15,6 @@ import Toast from '../common/Toast';
 import Pagination from '../common/Pagination';
 import Tooltip from '../common/Tooltip';
 import { debounce } from 'lodash';
-
-const truncateText = (text, maxLength) => {
-  if (!text) return '';
-  return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
-};
 
 const JobList = ({ filters, jobs: initialJobs = [] }) => {
   const navigate = useNavigate();

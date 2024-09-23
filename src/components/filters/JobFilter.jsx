@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Input from '../common/Input';
 import SelectInput from '../common/SelectInput';
-import { fetchJobTypes } from '../../api/jobsApi'; 
+import { getAllDocuments } from '../../services/firestoreCRUD'; // Firestore fetch function
 import HorizontalLineWithText from '../common/HorizontalLineWithText';
 
 const JobFilter = ({ onFilterChange }) => {
@@ -13,12 +13,19 @@ const JobFilter = ({ onFilterChange }) => {
 
   const [jobTypes, setJobTypes] = useState([]);
 
-  // Fetch job types from API on component mount
+  // Fetch job types from Firestore on component mount
   useEffect(() => {
     const fetchTypes = async () => {
-      const types = await fetchJobTypes();
-      const formattedTypes = types.map(type => ({ label: type, value: type }));
-      setJobTypes(formattedTypes);
+      try {
+        const types = await getAllDocuments('jobTypes');
+        const formattedTypes = types.map(type => ({
+          label: type.name, // Display the job type name
+          value: type.slug, // Use slug or ID as value
+        }));
+        setJobTypes(formattedTypes);
+      } catch (error) {
+        console.error('Error fetching job types from Firestore:', error);
+      }
     };
     fetchTypes();
   }, []);
@@ -57,7 +64,7 @@ const JobFilter = ({ onFilterChange }) => {
   };
 
   return (
-    <div className=" bg-slate-100 p-2 border-2 border-slate-500/10 rounded-lg">
+    <div className="bg-slate-100 p-2 border-2 border-slate-500/10 rounded-lg">
       <HorizontalLineWithText>Filter by location</HorizontalLineWithText>
       <div className="">
         <Input
@@ -68,6 +75,7 @@ const JobFilter = ({ onFilterChange }) => {
           className="border mt-2 p-2 w-full rounded"
         />
       </div>
+
       <HorizontalLineWithText>Filter by Job Type</HorizontalLineWithText>
       <div className="">
         <SelectInput
@@ -79,20 +87,21 @@ const JobFilter = ({ onFilterChange }) => {
           className="border mt-2 p-2 w-full rounded"
         />
       </div>
-      <div className='flex items-center justify-between gap-3 mt-8'>
-      <button
-        onClick={handleFilterSubmit}
-        className="w-full bg-slate-500 text-white p-1 rounded-lg hover:bg-slate-950 transition-all duration-300 ease-in-out"
-      >
-        Filter
-      </button>
-      <button
-        onClick={handleClearFilters}
-        className="w-full bg-gray-200 text-gray-700 p-1 rounded-lg"
-      >
-        Clear
-      </button>
-      </div>      
+
+      <div className="flex items-center justify-between gap-3 mt-8">
+        <button
+          onClick={handleFilterSubmit}
+          className="w-full bg-slate-500 text-white p-1 rounded-lg hover:bg-slate-950 transition-all duration-300 ease-in-out"
+        >
+          Filter
+        </button>
+        <button
+          onClick={handleClearFilters}
+          className="w-full bg-gray-200 text-gray-700 p-1 rounded-lg"
+        >
+          Clear
+        </button>
+      </div>
     </div>
   );
 };

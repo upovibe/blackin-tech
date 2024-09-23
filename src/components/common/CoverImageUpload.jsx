@@ -77,13 +77,13 @@ const CoverImageUpload = ({ onUpload }) => {
             <Lottie
               animationData={animationData}
               loop={true}
-              className="w-24 h-24"
+              className="size-24"
             />
           ) : (
             <img
-              src={image || coverDefault}
+              src={image || "https://via.placeholder.com/150"}
               alt="Uploaded"
-              className="w-[16rem] h-[9rem] lg:w-[20rem] lg:h-[11rem] xl:w-[24rem] xl:h-[13rem] max-w-60 max-h-35 rounded-lg object-cover border-2 border-opacity-20 border-gray-300"
+              className=" w-[20rem] h-32 rounded-lg object-cover border-2 border-opacity-20 border-gray-300"
             />
           )}
           <span className="flex items-center text-blue-600 mt-2 text-xs font-bold">
