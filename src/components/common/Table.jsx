@@ -10,6 +10,7 @@ import {
   FaUserSlash,
 } from "react-icons/fa6";
 import AvatarUpload from "./AvatarUpload";
+import Divider from "./Divider";
 import { FaPlusCircle } from "react-icons/fa";
 
 const Table = ({
@@ -296,137 +297,150 @@ const Table = ({
   // Render table rows
   const renderRows = () => {
     return currentData.map((row, rowIndex) => (
-      <tr
-        key={rowIndex}
-        className={`border-b border-gray-300 w-full ${
-          selectedRows.has(rowIndex) ? "bg-gray-100" : ""
-        }`}
-      >
-        <td className="p-2 text-center">
-          <input
-            type="checkbox"
-            checked={selectedRows.has(rowIndex)}
-            onChange={() => handleRowSelect(rowIndex)}
-          />
-        </td>
-        {columns.map((column) => (
-          <td
-            key={column.accessor}
-            onClick={() =>
-              column.type !== "image" && handleCellClick(rowIndex, column)
-            }
-            className={`p-2 ${
-              column.type === "image" ? "text-center mr-auto" : ""
-            }`}
-          >
-            {editing &&
-            editing.rowIndex === rowIndex &&
-            editing.accessor === column.accessor ? (
-              column.selectOptions ? (
-                <select
-                  ref={inputRef} // Ensure ref is correctly assigned
-                  value={editValue}
-                  onChange={handleEditChange}
-                  onKeyDown={handleKeyDown}
-                  className="w-full h-10 p-1 border-transparent rounded placeholder-slate-500 border focus:border-slate-500/0 focus:ring-2 focus:ring-slate-300 outline-none transition-colors duration-300"
-                >
-                  {column.selectOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  ref={inputRef} // Ensure ref is correctly assigned
-                  type="text"
-                  value={editValue}
-                  onChange={handleEditChange}
-                  onKeyDown={handleKeyDown}
-                  className="w-full p-1 min-h-10 border-transparent rounded placeholder-slate-500 border focus:border-slate-500/0 focus:ring-2 focus:ring-slate-300 outline-none transition-colors duration-300"
-                />
-              )
-            ) : column.type === "image" ? (
-              <div className="flex items-center justify-start overflow-hidden w-12 h-12 rounded-full">
-                <img
-                  src={row[column.accessor] || "https://via.placeholder.com/50"}
-                  alt={column.Header}
-                  className="w-full h-full object-cover cursor-pointer rounded-full transition-transform duration-300 transform hover:scale-110"
-                  onClick={() =>
-                    setModal({
-                      visible: true,
-                      action: "viewImage",
-                      rowData: row,
-                      newImageURL: null,
-                    })
-                  }
-                />
-              </div>
-            ) : (
-              row[column.accessor]
-            )}
+      <React.Fragment key={rowIndex}>
+        <tr
+          className={`relative border-b border-gray-300 w-full ${
+            selectedRows.has(rowIndex) ? "bg-gray-100" : ""
+          }`}
+        >
+          <td className="p-2 text-center">
+            <input
+              type="checkbox"
+              checked={selectedRows.has(rowIndex)}
+              onChange={() => handleRowSelect(rowIndex)}
+            />
           </td>
-        ))}
-        <td className="flex items-center justify-end size-full p-2">
-          <div className="relative size-fit">
-            <button
-              onClick={() => onView(row)}
-              className="p-1 rounded hover:bg-gray-200"
+          {columns.map((column) => (
+            <td
+              key={column.accessor}
+              onClick={() =>
+                column.type !== "image" && handleCellClick(rowIndex, column)
+              }
+              className={`p-2 ${
+                column.type === "image" ? "text-center mr-auto" : ""
+              }`}
             >
-              <FaEye className="text-green-500 group-hover:text-green-600" />
-            </button>
-            <button
-              onClick={() => handleActionsToggle(rowIndex)}
-              className="p-1 rounded hover:bg-gray-200"
-            >
-              <FaEllipsisVertical />
-            </button>
-            {showActions === rowIndex && (
-              <ul
-                ref={dropdownRef}
-                className="absolute right-1 bg-white border border-gray-300 rounded shadow-lg mt-1 p-2 space-y-1 z-10"
+              {editing &&
+              editing.rowIndex === rowIndex &&
+              editing.accessor === column.accessor ? (
+                column.selectOptions ? (
+                  <select
+                    ref={inputRef}
+                    value={editValue}
+                    onChange={handleEditChange}
+                    onKeyDown={handleKeyDown}
+                    className="w-full h-10 p-1 border-transparent rounded placeholder-slate-500 border focus:border-slate-500/0 focus:ring-2 focus:ring-slate-300 outline-none transition-colors duration-300"
+                  >
+                    {column.selectOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={editValue}
+                    onChange={handleEditChange}
+                    onKeyDown={handleKeyDown}
+                    className="w-full p-1 min-h-10 border-transparent rounded placeholder-slate-500 border focus:border-slate-500/0 focus:ring-2 focus:ring-slate-300 outline-none transition-colors duration-300"
+                  />
+                )
+              ) : column.type === "image" ? (
+                <div className="flex items-center justify-start overflow-hidden w-12 h-12 rounded-full">
+                  <img
+                    src={
+                      row[column.accessor] || "https://via.placeholder.com/50"
+                    }
+                    alt={column.Header}
+                    className="w-full h-full object-cover cursor-pointer rounded-full transition-transform duration-300 transform hover:scale-110"
+                    onClick={() =>
+                      setModal({
+                        visible: true,
+                        action: "viewImage",
+                        rowData: row,
+                        newImageURL: null,
+                      })
+                    }
+                  />
+                </div>
+              ) : (
+                row[column.accessor]
+              )}
+            </td>
+          ))}
+          <td className="flex items-center justify-end size-full p-2">
+            <div className="relative size-fit">
+              <button
+                onClick={() => onView(row)}
+                className="p-1 rounded hover:bg-gray-200"
               >
-                <li
-                  onClick={() =>
-                    setModal({ visible: true, action: "edit", rowData: row })
-                  }
-                  className="group transition-all duration-200 ease-in-out group cursor-pointer hover:bg-gray-200 p-1 rounded flex items-center gap-2 px-2"
-                >
-                  <FaPenToSquare className="text-blue-500 group-hover:text-blue-600" />{" "}
-                  Edit
-                </li>
-                <li
-                  onClick={() =>
-                    setModal({ visible: true, action: "delete", rowData: row })
-                  }
-                  className="group transition-all duration-200 ease-in-out cursor-pointer hover:bg-gray-200 p-1 rounded flex items-center gap-2 px-2"
-                >
-                  <FaTrash className="text-red-500 group-hover:text-red-600" />
-                  Delete
-                </li>
-                <li
-                  onClick={() => onView(row)}
-                  className="group transition-all duration-200 ease-in-out cursor-pointer hover:bg-gray-200 p-1 rounded flex items-center gap-2 px-2"
-                >
-                  <FaEye className="text-green-500 group-hover:text-green-600" />
-                  View
-                </li>
-                <li
-                  onClick={() =>
-                    setModal({ visible: true, action: "disable", rowData: row })
-                  }
-                  className="group transition-all duration-200 ease-in-out cursor-pointer hover:bg-gray-200 p-1 rounded flex items-center gap-2 px-2"
-                >
-                  <FaUserSlash className="text-yellow-500 group-hover:text-yellow-600" />
-                  Disable
-                </li>
-              </ul>
-            )}
+                <FaEye className="text-green-500 group-hover:text-green-600" />
+              </button>
+              <button
+                onClick={() => handleActionsToggle(rowIndex)}
+                className="p-1 rounded hover:bg-gray-200"
+              >
+                <FaEllipsisVertical />
+              </button>
+            </div>
+            
+        {showActions === rowIndex && (
+          <div className="absolute right-5 top-5 z-50">
+            <ul
+              ref={dropdownRef}
+              className="bg-white border border-gray-300 rounded shadow-lg mt-1 p-2 space-y-1"
+            >
+              <li
+                onClick={() => onView(row)}
+                className="group transition-all duration-200 ease-in-out cursor-pointer hover:bg-gray-200 p-1 rounded flex items-center gap-2 px-2"
+              >
+                <FaEye className="text-green-500 group-hover:text-green-600" />
+                View
+              </li>
+              <li
+                onClick={() => onEdit(row)}
+                className="group transition-all duration-200 ease-in-out cursor-pointer hover:bg-gray-200 p-1 rounded flex items-center gap-2 px-2"
+              >
+                <FaPenToSquare className="text-blue-500 group-hover:text-blue-600" />{" "}
+                Edit
+              </li>
+              {/* <li
+                onClick={() =>
+                  setModal({
+                    visible: true,
+                    action: "disable",
+                    rowData: row,
+                  })
+                }
+                className="group transition-all duration-200 ease-in-out cursor-pointer hover:bg-gray-200 p-1 rounded flex items-center gap-2 px-2"
+              >
+                <FaUserSlash className="text-yellow-500 group-hover:text-yellow-600" />
+                Disable
+              </li> */}
+              <li
+                onClick={() =>
+                  setModal({
+                    visible: true,
+                    action: "delete",
+                    rowData: row,
+                  })
+                }
+                className="group transition-all duration-200 ease-in-out cursor-pointer hover:bg-gray-200 p-1 rounded flex items-center gap-2 px-2"
+              >
+                <FaTrash className="text-red-500 group-hover:text-red-600" />
+                Delete
+              </li>
+            </ul>
           </div>
-        </td>
-      </tr>
+        )}
+          </td>
+        </tr>
+      </React.Fragment>
     ));
   };
+
   const renderPagination = () => {
     const pageNumbers = [];
     for (let i = 1; i <= Math.ceil(sortedData.length / rowsPerPage); i++) {
@@ -434,12 +448,12 @@ const Table = ({
     }
 
     return (
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center items-center gap-3 mt-4">
         {pageNumbers.map((number) => (
           <button
             key={number}
             onClick={() => paginate(number)}
-            className={`size-6 text-sm font-semibold rounded ${
+            className={`size-8 text-sm font-semibold rounded ${
               number === currentPage ? "bg-slate-800 text-white" : "bg-gray-200"
             }`}
           >
@@ -667,53 +681,53 @@ const Table = ({
 
   return (
     <div className="relative p-3 bg-white shadow-md rounded-lg mb-2 overflow-x-auto">
-  {title && (
-    <div className="flex items-center justify-between gap-3 h-14 pb-3">
-      <div className="flex items-center gap-2 text-bold text-slate-900 text-xl font-bold">
-        {icon && <span>{icon}</span>}
-        <h2>{title}</h2>
+      {title && (
+        <div className="flex items-center justify-between gap-3 h-14 pb-3">
+          <div className="flex items-center gap-2 text-bold text-slate-900 text-xl font-bold">
+            {icon && <span>{icon}</span>}
+            <h2>{title}</h2>
+          </div>
+          <div className="flex items-center gap-2 transition-all duration-200 ease-in-out">
+            <button
+              type="button"
+              onClick={onAdd}
+              className="bg-green-500 text-white p-2 text-sm font-semibold rounded-md hover:bg-green-600 flex items-center gap-2"
+            >
+              <FaPlusCircle />
+              <span className="hidden lg:block">Add New</span>
+            </button>
+            {selectedRows.size > 0 && (
+              <button
+                onClick={handleBulkDeleteClick}
+                className="bg-red-500 text-white p-2 flex items-center gap-2 rounded-md hover:bg-red-600 text-sm font-semibold"
+              >
+                <FaTrash />
+                <span className="hidden lg:block">Delete Selected</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      <div className="overflow-auto pb-32">
+        <table className="min-w-full max-w-full border-collapse border border-gray-200">
+          <thead>{renderHeaders()}</thead>
+          <tbody>
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length + 2} className="text-center p-4">
+                  No data available.
+                </td>
+              </tr>
+            ) : (
+              renderRows()
+            )}
+          </tbody>
+        </table>
       </div>
-      <div className="flex items-center gap-2 transition-all duration-200 ease-in-out">
-        <button
-          type="button"
-          onClick={onAdd}
-          className="bg-green-500 text-white p-2 text-sm font-semibold rounded-md hover:bg-green-600 flex items-center gap-2"
-        >
-          <FaPlusCircle />
-          <span className="hidden lg:block">Add New</span>
-        </button>
-        {selectedRows.size > 0 && (
-          <button
-            onClick={handleBulkDeleteClick}
-            className="bg-red-500 text-white p-2 flex items-center gap-2 rounded-md hover:bg-red-600 text-sm font-semibold"
-          >
-            <FaTrash />
-            <span className="hidden lg:block">Delete Selected</span>
-          </button>
-        )}
-      </div>
+      <Divider className="bg-slate-500/10" />
+      {pagination && renderPagination()}
+      {renderModal()}
     </div>
-  )}
-  <div className="overflow-auto">
-    <table className="min-w-full max-w-full border-collapse border border-gray-200">
-      <thead>{renderHeaders()}</thead>
-      <tbody>
-        {data.length === 0 ? (
-          <tr>
-            <td colSpan={columns.length + 2} className="text-center p-4">
-              No data available.
-            </td>
-          </tr>
-        ) : (
-          renderRows()
-        )}
-      </tbody>
-    </table>
-  </div>
-  {pagination && renderPagination()}
-  {renderModal()}
-</div>
-
   );
 };
 

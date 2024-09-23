@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainLayout from './components/Layout/MainLayout';
-import AdminLayout from './components/Layout/AdminLayout';
+import DashboardLayout from './components/Layout/DashboardLayout';
 import PrivateRoute from './routes/PrivateRoute';
 import PublicRoute from './routes/PublicRoute';
 import Home from './pages/Home';
@@ -22,7 +22,7 @@ import UserPortal from './admin/UserPortal';
 import JobPortal from './admin/JobPortal';
 import DataSettings from './admin/DataSettings';
 import StartReports from './admin/StartReports';
-import JobManagementPage from './pages/JobManagementPage'
+import Subscribe from './pages/Subscribe'
 
 function App() {
   return (
@@ -36,7 +36,7 @@ function App() {
         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
         <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />
         <Route path="/jobs/:slug" element={<MainLayout><JobDetails /></MainLayout>} />
-        <Route path="/jobmanagementpage" element={<MainLayout><JobManagementPage /></MainLayout>} />
+        <Route path="/subscribe" element={<MainLayout><Subscribe /></MainLayout>} />
         <Route path="/connect" element={<MainLayout><Connect /></MainLayout>} />
         <Route path="/search" element={<MainLayout><Search /></MainLayout>} />
         <Route path="/search" element={<MainLayout><Search /></MainLayout>} />
@@ -53,11 +53,11 @@ function App() {
 
         {/* Admin route */}
         <Route element={<PrivateRoute requiredRole="admin" />}>
-          <Route path="/dashboard" element={<AdminLayout><Dashboard /></AdminLayout>} />
-          <Route path="/userportal" element={<AdminLayout><UserPortal /></AdminLayout>} />
-          <Route path="/jobportal" element={<AdminLayout><JobPortal /></AdminLayout>} />
-          <Route path="/stat-reports" element={<AdminLayout><StartReports /></AdminLayout>} />
-          <Route path="/data-settings" element={<AdminLayout><DataSettings /></AdminLayout>} />
+          <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
+          <Route path="/userportal" element={<DashboardLayout><UserPortal /></DashboardLayout>} />
+          <Route path="/jobportal" element={<DashboardLayout><JobPortal /></DashboardLayout>} />
+          <Route path="/stat-reports" element={<DashboardLayout><StartReports /></DashboardLayout>} />
+          <Route path="/data-settings" element={<DashboardLayout><DataSettings /></DashboardLayout>} />
         </Route>
 
         {/* Catch-all route */}

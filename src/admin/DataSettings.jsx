@@ -8,6 +8,8 @@ import JobSkillsTable from "../components/tables/JobSkillsTable";
 import JobAbilitiesTable from "../components/tables/JobAbilitiesTable";
 import EduCategoriesTable from "../components/tables/EduCategoriesTable";
 import PronounsTable from "../components/tables/PronounsTable";
+import SubTypesTable from "../components/tables/SubTyoesTable";
+import SubscriptionTable from "../components/tables/SubscriptionTable";
 
 const DataSettings = () => {
   const [loading, setLoading] = useState(true);
@@ -19,6 +21,22 @@ const DataSettings = () => {
   }, []);
 
   const tabs = [
+    {
+      label: "SubType",
+      content: (
+        <div>
+          <SubTypesTable />
+        </div>
+      ),
+    },
+    {
+      label: "Subscriptions",
+      content: (
+        <div>
+          <SubscriptionTable />
+        </div>
+      ),
+    },
     {
       label: "Job Tpes",
       content: (

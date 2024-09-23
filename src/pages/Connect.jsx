@@ -3,7 +3,7 @@ import UserProfileList from "../components/lists/UserProfileList";
 import UsersFilter from "../components/filters/UsersFilter";
 import HorizontalLineWithText from "../components/common/HorizontalLineWithText";
 import { getAllDocuments } from "../services/firestoreCRUD";
-import { FaRotate, FaEyeSlash, FaEye } from "react-icons/fa6";
+import { FaRotate, FaFilter, } from "react-icons/fa6";
 import Divider from "../components/common/Divider"
 
 const Connect = () => {
@@ -91,13 +91,10 @@ const Connect = () => {
                 className="flex items-center space-x-2 px-4 py-2 border rounded-full text-sm font-sm transition-all duration-300"
               >
                 <span className="flex items-center">
-                  {showFilters ? (
-                    <FaEyeSlash className="mr-2" />
-                  ) : (
-                    <FaEye className="mr-2" />
-                  )}
-                  {showFilters ? "Hide Filters" : "Show Filters"}
-                </span>
+  <FaFilter className="mr-2" />
+  {showFilters ? "Hide Filters" : "Show Filters"}
+</span>
+
               </button>
             </div>
             <div>

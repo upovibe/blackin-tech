@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useNavigate  } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import JobList from '../components/lists/JobList';
 import JobFilter from '../components/filters/JobFilter';
 import Lottie from 'lottie-react';
 import animationData from '../assets/animations/Animation - TechJobs.json';
-import pageloading from '../assets/animations/Animation - LoadingPage.json'; // Your loading animation
+import pageloading from '../assets/animations/Animation - LoadingPage.json';
 import HorizontalLineWithText from '../components/common/HorizontalLineWithText';
-import { FaFilter, FaBriefcase } from 'react-icons/fa6';
+import { FaFilter, FaRotate } from 'react-icons/fa6';
 import { FaFileUpload } from 'react-icons/fa';
-import Button from '../components/common/Button'
+import Button from '../components/common/Button';
 
 const Jobs = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate(); // Initialize the navigate hook
   const [filters, setFilters] = useState({
     location: '',
     specialties: [],
@@ -24,7 +25,6 @@ const Jobs = () => {
 
   useEffect(() => {
     setLoading(true);
-
 
     const fetchData = setTimeout(() => {
       setLoading(false);
@@ -45,10 +45,9 @@ const Jobs = () => {
     setRefreshKey((prevKey) => prevKey + 1);
   };
 
-  // const handleNavigateToJobManagement = () => {
-  //   navigate("/jobmanagementpage");
-  // };
-
+  const handleNavigateToPostJob = () => {
+    navigate("/subscribe");
+  };
 
   if (loading) {
     return (
@@ -60,8 +59,8 @@ const Jobs = () => {
 
   return (
     <main className='w-screen h-auto'>
-      <section className='flex justify-center items-center'>
-        <div className="container pt-16 px-2 md:px-0">
+      <section className='flex justify-center items-center p-2'>
+        <div className="container pt-16">
           <div className='flex flex-col space-y-6 items-center justify-center px-0 md:px-20 lg:px-40 xl:px-60'>
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-semibold text-center font-serif">
               Your Gateway to Tech Opportunities
@@ -73,8 +72,8 @@ const Jobs = () => {
           </div>
           <div className='w-full flex items-center justify-center my-5 mt-10'>
             <Button 
-              className="flex gap-2 items-center font-semibold border rounded-full text-sm font-sm transition-all duration-300 h-14 w-40"              
-              
+              className="flex gap-2 items-center font-semibold border rounded-full text-sm font-sm transition-all duration-300 h-14 w-40"
+              onClick={handleNavigateToPostJob}
             >
               <FaFileUpload />
               <span>Post Job</span>
@@ -109,7 +108,7 @@ const Jobs = () => {
                 className='flex items-center space-x-2 px-4 py-2 border rounded-full text-sm font-sm transition-all duration-300' 
                 onClick={handleRefresh}
               >
-                <FaBriefcase />
+                <FaRotate />
                 <span>JobBoard</span>
               </button>
               <p className='text-xl font-bold leading-tight'>Recent job posts</p>

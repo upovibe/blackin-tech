@@ -31,7 +31,7 @@ const Dashboard = () => {
   }
 
   return (
-    <main className="h-screen overflow-auto pb-20">
+    <main className="h-screen overflow-auto pb-28">
       <section>
         <div className="p-4 flex flex-col gap-5">
           <h1 className="text-2xl font-bold ">Dashboard Content</h1>

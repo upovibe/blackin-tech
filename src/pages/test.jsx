@@ -2318,3 +2318,253 @@ const UserProfileList = ({ profiles, keywords, selectedAvailability, selectedLoc
 };
 
 export default UserProfileList;
+
+
+
+
+<div className="flex flex-col min-h-screen">
+  {/* Header at the top */}
+  <header className="flex items-center justify-between h-16 px-2 bg-white shadow-md w-full">
+    <div className="flex items-center gap-10">
+      {/* Logo */}
+      <Link to="/" className="flex items-center">
+        {/* Hidden Sidebar - Show "BT" for small screens */}
+        {isHidden && windowWidth < 768 && (
+          <div className="flex items-center gap-1">
+            <span className="bg-slate-700 text-white px-3 py-1 rounded-lg text-2xl font-bold shadow-md">
+              B
+            </span>
+            <span className="h-10 w-0.5 bg-slate-700"></span>
+            <span className="bg-slate-700 text-white px-3 py-1 rounded-lg text-2xl font-bold shadow-md">
+              T
+            </span>
+          </div>
+        )}
+        {isHidden && windowWidth >= 768 && (
+          <div className="flex items-center">
+            <span className="bg-slate-700 text-white px-3 py-1 rounded-lg text-2xl font-bold shadow-md">
+              B
+            </span>
+            <span className="text-gray-900 text-2xl font-semibold border-b-2 border-slate-700 pb-[2px]">
+              lack
+              <span className="text-slate-700 text-2xl font-extrabold">In</span>
+              <span className="text-gray-900 text-2xl font-semibold">Tech</span>
+            </span>
+          </div>
+        )}
+      </Link>
+      <SearchInput />
+    </div>
+
+    <div className="flex items-center gap-4">
+      <NavAvatar />
+      <div className="flex items-center justify-center">
+        {/* Hide/Show Sidebar Button */}
+        {!isHidden && (
+          <button
+            className="text-gray-700 hover:bg-gray-300 p-2 rounded-full"
+            onClick={toggleHide}
+          >
+            <FaBarsStaggered className="text-lg" title="Hide Sidebar" />
+          </button>
+        )}
+        {isHidden && (
+          <button
+            className="text-gray-700 hover:bg-gray-300 p-2 rounded-full"
+            onClick={toggleHide}
+          >
+            <FaBars className="text-lg" title="Show Sidebar" />
+          </button>
+        )}
+      </div>
+    </div>
+  </header>
+
+  {/* Main content in the middle */}
+  <main className="flex-grow relative overflow-y-auto w-full p-4">
+    {children}
+  </main>
+
+  {/* Footer at the bottom */}
+  <footer className="bg-slate-100 py-4 w-full">
+    <div className="container mx-auto flex justify-between items-center px-4">
+      <p className="text-sm">BlackinTech &copy; 2022</p>
+      <ul className="flex gap-x-4">
+        <li>
+          <a
+            href="#"
+            className="text-sm text-slate-700 hover:text-slate-900 transition-colors duration-300 ease-in-out"
+          >
+            About
+          </a>
+        </li>
+        <li>
+          <a
+            href="#"
+            className="text-sm text-slate-700 hover:text-slate-900 transition-colors duration-300 ease-in-out"
+          >
+            Privacy
+          </a>
+        </li>
+        <li>
+          <a
+            href="#"
+            className="text-sm text-slate-700 hover:text-slate-900 transition-colors duration-300 ease-in-out"
+          >
+            Terms
+          </a>
+        </li>
+        <li>
+          <a
+            href="#"
+            className="text-sm text-slate-700 hover:text-slate-900 transition-colors duration-300 ease-in-out"
+          >
+            Support
+          </a>
+        </li>
+      </ul>
+    </div>
+  </footer>
+</div>
+
+
+
+
+
+
+
+
+
+
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  listenToCollection,
+  updateDocument,
+  deleteDocument,
+  getDocumentByID,
+  getAllDocuments
+} from "../../services/firestoreCRUD";
+import Table from "../common/Table";
+import { FaStar } from "react-icons/fa";
+import RightSidebar from "../common/RightSidebar";
+import Modal from "../common/Modal";
+import SubscriptionForm from "../forms/SubscriptionForm";
+
+const SubscriptionTable = () => {
+  const [subscriptions, setSubscriptions] = useState([]);
+  const [selectedRows, setSelectedRows] = useState(new Set());
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [selectedSubscription, setSelectedSubscription] = useState(null);
+  const [loadingSubscription, setLoadingSubscription] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = listenToCollection("subscriptions", (data) => {
+      setSubscriptions(data);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const columns = [
+    { Header: "Title", accessor: "title", type: "text" },
+    { Header: "Description", accessor: "description", type: "text" },
+    { Header: "Price", accessor: "price", type: "text" },
+    { Header: "Type", accessor: "type", type: "text" },
+    { Header: "Updated At", accessor: "updatedAt", type: "text" },
+  ];
+
+  const handleUpdate = (subscription, updatedData) => {
+    const updatedSubscription = { ...subscription, ...updatedData };
+    updateDocument("subscriptions", updatedSubscription.id, updatedSubscription)
+      .then(() => console.log("Subscription updated successfully"))
+      .catch((error) => console.error("Error updating subscription:", error));
+  };
+
+  const handleDelete = (subscription) => {
+    deleteDocument("subscriptions", subscription.id)
+      .then(() => console.log("Subscription deleted successfully"))
+      .catch((error) => console.error("Error deleting subscription:", error));
+  };
+
+  const handleBulkDelete = () => {
+    selectedRows.forEach((rowId) => {
+      const subscriptionToDelete = subscriptions.find((subscription) => subscription.id === rowId);
+      if (subscriptionToDelete) {
+        deleteDocument("subscriptions", subscriptionToDelete.id)
+          .then(() => console.log(`Subscription ${subscriptionToDelete.id} deleted successfully`))
+          .catch((error) => console.error("Error deleting subscription:", error));
+      }
+    });
+
+    setSubscriptions((prevSubscriptions) =>
+      prevSubscriptions.filter((subscription) => !selectedRows.has(subscription.id))
+    );
+    setSelectedRows(new Set());
+  };
+
+  const handleViewSubscription = (subscriptionId) => {
+    setLoadingSubscription(true);
+    getDocumentByID("subscriptions", subscriptionId)
+      .then((doc) => {
+        setSelectedSubscription(doc);
+        setIsSidebarOpen(true); // Open the sidebar after setting the subscription
+        setLoadingSubscription(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching subscription:", error);
+        setLoadingSubscription(false);
+      });
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  return (
+    <>
+      <Table
+        title="Subscriptions Table"
+        icon={<FaStar />} // Change the icon if desired
+        columns={columns}
+        data={subscriptions}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+        sortable={true}
+        filterable={true}
+        pagination={true}
+        onEdit={handleUpdate}
+        onDelete={handleDelete}
+        handleBulkDelete={handleBulkDelete}
+        onView={handleViewSubscription} // This will handle viewing a subscription
+        onAdd={() => setIsSidebarOpen(true)}
+        className="w-full text-sm text-gray-700"
+      />
+
+      {/* RightSidebar Component */}
+      <RightSidebar
+        isOpen={isSidebarOpen}
+        onClose={toggleSidebar}
+        title={selectedSubscription ? "Edit Subscription" : "Add Subscription"}
+      >
+        {/* Check if loading, otherwise render the form */}
+        {loadingSubscription ? (
+          <p>Loading...</p>
+        ) : selectedSubscription ? (
+          <SubscriptionForm
+            subscription={selectedSubscription}
+            onSave={handleUpdate}
+            onClose={toggleSidebar}
+          />
+        ) : (
+          <SubscriptionForm
+            onSave={handleUpdate}
+            onClose={toggleSidebar}
+          />
+        )}
+      </RightSidebar>
+    </>
+  );
+};
+
+export default SubscriptionTable;

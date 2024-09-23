@@ -20,7 +20,7 @@ import NavAvatar from "../auth/NavAvatar";
 import SearchInput from "../filters/SearchInput";
 import { FaBarsStaggered } from "react-icons/fa6";
 
-const AdminLayout = ({ children }) => {
+const DashboardLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -168,7 +168,7 @@ const AdminLayout = ({ children }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow">
+      <div className="flex-grow flex flex-col min-h-screen">
         <header className=" flex items-center justify-between h-16 px-2">
           <div className="flex flex-tems-center gap-10">
             {/* Logo */}
@@ -228,10 +228,49 @@ const AdminLayout = ({ children }) => {
             </div>
           </div>
         </header>
-        <div className="flex-grow relative overflow-y-auto">{children}</div>
+        <div className="flex-grow relative overflow-y-hidden">{children}</div>
+        <footer className="bg-slate-100 py-4 w-full">
+          <div className="mx-auto flex justify-between items-center px-4">
+            <p className="text-sm">BlackinTech &copy; 2022</p>
+            <ul className="flex gap-x-4">
+              <li>
+                <a
+                  href="#"
+                  className="text-sm text-slate-700 hover:text-slate-900 transition-colors duration-300 ease-in-out"
+                >
+                  About
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-sm text-slate-700 hover:text-slate-900 transition-colors duration-300 ease-in-out"
+                >
+                  Privacy
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-sm text-slate-700 hover:text-slate-900 transition-colors duration-300 ease-in-out"
+                >
+                  Terms
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-sm text-slate-700 hover:text-slate-900 transition-colors duration-300 ease-in-out"
+                >
+                  Support
+                </a>
+              </li>
+            </ul>
+          </div>
+        </footer>
       </div>
     </div>
   );
 };
 
-export default AdminLayout;
+export default DashboardLayout;

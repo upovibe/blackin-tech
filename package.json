@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tinymce/tinymce-react": "^5.1.1",
+    "aos": "^2.3.4",
     "chart.js": "^4.4.4",
     "firebase": "^10.13.1",
     "lottie-react": "^2.4.0",
