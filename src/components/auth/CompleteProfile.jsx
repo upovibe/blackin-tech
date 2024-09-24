@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { UserAuth } from "../../contexts/AuthContext";
 import { fetchCountries, fetchLanguages } from "../../api/fetchStaticData";
 import { getAllDocuments, getDocumentByID  } from "../../services/firestoreCRUD";
 import { toLowerCase } from "../../utils/stringUtils";
@@ -22,6 +23,8 @@ import {
 } from "react-icons/fa";
 
 const CompleteProfile = () => {
+  const { user } = UserAuth(); // Get user from the context
+  
   const [formValues, setFormValues] = useState({
     avatarUrl: "",
     coverImageUrl: "",
@@ -49,8 +52,7 @@ const CompleteProfile = () => {
   const [toastType, setToastType] = useState("error");
 
   const navigate = useNavigate();
-  const userID = user?.uid; 
-
+  const userID = user?.uid;
   useEffect(() => {
     setAnimationClass("opacity-100 translate-y-0");
     const fetchData = async () => {

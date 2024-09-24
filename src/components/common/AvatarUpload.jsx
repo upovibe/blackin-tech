@@ -67,39 +67,37 @@ const AvatarUpload = ({ onUpload }) => {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <div className="relative">
-        <label
-          htmlFor="image-upload"
-          className="cursor-pointer flex flex-col items-center"
-        >
-          {isUploading ? (
-            <Lottie
-              animationData={animationData}
-              loop={true}
-              className="w-24 h-24"
-            />
-          ) : (
-            <img
-              src={image || "https://via.placeholder.com/150"}
-              alt="Uploaded"
-              className="w-[6rem] h-[6rem] lg:w-[7rem] lg:h-[7rem] xl:w-[8rem] xl:h-[8rem] max-w-40 max-h-40 rounded-full object-cover border-2 border-opacity-20 border-gray-300"
-            />
-          )}
-          <span className="flex items-center text-blue-600 mt-2 text-xs font-bold">
-            <FaCloudUploadAlt className="mr-1" /> Replace Image
-          </span>
-        </label>
-        <input
-          type="file"
-          id="image-upload"
-          accept="image/*"
-          className="hidden"
-          onChange={handleImageUpload}
-        />
-      </div>
-      {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
-    </div>
+<div className="relative">
+  <label
+    htmlFor="avatar-upload" // Change this id to be unique
+    className="cursor-pointer flex flex-col items-center"
+  >
+    {isUploading ? (
+      <Lottie
+        animationData={animationData}
+        loop={true}
+        className="w-24 h-24"
+      />
+    ) : (
+      <img
+        src={image || "https://via.placeholder.com/150"}
+        alt="Uploaded"
+        className="w-[6rem] h-[6rem] lg:w-[7rem] lg:h-[7rem] xl:w-[8rem] xl:h-[8rem] max-w-40 max-h-40 rounded-full object-cover border-2 border-opacity-20 border-gray-300"
+      />
+    )}
+    <span className="flex items-center text-blue-600 mt-2 text-xs font-bold">
+      <FaCloudUploadAlt className="mr-1" /> Replace Image
+    </span>
+  </label>
+  <input
+    type="file"
+    id="avatar-upload" // Unique id for avatar upload
+    accept="image/*"
+    className="hidden"
+    onChange={handleImageUpload}
+  />
+</div>
+
   );
 };
 

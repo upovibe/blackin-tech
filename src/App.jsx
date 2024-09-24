@@ -24,6 +24,7 @@ import AssignBadge from './admin/AssignBadge';
 import DataSettings from './admin/DataSettings';
 import StartReports from './admin/StartReports';
 import Subscribe from './pages/Subscribe'
+import AssignBadgeForm from './components/forms/AssignBadgeForm';
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
         <Route path="/search" element={<MainLayout><Search /></MainLayout>} />
         <Route path="/terms" element={<MainLayout><Terms /></MainLayout>} />
         <Route path="/about" element={<MainLayout><About /></MainLayout>} />
+        <Route path="/assignadge" element={<MainLayout><AssignBadgeForm /></MainLayout>} />
 
         {/* Private routes with MainLayout */}
         <Route element={<PrivateRoute />}>

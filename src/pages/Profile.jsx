@@ -261,7 +261,7 @@ function Profile() {
                             <img
                               src={badge.icon}
                               alt={badge.name}
-                              className="size-4 shadow"
+                              className="size-4 ilter drop-shadow-lg"
                             />
                           </Tooltip>
                         )}

@@ -34,7 +34,7 @@ const SettingsPage = () => {
             <h1 className="text-2xl font-bold mb-6">Settings</h1>
             <TabComponent
               tabs={tabs}
-              defaultActiveTab="Profile"
+              defaultActiveTab="EditProfile"
               orientation="vertical"
               onTabChange={(activeTab) =>
                 console.log("Active Tab: ", activeTab)

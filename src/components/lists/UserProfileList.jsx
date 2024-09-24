@@ -231,7 +231,7 @@ const UserProfileList = ({
             </div>
             <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full">
               <div className="p-3 size-full text-center">
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center gap-1">
                 <h3 className="text-center capitalize font-semibold truncate">
                   {profile.fullName}
                 </h3>
@@ -245,7 +245,7 @@ const UserProfileList = ({
                     <img
                       src={profile.badge.icon}
                       alt={profile.badge.name || "Badge icon"}
-                      className="size-4 min-h-4 min-w-4 shadow"
+                      className="size-4 min-h-4 min-w-4 ilter drop-shadow-lg"
                     />
                   </Tooltip>
                 )}

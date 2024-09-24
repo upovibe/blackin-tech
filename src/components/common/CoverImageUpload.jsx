@@ -33,7 +33,9 @@ const CoverImageUpload = ({ onUpload }) => {
 
     img.onload = () => {
       if (img.width < MIN_WIDTH || img.height < MIN_HEIGHT) {
-        setError(`Image dimensions must be at least ${MIN_WIDTH}x${MIN_HEIGHT} pixels.`);
+        setError(
+          `Image dimensions must be at least ${MIN_WIDTH}x${MIN_HEIGHT} pixels.`
+        );
         return;
       }
 
@@ -67,38 +69,35 @@ const CoverImageUpload = ({ onUpload }) => {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <div className="relative">
-        <label
-          htmlFor="image-upload"
-          className="cursor-pointer flex flex-col items-center"
-        >
-          {isUploading ? (
-            <Lottie
-              animationData={animationData}
-              loop={true}
-              className="size-24"
-            />
-          ) : (
-            <img
-              src={image || "https://via.placeholder.com/150"}
-              alt="Uploaded"
-              className=" w-[20rem] h-32 rounded-lg object-cover border-2 border-opacity-20 border-gray-300"
-            />
-          )}
-          <span className="flex items-center text-blue-600 mt-2 text-xs font-bold">
-            <FaCloudUploadAlt className="mr-1" /> Replace Cover Image
-          </span>
-        </label>
-        <input
-          type="file"
-          id="image-upload"
-          accept="image/*"
-          className="hidden"
-          onChange={handleImageUpload}
-        />
-      </div>
-      {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
+    <div className="relative">
+      <label
+        htmlFor="cover-upload" // Change this id to be unique
+        className="cursor-pointer flex flex-col items-center"
+      >
+        {isUploading ? (
+          <Lottie
+            animationData={animationData}
+            loop={true}
+            className="size-24"
+          />
+        ) : (
+          <img
+            src={image || "https://via.placeholder.com/150"}
+            alt="Uploaded"
+            className=" w-[20rem] h-32 rounded-lg object-cover border-2 border-opacity-20 border-gray-300"
+          />
+        )}
+        <span className="flex items-center text-blue-600 mt-2 text-xs font-bold">
+          <FaCloudUploadAlt className="mr-1" /> Replace Cover Image
+        </span>
+      </label>
+      <input
+        type="file"
+        id="cover-upload" // Unique id for cover upload
+        accept="image/*"
+        className="hidden"
+        onChange={handleImageUpload}
+      />
     </div>
   );
 };
