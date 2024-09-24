@@ -14,6 +14,7 @@ import {
   FaEye,
   FaEyeSlash,
   FaBars,
+  FaUserCheck,
 } from "react-icons/fa";
 import { NavLink, Link } from "react-router-dom";
 import NavAvatar from "../auth/NavAvatar";
@@ -104,6 +105,7 @@ const DashboardLayout = ({ children }) => {
                 label: "Dashboard",
               },
               { to: "/userportal", icon: <FaUserFriends />, label: "Users" },
+              { to: "/assignbadge", icon: <FaUserCheck />, label: "AssignBadge" },
               { to: "/jobportal", icon: <FaBriefcase />, label: "Jobs" },
               { to: "/stat-reports", icon: <FaChartLine />, label: "Reports" },
               { to: "/data-settings", icon: <FaCog />, label: "Data Settings" },

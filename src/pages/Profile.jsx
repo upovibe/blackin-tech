@@ -10,9 +10,11 @@ import {
   checkConnectionStatus,
   listenToConnectionStatus,
 } from "../services/firestoreUsersManagement";
+import { getDocumentByID } from "../services/firestoreCRUD.js";
 import Lottie from "lottie-react";
 import pageloading from "../assets/animations/Animation - LoadingPage.json";
 import Modal from "../components/common/Modal";
+import Tooltip from "../components/common/Tooltip";
 import UserInsightsForm from "../components/auth/UserInsightsForm";
 import ProfileProgress from "../components/auth/ProfileProgress";
 import JobProfile from "../components/lists/JobProfile";
@@ -64,6 +66,7 @@ function Profile() {
   const navigate = useNavigate();
   const { user } = UserAuth();
   const [profileUser, setProfileUser] = useState(null);
+  const [badge, setBadge] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [connections, setConnections] = useState(new Set());
@@ -86,6 +89,9 @@ function Profile() {
         const profile = await getUserByUsername(userName);
         if (profile) {
           setProfileUser(profile);
+
+          setBadge(profile.badge || {});
+
           // Fetch current connections and update count
           const connectionList = await getConnectionsByUserId(profile.id);
           setConnections(
@@ -232,9 +238,28 @@ function Profile() {
                   </div>
                   <div className="flex flex-col items-start gap-3">
                     <div className="flex flex-col gap-1">
-                      <span className="text-2xl font-bold text-wrap">
-                        {profileUser.fullName || "Anonymous"}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl font-bold text-wrap">
+                          {profileUser.fullName || "Anonymous"}
+                        </span>
+                        {badge && badge.name && (
+                          <Tooltip
+                            position="top"
+                            text={`${badge.name}: ${
+                              badge.description || "Click to see more details"
+                            }`}
+                          >
+                            <img
+                              src={badge.icon}
+                              alt={badge.name}
+                              className="size-4 shadow"
+                            />
+                          </Tooltip>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-600">
+                        {badge.description}
+                      </p>
                       <div className="flex flex-row gap-2 items-center">
                         <span className="font-semibold text-lg lowercase">
                           @{profileUser.userName || "Anonymous"}
@@ -385,7 +410,7 @@ function Profile() {
                   )}
               </>
 
-              <div  className="flex items-center justify-between w-full">
+              <div className="flex items-center justify-between w-full">
                 {user.userName === profileUser.userName && <ProfileProgress />}
               </div>
             </div>

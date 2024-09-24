@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { listenToCollection, updateDocument, deleteDocument } from '../../services/firestoreCRUD'; 
 import Table from '../common/Table';
-import { FaUserTag } from 'react-icons/fa'; // Changed icon to something related to pronouns
+import { FaUserTag } from 'react-icons/fa'; 
 import RightSidebar from '../common/RightSidebar';
 import Modal from '../common/Modal';
-import PronounsForm from '../forms/PronounsForm'; // Import the PronounsForm
+import PronounsForm from '../forms/PronounsForm';
 
 const PronounsTable = () => {
   const [pronouns, setPronouns] = useState([]);

@@ -189,3 +189,15 @@ export const getUserByUsername = async (userName) => {
     return null;
   }
 };
+
+// Assign badge to user
+export const assignBadgeToUser = async (userId, badge) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    await updateDoc(userRef, { badge: badge });
+    console.log("Badge assigned successfully");
+  } catch (e) {
+    console.error("Error assigning badge:", e);
+    throw e;
+  }
+};

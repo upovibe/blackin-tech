@@ -20,6 +20,7 @@ import Dashboard from './admin/Dashboard';
 import JobDetails from './components/views/JobDetails';
 import UserPortal from './admin/UserPortal';
 import JobPortal from './admin/JobPortal';
+import AssignBadge from './admin/AssignBadge';
 import DataSettings from './admin/DataSettings';
 import StartReports from './admin/StartReports';
 import Subscribe from './pages/Subscribe'
@@ -55,6 +56,7 @@ function App() {
         <Route element={<PrivateRoute requiredRole="admin" />}>
           <Route path="/dashboard" element={<DashboardLayout><Dashboard /></DashboardLayout>} />
           <Route path="/userportal" element={<DashboardLayout><UserPortal /></DashboardLayout>} />
+          <Route path="/assignbadge" element={<DashboardLayout><AssignBadge /></DashboardLayout>} />
           <Route path="/jobportal" element={<DashboardLayout><JobPortal /></DashboardLayout>} />
           <Route path="/stat-reports" element={<DashboardLayout><StartReports /></DashboardLayout>} />
           <Route path="/data-settings" element={<DashboardLayout><DataSettings /></DashboardLayout>} />

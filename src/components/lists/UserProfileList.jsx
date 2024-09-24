@@ -7,13 +7,20 @@ import {
   listenToConnectionCount,
 } from "../../services/firestoreUsersManagement";
 import { truncateText } from "../../utils/truncate";
-import { getAllDocuments } from "../../services/firestoreCRUD";
+import { getAllDocuments, getDocumentByID } from "../../services/firestoreCRUD";
 import { UserAuth } from "../../contexts/AuthContext";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../assets/animations/Animation - Loading.json";
 import noDataAnimation from "../../assets/animations/Animation - No Data Found.json";
 import Toast from "../common/Toast";
-import { FaUserPlus, FaUserMinus, FaEye, FaTimes } from "react-icons/fa";
+import Tooltip from "../common/Tooltip";
+import {
+  FaUserPlus,
+  FaUserMinus,
+  FaEye,
+  FaTimes,
+  FaInfoCircle,
+} from "react-icons/fa";
 
 const UserProfileList = ({
   profiles,
@@ -22,6 +29,7 @@ const UserProfileList = ({
   selectedLocation,
 }) => {
   const { user } = UserAuth();
+  const [badge, setBadge] = useState(null);
   const [profileList, setProfileList] = useState([]); // Renamed this state variable to 'profileList'
   const [loading, setLoading] = useState(true);
   const [connections, setConnections] = useState(new Set());
@@ -55,10 +63,22 @@ const UserProfileList = ({
 
         // Shuffle profiles for random arrangement
         const shuffledProfiles = validProfiles.sort(() => Math.random() - 0.5);
-        setProfileList(shuffledProfiles); // Updated to use 'setProfileList'
+
+        // Fetch the badges for each profile
+        const profilesWithBadges = await Promise.all(
+          shuffledProfiles.map(async (profile) => {
+            if (profile.badgeId) {
+              const badge = await getDocumentByID("badges", profile.badgeId); // Assuming badges are stored in a 'badges' collection
+              return { ...profile, badge }; // Add badge to the profile
+            }
+            return profile; // Return profile without badge if no badgeId
+          })
+        );
+
+        setProfileList(profilesWithBadges); // Updated to use the profiles with badges
 
         // Set up real-time listener for connection counts
-        shuffledProfiles.forEach((profile) => {
+        profilesWithBadges.forEach((profile) => {
           listenToConnectionCount(profile.id, (count) => {
             setConnectionCounts((prevCounts) => ({
               ...prevCounts,
@@ -69,7 +89,7 @@ const UserProfileList = ({
       } catch (error) {
         console.error("Error fetching profiles:", error);
       } finally {
-        setLoading(false); // Move this to the end
+        setLoading(false);
       }
     };
 
@@ -211,13 +231,29 @@ const UserProfileList = ({
             </div>
             <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full">
               <div className="p-3 size-full text-center">
-                <h3 className="text-center font-semibold truncate mt-1">
+                <div className="flex items-center justify-center">
+                <h3 className="text-center capitalize font-semibold truncate">
                   {profile.fullName}
                 </h3>
+                {profile.badge && profile.badge.icon && (
+                  <Tooltip
+                    position="top"
+                    text={`${profile.badge.name || "Badge"}: ${
+                      profile.badge.description || "No description available"
+                    }`}
+                  >
+                    <img
+                      src={profile.badge.icon}
+                      alt={profile.badge.name || "Badge icon"}
+                      className="size-4 min-h-4 min-w-4 shadow"
+                    />
+                  </Tooltip>
+                )}
+                </div>                
+
                 <div className="flex items-baseline space-x-2 mr-auto text-slate-800 font-semibold text-sm">
                   {profile.professionalTitle && (
                     <>
-                      <FaInfoCircle />
                       <span className="text-sm truncate">
                         {profile.professionalTitle}
                       </span>

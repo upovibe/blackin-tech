@@ -2568,3 +2568,195 @@ const SubscriptionTable = () => {
 };
 
 export default SubscriptionTable;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { UserAuth } from "../contexts/AuthContext";
+import {
+  getUserByUsername,
+  getConnectionsByUserId,
+  listenToConnectionCount,
+  checkConnectionStatus,
+  listenToConnectionStatus,
+} from "../services/firestoreUsersManagement";
+import { getDocumentByID } from "../services/firestoreBadges"; // Assuming you have a method to get badge by ID
+import Lottie from "lottie-react";
+import pageloading from "../assets/animations/Animation - LoadingPage.json";
+import Modal from "../components/common/Modal";
+import UserInsightsForm from "../components/auth/UserInsightsForm";
+import ProfileProgress from "../components/auth/ProfileProgress";
+import JobProfile from "../components/lists/JobProfile";
+import Divider from "../components/common/Divider";
+import TabComponent from "../components/common/TabComponent.jsx";
+import DefaultCoverImage from "../assets/images/coverimage.jpg";
+import DefaultAvatar from "../assets/images/avatar-default.png";
+import { FaInfoCircle, FaMapMarker, FaLink, FaUserPlus, FaUserMinus } from "react-icons/fa";
+
+function Profile() {
+  const { userName } = useParams();
+  const navigate = useNavigate();
+  const { user } = UserAuth();
+  const [profileUser, setProfileUser] = useState(null);
+  const [badge, setBadge] = useState(null);  // New state for badge
+  const [loading, setLoading] = useState(true);
+  const [connections, setConnections] = useState(new Set());
+  const [connectionCount, setConnectionCount] = useState(0);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!userName) {
+        console.error("Username is undefined");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const profile = await getUserByUsername(userName);
+        if (profile) {
+          setProfileUser(profile);
+          
+          // Fetch badge if exists
+          if (profile.badge) {
+            const badgeData = await getDocumentByID("badges", profile.badge); // Assuming profile.badge contains badge ID
+            setBadge(badgeData);
+          }
+          
+          const connectionList = await getConnectionsByUserId(profile.id);
+          setConnections(new Set(connectionList.map(conn => conn.connectedUserId)));
+          setConnectionCount(connectionList.length);
+          listenToConnectionCount(profile.id, setConnectionCount);
+          
+          const isConnected = await checkConnectionStatus(user.uid, profile.id);
+          setConnections((prev) => isConnected ? new Set(prev).add(profile.id) : prev);
+
+          listenToConnectionStatus(user.uid, profile.id, (isConnected) => {
+            setConnections((prev) => {
+              const updatedConnections = new Set(prev);
+              if (isConnected) {
+                updatedConnections.add(profile.id);
+              } else {
+                updatedConnections.delete(profile.id);
+              }
+              return updatedConnections;
+            });
+          });
+        } else {
+          console.error("User profile not found");
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfileData();
+  }, [userName]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center w-full h-screen">
+        <Lottie animationData={pageloading} loop={true} className="w-48 h-48" />
+      </div>
+    );
+  }
+
+  if (!profileUser) {
+    return <p>User not found</p>;
+  }
+
+  return (
+    <main>
+      <section className="w-screen flex flex-col items-center justify-center">
+        {/* Cover Image and Avatar */}
+        <div className="w-full h-64 bg-gray-200 relative">
+          <img
+            src={profileUser.coverImageUrl || DefaultCoverImage}
+            alt="Cover"
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        <div className="container flex items-start flex-col lg:flex-row p-0 px-2 md:py-2 gap-5 lg:gap-10">
+          <div className="flex items-center flex-col gap-2 mb-4 w-full lg:w-3/6 xl:w-2/6 transform -translate-y-16">
+            <div className="flex items-center flex-col gap-5 w-full">
+              <div className="flex items-start justify-between w-full">
+                <div className="flex items-start lg:items-start flex-col gap-1 w-1/2">
+                  <div className="relative flex flex-col items-center justify-center">
+                    <img
+                      src={profileUser.avatarUrl || DefaultAvatar}
+                      alt="User Avatar"
+                      className="w-28 h-28 rounded-full border-2 border-opacity-20 border-white"
+                    />
+                    {profileUser.role === "admin" && (
+                      <span className="absolute bottom-0 text-sm px-3 py-[1px] shadow bg-orange-400 text-white rounded-full font-semibold w-max">
+                        {profileUser.role}
+                      </span>
+                    )}
+                  </div>
+                  {/* Profile Info */}
+                  <div className="flex flex-col items-start gap-3">
+                    <span className="text-2xl font-bold">
+                      {profileUser.fullName || "Anonymous"}
+                    </span>
+                    <span className="font-semibold text-lg lowercase">
+                      @{profileUser.userName || "Anonymous"}
+                    </span>
+                    {/* Display badge if exists */}
+                    {badge && (
+                      <div className="badge-info mt-3">
+                        <h3 className="text-xl font-semibold text-slate-800">
+                          Badge: {badge.name}
+                        </h3>
+                        <p className="text-sm text-slate-600">
+                          {badge.description}
+                        </p>
+                        {badge.icon && (
+                          <img
+                            src={badge.icon}
+                            alt={`${badge.name} icon`}
+                            className="w-16 h-16 mt-2"
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+export default Profile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

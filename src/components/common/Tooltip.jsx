@@ -31,7 +31,7 @@ const Tooltip = ({ children, text, position = "top" }) => {
     >
       {children}
       {showTooltip && (
-        <div className={`absolute min-w-full border-2 border-slate-300/50 bg-slate-700 shadow-slate-800/10 text-white shadow-lg text-sm px-2 py-1 rounded-xl cursor-pointer z-50 w-max ${positions[position]}`}>
+        <div className={`w-40 text-sm absolute min-w-full border-2 border-slate-300/50 bg-slate-700 shadow-slate-800/10 text-white shadow-lg text-sm px-2 py-1 rounded-xl cursor-pointer z-50 ${positions[position]}`}>
           {text}
         </div>
       )}

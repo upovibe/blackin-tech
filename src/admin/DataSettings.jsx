@@ -10,6 +10,7 @@ import EduCategoriesTable from "../components/tables/EduCategoriesTable";
 import PronounsTable from "../components/tables/PronounsTable";
 import SubTypesTable from "../components/tables/SubTyoesTable";
 import SubscriptionTable from "../components/tables/SubscriptionTable";
+import BadgesTable from "../components/tables/BadgesTable";
 
 const DataSettings = () => {
   const [loading, setLoading] = useState(true);
@@ -26,6 +27,14 @@ const DataSettings = () => {
       content: (
         <div>
           <SubTypesTable />
+        </div>
+      ),
+    },
+    {
+      label: "Badges",
+      content: (
+        <div>
+          <BadgesTable />
         </div>
       ),
     },
