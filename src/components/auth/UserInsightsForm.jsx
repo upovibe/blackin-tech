@@ -314,8 +314,8 @@ const UserInsightsForm = () => {
                   Skills and Expertise
                 </span>
               </HorizontalLineWithText>
-              <div className="flex items-center justify-between gap-3 my-5 mb-14">
-                <div className="w-full">
+              <div className="flex flex-col lg:flex-row items-center justify-between gap-3 my-5 mb-14">
+                <div className="w-full lg:w-1/2">
                   <TagInput
                     options={skillsOptions.map((o) => o.label)}
                     placeholder="Select skills"
@@ -325,7 +325,7 @@ const UserInsightsForm = () => {
                     className="mb-2"
                   />
                 </div>
-                <div className="w-full">
+                <div className="w-full lg:w-1/2">
                   <TagInput
                     options={abilitiesOptions.map((o) => o.label)}
                     placeholder="Select abilities"

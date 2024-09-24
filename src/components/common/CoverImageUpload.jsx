@@ -71,7 +71,7 @@ const CoverImageUpload = ({ onUpload }) => {
   return (
     <div className="relative">
       <label
-        htmlFor="cover-upload" // Change this id to be unique
+        htmlFor="cover-upload"
         className="cursor-pointer flex flex-col items-center"
       >
         {isUploading ? (
@@ -82,24 +82,33 @@ const CoverImageUpload = ({ onUpload }) => {
           />
         ) : (
           <img
-            src={image || "https://via.placeholder.com/150"}
+            src={image || coverDefault}
             alt="Uploaded"
-            className=" w-[20rem] h-32 rounded-lg object-cover border-2 border-opacity-20 border-gray-300"
+            className="w-[20rem] h-32 rounded-lg object-cover border-2 border-opacity-20 border-gray-300"
           />
         )}
         <span className="flex items-center text-blue-600 mt-2 text-xs font-bold">
           <FaCloudUploadAlt className="mr-1" /> Replace Cover Image
         </span>
       </label>
+  
       <input
         type="file"
-        id="cover-upload" // Unique id for cover upload
+        id="cover-upload"
         accept="image/*"
         className="hidden"
         onChange={handleImageUpload}
       />
+  
+      {/* Error message display */}
+      {error && (
+        <div className="text-red-500 text-xs mt-2">
+          {error}
+        </div>
+      )}
     </div>
   );
+  
 };
 
 export default CoverImageUpload;

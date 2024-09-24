@@ -247,8 +247,8 @@ function Profile() {
                   </div>
                   <div className="flex flex-col items-start gap-3">
                     <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-wrap">
+                      <div className="flex items-center gap-1">
+                        <span className="text-2xl font-bold">
                           {profileUser.fullName || "Anonymous"}
                         </span>
                         {badge && badge.name && (
