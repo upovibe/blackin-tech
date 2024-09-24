@@ -31,6 +31,7 @@ const CompleteProfile = () => {
     languages: [],
     country: "",
     city: "",
+    link: "",
   });
 
   const [pronounsOptions, setPronounsOptions] = useState([]);
@@ -277,7 +278,15 @@ const CompleteProfile = () => {
                         value={formValues.bio}
                         onChange={handleInputChange}
                         className="w-full"
-                      />
+                      /> 
+                      <Input
+                      type="url"
+                      name="link"
+                      placeholder="Portfolio/Website Link"
+                      value={formValues.link}
+                      onChange={handleInputChange}
+                      className="w-full"
+                    />
                     </div>
                     <div className="flex justify-between gap-5">
                       <Button

@@ -15,7 +15,12 @@ import noDataAnimation from "../../assets/animations/Animation - No Data Found.j
 import Toast from "../common/Toast";
 import { FaUserPlus, FaUserMinus, FaEye, FaTimes } from "react-icons/fa";
 
-const UserProfileList = ({ profiles, keywords, selectedAvailability, selectedLocation }) => {
+const UserProfileList = ({
+  profiles,
+  keywords,
+  selectedAvailability,
+  selectedLocation,
+}) => {
   const { user } = UserAuth();
   const [profileList, setProfileList] = useState([]); // Renamed this state variable to 'profileList'
   const [loading, setLoading] = useState(true);
@@ -39,7 +44,9 @@ const UserProfileList = ({ profiles, keywords, selectedAvailability, selectedLoc
 
       try {
         const connectionList = await getConnectionsByUserId(user.uid);
-        setConnections(new Set(connectionList.map((conn) => conn.connectedUserId)));
+        setConnections(
+          new Set(connectionList.map((conn) => conn.connectedUserId))
+        );
 
         const allProfiles = await getAllDocuments("users");
         const validProfiles = allProfiles.filter(
@@ -76,8 +83,15 @@ const UserProfileList = ({ profiles, keywords, selectedAvailability, selectedLoc
   const handleConnect = async (profileId, profile) => {
     setIsConnecting(true);
     try {
-      await addConnection(user.uid, profileId, profile.avatarUrl, profile.fullName);
-      setConnections((prevConnections) => new Set(prevConnections).add(profileId));
+      await addConnection(
+        user.uid,
+        profileId,
+        profile.avatarUrl,
+        profile.fullName
+      );
+      setConnections((prevConnections) =>
+        new Set(prevConnections).add(profileId)
+      );
       setToastMessage("Connection added successfully!");
       setToastType("success");
     } catch (error) {
@@ -117,7 +131,9 @@ const UserProfileList = ({ profiles, keywords, selectedAvailability, selectedLoc
   const filteredProfiles = profileList.filter((profile) => {
     const keywordMatch = keywords
       ? profile.fullName.toLowerCase().includes(keywords.toLowerCase()) ||
-        profile.professionalTitle?.toLowerCase().includes(keywords.toLowerCase()) ||
+        profile.professionalTitle
+          ?.toLowerCase()
+          .includes(keywords.toLowerCase()) ||
         profile.skills?.some((skill) =>
           skill.toLowerCase().includes(keywords.toLowerCase())
         )
@@ -131,9 +147,13 @@ const UserProfileList = ({ profiles, keywords, selectedAvailability, selectedLoc
       ? profile.location?.toLowerCase() === selectedLocation.toLowerCase()
       : true;
 
-    return keywordMatch && availabilityMatch && locationMatch && !removedProfiles.has(profile.id);
+    return (
+      keywordMatch &&
+      availabilityMatch &&
+      locationMatch &&
+      !removedProfiles.has(profile.id)
+    );
   });
-
 
   if (loading) {
     return (
@@ -166,7 +186,9 @@ const UserProfileList = ({ profiles, keywords, selectedAvailability, selectedLoc
             <div
               className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-full z-"
               style={{
-                backgroundImage: `url(${profile.coverImageUrl || "https://via.placeholder.com/150"})`,
+                backgroundImage: `url(${
+                  profile.coverImageUrl || "https://via.placeholder.com/150"
+                })`,
               }}
             />
             <button
@@ -192,9 +214,17 @@ const UserProfileList = ({ profiles, keywords, selectedAvailability, selectedLoc
                 <h3 className="text-center font-semibold truncate mt-1">
                   {profile.fullName}
                 </h3>
-                <span className="text-sm truncate">
-                  {profile.professionalTitle || "No title"}
-                </span>
+                <div className="flex items-baseline space-x-2 mr-auto text-slate-800 font-semibold text-sm">
+                  {profile.professionalTitle && (
+                    <>
+                      <FaInfoCircle />
+                      <span className="text-sm truncate">
+                        {profile.professionalTitle}
+                      </span>
+                    </>
+                  )}
+                </div>
+
                 <p className="text-sm text-slate-500">
                   {truncateText((profile.skills || []).join(" | "), 100)}
                 </p>
@@ -221,7 +251,8 @@ const UserProfileList = ({ profiles, keywords, selectedAvailability, selectedLoc
                       }}
                       disabled={isDisconnecting}
                     >
-                      <FaUserMinus /> {isDisconnecting ? "Disconnecting..." : "Disconnect"} 
+                      <FaUserMinus />{" "}
+                      {isDisconnecting ? "Disconnecting..." : "Disconnect"}
                     </button>
                   ) : (
                     <button
@@ -236,7 +267,8 @@ const UserProfileList = ({ profiles, keywords, selectedAvailability, selectedLoc
                       }}
                       disabled={isConnecting}
                     >
-                      <FaUserPlus /> {isConnecting ? "Connecting..." : "Connect"}
+                      <FaUserPlus />{" "}
+                      {isConnecting ? "Connecting..." : "Connect"}
                     </button>
                   )}
                 </div>

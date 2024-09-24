@@ -20,9 +20,44 @@ import Divider from "../components/common/Divider";
 import TabComponent from "../components/common/TabComponent.jsx";
 import DefaultCoverImage from "../assets/images/coverimage.jpg";
 import DefaultAvatar from "../assets/images/avatar-default.png";
-import { FaInfoCircle, FaMapMarker, FaUser } from "react-icons/fa";
-import { FaPencil, FaUserMinus, FaUserPlus } from "react-icons/fa6";
+import {
+  FaInfoCircle,
+  FaLink,
+  FaMapMarker,
+  FaShare,
+  FaUser,
+} from "react-icons/fa";
+import {
+  FaArrowUpRightFromSquare,
+  FaPencil,
+  FaUserMinus,
+  FaUserPlus,
+} from "react-icons/fa6";
 import Toast from "../components/common/Toast";
+import {
+  FaTwitter,
+  FaLinkedin,
+  FaGithub,
+  FaFacebook,
+  FaInstagram,
+  FaMedium,
+  FaTwitch,
+  FaDiscord,
+  FaMinus,
+  FaPlus,
+} from "react-icons/fa";
+
+const socialMediaIcons = {
+  twitter: FaTwitter,
+  linkedin: FaLinkedin,
+  github: FaGithub,
+  facebook: FaFacebook,
+  instagram: FaInstagram,
+  medium: FaMedium,
+  twitch: FaTwitch,
+  discord: FaDiscord,
+  // Add more platforms as needed
+};
 
 function Profile() {
   const { userName } = useParams();
@@ -195,17 +230,50 @@ function Profile() {
                       </span>
                     )}
                   </div>
-                  <span className="text-2xl font-bold text-wrap">
-                    {profileUser.fullName || "Anonymous"}
-                  </span>
-                  <div className="flex flex-row gap-2 items-center">
-                    <span className="font-semibold text-lg lowercase">
-                      @{profileUser.userName}
-                    </span>
-                    &#183;
-                    <span className="text-sm font-semibold underline">
-                      {profileUser.pronouns}
-                    </span>
+                  <div className="flex flex-col items-start gap-3">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-2xl font-bold text-wrap">
+                        {profileUser.fullName || "Anonymous"}
+                      </span>
+                      <div className="flex flex-row gap-2 items-center">
+                        <span className="font-semibold text-lg lowercase">
+                          @{profileUser.userName || "Anonymous"}
+                        </span>
+                        &#183;
+                        <span className="text-sm font-semibold underline">
+                          {profileUser.pronouns}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      {profileUser.professionalTitle && (
+                        <div className="flex items-baseline space-x-2 mr-auto text-slate-800 font-semibold text-sm">
+                          <FaInfoCircle />
+                          <span>{profileUser.professionalTitle}</span>
+                        </div>
+                      )}
+                      {(profileUser.country || profileUser.city) && (
+                        <div className="flex items-baseline space-x-2 mr-auto text-slate-800 font-semibold text-sm">
+                          <FaMapMarker />
+                          <span>
+                            {profileUser.country}&nbsp;{profileUser.city}
+                          </span>
+                        </div>
+                      )}
+                      {profileUser.link && (
+                        <div className="flex items-baseline space-x-2 mr-auto text-slate-800 font-semibold text-sm">
+                          <FaLink />
+                          <a
+                            href={profileUser.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            {profileUser.link}
+                          </a>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -244,22 +312,80 @@ function Profile() {
               </div>
 
               <div className="rounded-xl border-2 border-slate-300/80 p-3 flex flex-col items-center gap-3 w-full">
-                <span className="flex items-baseline space-x-2 text-slate-800 font-semibold text-sm mr-auto">
-                  <FaInfoCircle />
-                  <p>{profileUser.bio}</p>
-                </span>
-                <Divider direction="horizontal" className="opacity-50" />
-                <div className="flex items-baseline space-x-2 mr-auto text-slate-800 font-semibold text-sm">
-                  <FaMapMarker />
-                  <span>
-                    {profileUser.country}&nbsp;{profileUser.city}
-                  </span>
-                </div>
+                {profileUser.bio && (
+                  <>
+                    <span className="flex items-baseline space-x-2 text-slate-800 font-semibold text-sm mr-auto">
+                      <p>{profileUser.bio}</p>
+                    </span>
+                    <Divider direction="horizontal" className="opacity-50" />
+                  </>
+                )}
+
+                {profileUser.skills && profileUser.skills.length > 0 && (
+                  <>
+                    <div className="flex items-baseline space-x-2 mr-auto text-slate-800 font-semibold text-sm">
+                      <span>{profileUser.skills.join(" | ")}</span>
+                    </div>
+                    <Divider direction="horizontal" className="opacity-50" />
+                  </>
+                )}
+
+                {profileUser.abilities && profileUser.abilities.length > 0 && (
+                  <>
+                    <div className="flex items-baseline space-x-2 mr-auto text-slate-800 font-semibold text-sm">
+                      <span>{profileUser.abilities.join(" | ")}</span>
+                    </div>
+                    <Divider direction="horizontal" className="opacity-50" />
+                  </>
+                )}
+
                 <div className="flex items-center justify-between w-full">
                   <span className="text-sm font-semibold text-slate-800">
-                    Connections: {connectionCount}
+                    Connections
+                  </span>
+                  <span className="text-sm font-semibold text-slate-800">
+                    {connectionCount}
                   </span>
                 </div>
+              </div>
+
+              <>
+                {profileUser.socialLinks &&
+                  profileUser.socialLinks.length > 0 && (
+                    <div className="rounded-xl border-2 border-slate-300/80 flex flex-col items-center gap-3 w-full overflow-hidden">
+                      <div className="flex flex-col items-start w-full">
+                        {profileUser.socialLinks.map((social, index) => {
+                          const Icon =
+                            socialMediaIcons[social.platform.toLowerCase()]; // Get the icon
+
+                          return (
+                            <div
+                              key={index}
+                              className="w-full hover:bg-slate-200 transition-all duration-300 ease-in-out"
+                            >
+                              <a
+                                href={social.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className=" flex items-center justify-between text-slate-800 font-semibold border-b-2 p-2"
+                              >
+                                <div className="flex items-center gap-3 ">
+                                  {Icon && <Icon className="" />}{" "}
+                                  {/* Render icon if exists */}
+                                  <span>{social.platform}</span>{" "}
+                                  {/* Display platform name instead of URL */}
+                                </div>
+                                <FaArrowUpRightFromSquare />
+                              </a>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+              </>
+
+              <div  className="flex items-center justify-between w-full">
                 {user.userName === profileUser.userName && <ProfileProgress />}
               </div>
             </div>

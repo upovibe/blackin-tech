@@ -14,7 +14,7 @@ import {
   deleteDoc, // Make sure to import deleteDoc
 } from "firebase/firestore";
 
-// Add Connection and Increment Count
+/// Add Connection and Increment the Connected User's Count
 export const addConnection = async (
   userId,
   connectedUserId,
@@ -22,7 +22,7 @@ export const addConnection = async (
   userFullName
 ) => {
   const connectionRef = collection(db, "connections");
-  const userRef = doc(db, "users", userId);
+  const connectedUserRef = doc(db, "users", connectedUserId); // Update connectedUserId's count
 
   try {
     // Add a connection document
@@ -34,21 +34,21 @@ export const addConnection = async (
       createdAt: new Date(),
     });
 
-    // Increment the connection count for the user
-    await updateDoc(userRef, {
+    // Increment the connection count for the connected user
+    await updateDoc(connectedUserRef, {
       connectionCount: increment(1),
     });
 
-    console.log("Connection added and connection count updated successfully!");
+    console.log("Connection added and connected user's connection count updated successfully!");
   } catch (error) {
     console.error("Error adding connection and updating count: ", error);
   }
 };
 
-// Remove Connection and Decrement Count
+// Remove Connection and Decrement the Connected User's Count
 export const removeConnection = async (userId, connectedUserId) => {
   const connectionRef = collection(db, "connections");
-  const userRef = doc(db, "users", userId);
+  const connectedUserRef = doc(db, "users", connectedUserId); // Update connectedUserId's count
 
   try {
     // Find and delete the connection document
@@ -63,14 +63,12 @@ export const removeConnection = async (userId, connectedUserId) => {
       await deleteDoc(doc.ref); // Delete the document
     });
 
-    // Decrement the connection count for the user
-    await updateDoc(userRef, {
+    // Decrement the connection count for the connected user
+    await updateDoc(connectedUserRef, {
       connectionCount: increment(-1),
     });
 
-    console.log(
-      "Connection removed and connection count updated successfully!"
-    );
+    console.log("Connection removed and connected user's connection count updated successfully!");
   } catch (error) {
     console.error("Error removing connection and updating count: ", error);
   }

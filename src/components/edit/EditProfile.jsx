@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { UserAuth } from "../../contexts/AuthContext";
 import { fetchCountries, fetchLanguages } from "../../api/fetchStaticData";
-import { getAllDocuments, getDocumentByID, updateDocument } from "../../services/firestoreCRUD";
+import {
+  getAllDocuments,
+  getDocumentByID,
+  updateDocument,
+} from "../../services/firestoreCRUD";
 import { toLowerCase } from "../../utils/stringUtils";
 import { useNavigate } from "react-router-dom";
 import Input from "../common/Input";
@@ -12,6 +16,19 @@ import AvatarUpload from "../common/AvatarUpload";
 import CoverImageUpload from "../common/CoverImageUpload";
 import Button from "../common/Button";
 import Toast from "../common/Toast";
+import { FaTwitter, FaLinkedin, FaGithub, FaFacebook, FaInstagram, FaMedium, FaTwitch, FaDiscord, FaMinus, FaPlus } from "react-icons/fa";
+
+const socialMediaIcons = {
+  twitter: FaTwitter,
+  linkedin: FaLinkedin,
+  github: FaGithub,
+  facebook: FaFacebook,
+  instagram: FaInstagram,
+  medium: FaMedium,
+  twitch: FaTwitch,
+  discord: FaDiscord,
+  // Add more platforms as needed
+};
 
 const EditProfile = () => {
   const [formValues, setFormValues] = useState({
@@ -23,7 +40,10 @@ const EditProfile = () => {
     languages: [],
     country: "",
     city: "",
+    link: "",
   });
+
+  const [socialLinks, setSocialLinks] = useState([{ platform: "", url: "" }]);
 
   const [pronounsOptions, setPronounsOptions] = useState([]);
   const [countriesOptions, setCountriesOptions] = useState([]);
@@ -116,21 +136,42 @@ const EditProfile = () => {
     }));
   };
 
+  const handleSocialChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedLinks = [...socialLinks];
+    updatedLinks[index][name] = value;
+    setSocialLinks(updatedLinks);
+  };
+
+  const addSocialLink = () => {
+    setSocialLinks([...socialLinks, { platform: "", url: "" }]);
+  };
+
+  const removeSocialLink = (index) => {
+    const updatedLinks = socialLinks.filter((_, i) => i !== index);
+    setSocialLinks(updatedLinks);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     clearToast();
     setIsLoading(true);
-  
+
     const formValuesWithLowercaseUsername = {
       ...formValues,
       userName: toLowerCase(formValues.userName),
+      socialLinks,
     };
-  
+
     try {
       if (userID) {
-        const result = await updateDocument("users", userID, formValuesWithLowercaseUsername);
-  
+        const result = await updateDocument(
+          "users",
+          userID,
+          formValuesWithLowercaseUsername
+        );
+
         // Simulate success message even if the update fails
         if (result && result.success) {
           setToastMessage("Profile updated successfully!");
@@ -178,6 +219,14 @@ const EditProfile = () => {
           value={formValues.bio}
           onChange={handleInputChange}
         />
+        <Input
+          type="url"
+          name="link"
+          placeholder="Portfolio/Website Link"
+          value={formValues.link} // Bind this to formValues
+          onChange={handleInputChange}
+          className="w-full"
+        />
         <SelectInput
           name="pronouns"
           placeholder="Select Pronouns"
@@ -208,6 +257,53 @@ const EditProfile = () => {
           value={formValues.city}
           onChange={handleInputChange}
         />
+        {/* Social Media Links Section */}
+        <div>
+          <h3 className="text-lg font-semibold">Social Media Links</h3>
+          {socialLinks.map((social, index) => (
+            <div key={index} className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 w-full">
+                <SelectInput
+                  name="platform"
+                  placeholder="Platform"
+                  value={social.platform}
+                  onChange={(e) => handleSocialChange(index, e)}
+                  options={Object.keys(socialMediaIcons).map((platform) => ({
+                    label: platform.charAt(0).toUpperCase() + platform.slice(1),
+                    value: platform,
+                  }))}
+                />
+                <Input
+                  type="url"
+                  name="url"
+                  placeholder="Social Link URL"
+                  value={social.url}
+                  onChange={(e) => handleSocialChange(index, e)}
+                />
+                <div className="size-fit">
+                  <Button
+                    type="button"
+                    onClick={addSocialLink}
+                    className="bg-blue-500 text-white size-10"
+                  >
+                    <FaPlus />
+                  </Button>
+                </div>
+              </div>
+              {index > 0 && (
+                <div className="size-fit">
+                  <Button
+                    type="button"
+                    onClick={() => removeSocialLink(index)}
+                    className="bg-red-500 text-white ml-auto size-10"
+                  >
+                    <FaMinus />
+                  </Button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Loading..." : "Update Profile"}
         </Button>
