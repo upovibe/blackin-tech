@@ -167,9 +167,9 @@ const JobProfile = ({ tab }) => {
   }
 
   return (
-    <div className="job-profile-results flex flex-wrap gap-5">
+    <div className="job-profile-results flex flex-wrap items-center">
       {jobs.map((job) => (
-        <div key={job.id} className="job-item flex-1 min-w-[300px] p-4 relative">
+        <div key={job.id} className="job-item p-4 relative w-full md:w-1/2 xl:w-4/12">
           <div className="relative w-full h-64 overflow-hidden rounded-md group bg-black bg-opacity-0 transition-opacity duration-300 ease-in-out group-hover:bg-opacity-50">
               <img
                 src={job.logo}

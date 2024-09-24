@@ -201,3 +201,16 @@ export const assignBadgeToUser = async (userId, badge) => {
     throw e;
   }
 };
+
+export const incrementProfileView = async (userId) => {
+  const userRef = doc(db, "users", userId); // Replace with your collection name
+  await updateDoc(userRef, {
+    profileViews: increment(1), // Increment the view count
+  });
+};
+
+export const getProfileViewCount = async (userId) => {
+  const userRef = doc(db, "users", userId);
+  const userSnap = await getDoc(userRef);
+  return userSnap.exists() ? userSnap.data().profileViews : 0;
+};

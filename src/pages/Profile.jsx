@@ -9,6 +9,8 @@ import {
   listenToConnectionCount,
   checkConnectionStatus,
   listenToConnectionStatus,
+  incrementProfileView,
+  getProfileViewCount,
 } from "../services/firestoreUsersManagement";
 import { getDocumentByID } from "../services/firestoreCRUD.js";
 import Lottie from "lottie-react";
@@ -45,6 +47,7 @@ import {
   FaMedium,
   FaTwitch,
   FaDiscord,
+  FaEye,
   FaMinus,
   FaPlus,
 } from "react-icons/fa";
@@ -65,6 +68,7 @@ function Profile() {
   const { userName } = useParams();
   const navigate = useNavigate();
   const { user } = UserAuth();
+  const [profileViews, setProfileViews] = useState(0);
   const [profileUser, setProfileUser] = useState(null);
   const [badge, setBadge] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -89,8 +93,16 @@ function Profile() {
         const profile = await getUserByUsername(userName);
         if (profile) {
           setProfileUser(profile);
-
           setBadge(profile.badge || {});
+          // Fetch and update profile view count
+          if (user.uid !== profile.id) {
+            // Ensure the view count isn't incremented when the user views their own profile
+            await incrementProfileView(profile.id);
+          }
+
+          // Fetch the profile view count
+          const viewCount = await getProfileViewCount(profile.id);
+          setProfileViews(viewCount); // Set profile views state (to be created)
 
           // Fetch current connections and update count
           const connectionList = await getConnectionsByUserId(profile.id);
@@ -99,16 +111,13 @@ function Profile() {
           );
           setConnectionCount(connectionList.length);
 
-          // Set up listeners for real-time updates
           listenToConnectionCount(profile.id, setConnectionCount);
 
-          // Check initial connection status
           const isConnected = await checkConnectionStatus(user.uid, profile.id);
           setConnections((prev) =>
             isConnected ? new Set(prev).add(profile.id) : prev
           );
 
-          // Listen to connection status in real-time
           listenToConnectionStatus(user.uid, profile.id, (isConnected) => {
             setConnections((prev) => {
               const updatedConnections = new Set(prev);
@@ -257,9 +266,6 @@ function Profile() {
                           </Tooltip>
                         )}
                       </div>
-                      <p className="text-xs text-gray-600">
-                        {badge.description}
-                      </p>
                       <div className="flex flex-row gap-2 items-center">
                         <span className="font-semibold text-lg lowercase">
                           @{profileUser.userName || "Anonymous"}
@@ -365,11 +371,19 @@ function Profile() {
                 )}
 
                 <div className="flex items-center justify-between w-full">
-                  <span className="text-sm font-semibold text-slate-800">
-                    Connections
+                  <span className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                    <FaUserPlus/>Connections
                   </span>
                   <span className="text-sm font-semibold text-slate-800">
                     {connectionCount}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between w-full">
+                  <span className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                    <FaEye/>Profile Views
+                  </span>
+                  <span className="text-sm font-semibold text-slate-800">
+                    {profileViews}
                   </span>
                 </div>
               </div>
