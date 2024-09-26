@@ -2,14 +2,13 @@ import React, { useEffect } from "react";
 import Hero from "../components/common/Hero";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import FriendsImage from "../assets/images/FriendsImage.jpeg";
+import FriendsImage from "../assets/images/BuildingLong.jpeg";
+import Image2 from "../assets/images/GettyImages-1469706472_536328_xlc7vf.jpg";
 import CareerImage from "../assets/images/CareerImage.jpeg";
-import TalentImage from "../assets/images/photo-1556761175-5973dc0f32e7.jpeg";
 import Sponsor1 from "../assets/images/VisualStudio.png";
 import Sponsor2 from "../assets/images/Vercel.png";
 import Sponsor3 from "../assets/images/Github.png";
 import Subscribe from "./Subscribe";
-import Divider from "../components/common/Divider";
 
 function Home() {
 
@@ -22,7 +21,6 @@ function Home() {
       <section className="flex items-center justify-center py-16 relative z-10">
         <div className="container flex flex-col items-center justify-center">
           <Hero />
-          <Divider className="my-20 bg-slate-800/5" />
           {/* Features Section */}
           <div className="flex flex-col items-center justify-center w-full lg:w-10/12 gap-28 my-20">
             <div
@@ -70,7 +68,7 @@ function Home() {
               data-aos="fade-up"
             >
               <img
-                src={FriendsImage}
+                src={Image2}
                 alt="Showcase Your Talents"
                 className="w-full md:w-[660px] h-[350px] object-cover rounded-lg shadow-lg"
               />
@@ -138,7 +136,7 @@ function Home() {
             <h2 className="text-3xl font-semibold text-center mb-8">
               Our Sponsors
             </h2>
-            <div className="flex items-center justify-center space-x-8">
+            <div className="flex items-center justify-center md:gap-5 lg:gap-10">
               <img src={Sponsor1} alt="Sponsor 1" className="h-12 w-auto" />
               <img src={Sponsor2} alt="Sponsor 2" className="h-12 w-auto" />
               <img src={Sponsor3} alt="Sponsor 3" className="h-12 w-auto" />

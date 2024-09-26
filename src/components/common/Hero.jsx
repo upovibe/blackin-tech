@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { UserAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import animationHero from "../../assets/animations/Animation - Signup.json";
 import { FaUserFriends, FaBriefcase, FaRocket } from "react-icons/fa"; // Icons import
 import Button from "../common/Button";
+import Divider from "../common/Divider";
 
 function Hero() {
+  const { user } = UserAuth();
   const [text, setText] = useState("");
   const navigate = useNavigate();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -58,6 +61,9 @@ function Hero() {
     navigate("/signin");
   }
 
+    if (user) {
+      return null;
+    }
 
   return (
     <div className="relative flex flex-col items-center justify-center overflow-hidde px-2">
@@ -128,6 +134,8 @@ function Hero() {
           </p>
         </div>
       </div>
+      
+      <Divider className="my-20 bg-slate-800/5" />
     </div>
   );
 }

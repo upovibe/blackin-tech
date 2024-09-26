@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from 'react-router-dom';
 import { UserAuth } from "../../contexts/AuthContext";
 import Input from "../common/Input";
 import SelectInput from "../common/SelectInput";
@@ -20,6 +21,7 @@ import CompanyLogo from "../../assets/images/company-logo.png";
 
 const JobForm = () => {
   const { user } = UserAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     logo: "",
     companyName: "",
@@ -90,10 +92,87 @@ const JobForm = () => {
     setLogoError(false);
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+
+  //   if (
+  //     !formData.title ||
+  //     !formData.location ||
+  //     !formData.jobType ||
+  //     !formData.description
+  //   ) {
+  //     setShowToast({
+  //       visible: true,
+  //       message: "Please fill in all the required fields",
+  //       type: "error",
+  //     });
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   // Check if logo is provided
+  //   if (!formData.logo) {
+  //     setLogoError(true); // Show error for missing logo
+  //     setFormData({ ...formData, logo: CompanyLogo }); // Use default logo
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   try {
+  //     let mediaUrls = [];
+
+  //     if (media.length > 0) {
+  //       mediaUrls = await uploadImages(media);
+  //     }
+
+  //     const slug = generateSlug(formData.title);
+  //     const username = await fetchPosterUsername(user.uid);
+
+  //     const jobData = {
+  //       ...formData,
+  //       createdAt: new Date(),
+  //       media: mediaUrls,
+  //       postedBy: user.uid,
+  //       posterUsername: username,
+  //       slug,
+  //     };
+
+  //     await createDocument("jobs", jobData);
+
+  //     setSuccess(true);
+  //     setShowToast({
+  //       visible: true,
+  //       message: "Job posted successfully!",
+  //       type: "success",
+  //     });
+
+  //     setFormData({
+  //       logo: "",
+  //       companyName: "",
+  //       website: "",
+  //       title: "",
+  //       subtitle: "",
+  //       location: "",
+  //       jobType: "",
+  //       description: "",
+  //     });
+  //     setMedia([]);
+  //   } catch (error) {
+  //     setShowToast({
+  //       visible: true,
+  //       message: "Failed to post the job. Please try again later.",
+  //       type: "error",
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     if (
       !formData.title ||
       !formData.location ||
@@ -108,7 +187,7 @@ const JobForm = () => {
       setLoading(false);
       return;
     }
-
+  
     // Check if logo is provided
     if (!formData.logo) {
       setLogoError(true); // Show error for missing logo
@@ -116,17 +195,17 @@ const JobForm = () => {
       setLoading(false);
       return;
     }
-
+  
     try {
       let mediaUrls = [];
-
+  
       if (media.length > 0) {
         mediaUrls = await uploadImages(media);
       }
-
+  
       const slug = generateSlug(formData.title);
       const username = await fetchPosterUsername(user.uid);
-
+  
       const jobData = {
         ...formData,
         createdAt: new Date(),
@@ -135,16 +214,19 @@ const JobForm = () => {
         posterUsername: username,
         slug,
       };
-
+  
       await createDocument("jobs", jobData);
-
+  
       setSuccess(true);
       setShowToast({
         visible: true,
         message: "Job posted successfully!",
         type: "success",
       });
-
+  
+  
+      navigate(`/jobs/${slug}`);
+  
       setFormData({
         logo: "",
         companyName: "",
@@ -166,6 +248,7 @@ const JobForm = () => {
       setLoading(false);
     }
   };
+  
 
   const closeToast = () => {
     setShowToast({ ...showToast, visible: false });
@@ -274,7 +357,7 @@ const JobForm = () => {
       </form>
 
       {success && (
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center bg-white/80">
           <Lottie
             className="w-1/2"
             animationData={successAnimation}
