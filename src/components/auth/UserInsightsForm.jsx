@@ -12,7 +12,11 @@ import formLoading from "../../assets/animations/Animation - FormLoading.json";
 import Toast from "../common/Toast";
 import HorizontalLineWithText from "../common/HorizontalLineWithText";
 import Divider from "../common/Divider";
-import { updateDocument, getDocumentByID, getAllDocuments } from "../../services/firestoreCRUD";
+import {
+  updateDocument,
+  getDocumentByID,
+  getAllDocuments,
+} from "../../services/firestoreCRUD";
 import { UserAuth } from "../../contexts/AuthContext";
 import { FaMinus, FaPlus } from "react-icons/fa6";
 
@@ -89,7 +93,7 @@ const UserInsightsForm = () => {
           value: skill.slug,
         }));
         setSkillsOptions(formattedSkills);
-  
+
         // Fetch abilities from Firestore
         const abilitiesData = await getAllDocuments("jobAbilities");
         const formattedAbilities = abilitiesData.map((ability) => ({
@@ -97,7 +101,7 @@ const UserInsightsForm = () => {
           value: ability.slug,
         }));
         setAbilitiesOptions(formattedAbilities);
-  
+
         // Fetch availability statuses from Firestore
         const availabilityData = await getAllDocuments("jobAvailabilities");
         const formattedAvailability = availabilityData.map((availability) => ({
@@ -105,22 +109,25 @@ const UserInsightsForm = () => {
           value: availability.slug,
         }));
         setAvailabilityOptions(formattedAvailability);
-  
+
         // Fetch educational categories from the existing API
-        const educationalCategoriesData = await getAllDocuments("eduCategories");
-        const formattedEducationalCategories = educationalCategoriesData.map((category) => ({
-          label: category.name,
-          value: category.slug,
-        }));
+        const educationalCategoriesData = await getAllDocuments(
+          "eduCategories"
+        );
+        const formattedEducationalCategories = educationalCategoriesData.map(
+          (category) => ({
+            label: category.name,
+            value: category.slug,
+          })
+        );
         setEducationalCategories(formattedEducationalCategories);
       } catch (error) {
         console.error("Failed to load options:", error);
       }
     };
-  
+
     loadOptions();
   }, []);
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -404,8 +411,7 @@ const UserInsightsForm = () => {
                         </Button>
                       </div>
                     )}
-                    
-                  <Divider className="bg-black/5 mb-3"/>
+                    <Divider className="bg-black/5 mb-3" />
                   </div>
                 ))}
                 <div className="size-full flex items-end justify-end">
@@ -457,6 +463,18 @@ const UserInsightsForm = () => {
                           onChange={(e) => handleEducationChange(index, e)}
                         />
                       </div>
+                        {index > 0 && (
+                          <div className="size-fit ml-auto">
+                            <Button
+                              type="button"
+                              onClick={() => removeEducation(index)}
+                              className="bg-red-500 text-white ml-auto size-10"
+                            >
+                              <FaMinus />
+                            </Button>
+                          </div>
+                        )}                        
+                        <Divider className="bg-black/5 mb-3 inline-block md:hidden" />
                       <div className="size-fit ml-auto">
                         <Button
                           type="button"
@@ -467,17 +485,6 @@ const UserInsightsForm = () => {
                         </Button>
                       </div>
                     </div>
-                    {index > 0 && (
-                      <div className="size-fit my-5">
-                        <Button
-                          type="button"
-                          onClick={() => removeEducation(index)}
-                          className="bg-red-500 text-white ml-auto size-10"
-                        >
-                          <FaMinus />
-                        </Button>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -518,6 +525,18 @@ const UserInsightsForm = () => {
                           onChange={(e) => handleCertificationChange(index, e)}
                         />
                       </div>
+                        {index > 0 && (
+                          <div className="size-fit ml-auto">
+                          <Button
+                            type="button"
+                            onClick={() => removeCertification(index)}
+                            className="bg-red-500 text-white size-10"
+                          >
+                            <FaMinus />
+                          </Button>
+                          </div>
+                        )}                        
+                        <Divider className="bg-black/5 mb-3 inline-block md:hidden" />
                       <div className="size-fit ml-auto">
                         <Button
                           type="button"
@@ -528,15 +547,6 @@ const UserInsightsForm = () => {
                         </Button>
                       </div>
                     </div>
-                    {index > 0 && (
-                      <Button
-                        type="button"
-                        onClick={() => removeCertification(index)}
-                        className="bg-red-500 text-white size-10"
-                      >
-                        <FaMinus />
-                      </Button>
-                    )}
                   </div>
                 ))}
               </div>
