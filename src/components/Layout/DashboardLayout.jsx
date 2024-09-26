@@ -109,6 +109,7 @@ const DashboardLayout = ({ children }) => {
               { to: "/jobportal", icon: <FaBriefcase />, label: "Jobs" },
               { to: "/stat-reports", icon: <FaChartLine />, label: "Reports" },
               { to: "/data-settings", icon: <FaCog />, label: "Data Settings" },
+              { to: "/test-dashboard", icon: <FaCog />, label: "Testing" },
             ].map(({ to, icon, label }) => (
               <li
                 key={to}

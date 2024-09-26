@@ -25,6 +25,7 @@ import DataSettings from './admin/DataSettings';
 import StartReports from './admin/StartReports';
 import Subscribe from './pages/Subscribe'
 import AssignBadgeForm from './components/forms/AssignBadgeForm';
+import Test from './admin/Test';
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
           <Route path="/jobportal" element={<DashboardLayout><JobPortal /></DashboardLayout>} />
           <Route path="/stat-reports" element={<DashboardLayout><StartReports /></DashboardLayout>} />
           <Route path="/data-settings" element={<DashboardLayout><DataSettings /></DashboardLayout>} />
+          <Route path="/test-dashboard" element={<DashboardLayout><Test /></DashboardLayout>} />
         </Route>
 
         {/* Catch-all route */}

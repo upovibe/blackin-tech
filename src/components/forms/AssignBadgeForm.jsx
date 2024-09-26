@@ -1,29 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { updateDocument, getAllDocuments } from "../../services/firestoreCRUD";
-import Button from "../../components/common/Button";
-import Toast from "../../components/common/Toast";
-import TagInput from "../../components/common/TagInput";
-import SelectInput from "../../components/common/SelectInput";
+import Button from "../common/Button";
+import Toast from "../common/Toast";
+import SelectInput from "../common/SelectInput";
+import Input from "../common/Input";
 
 const AssignBadgeForm = () => {
   const [users, setUsers] = useState([]);
   const [badges, setBadges] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectedBadge, setSelectedBadge] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [toast, setToast] = useState({
-    visible: false,
     message: "",
     type: "success",
+    visible: false,
   });
 
+  // Fetch users and badges when the component mounts
   useEffect(() => {
     const fetchUsersAndBadges = async () => {
       try {
         const usersData = await getAllDocuments("users");
-        setUsers(usersData); // Set full user objects for later reference
+        setUsers(usersData);
 
         const badgesData = await getAllDocuments("badges");
-        setBadges(badgesData); // Store badge objects with full structure
+        setBadges(badgesData); // Store the full badge objects
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -32,131 +34,140 @@ const AssignBadgeForm = () => {
     fetchUsersAndBadges();
   }, []);
 
-  const handleAssignBadge = async (e) => {
-    e.preventDefault();
+  const handleUserSelection = (userId) => {
+    setSelectedUsers((prev) => {
+      if (prev.includes(userId)) {
+        return prev.filter((id) => id !== userId); // Deselect if already selected
+      }
+      return [...prev, userId]; // Select user
+    });
+  };
 
-    // Debugging - Check selected users and badge
-    console.log("Selected Users:", selectedUsers);
-    console.log("Selected Badge:", selectedBadge);
-
-    if (selectedUsers.length === 0 || !selectedBadge) {
+  const handleAssignBadge = async () => {
+    if (!selectedBadge) {
       setToast({
-        visible: true,
-        message: "Please select at least one user and a badge.",
+        message: "Please select a badge.",
         type: "error",
+        visible: true,
       });
       return;
     }
 
     try {
-      const currentDate = new Date().toLocaleString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-      });
-
-      // Format badge data to match the desired structure
-      const badgeData = {
-        id: selectedBadge.id,
-        name: selectedBadge.name,
-        slug: selectedBadge.slug,
-        description: selectedBadge.description,
-        icon: selectedBadge.icon,
-        createdAt: currentDate,
-      };
-
-      // Filter out the selected user objects
-      const selectedUserDocs = users.filter((user) =>
-        selectedUsers.includes(`${user.fullName} (${user.email})`)
-      );
-
-      // Debugging - Check the filtered user objects
-      console.log("Selected User Docs:", selectedUserDocs);
-
-      // Assign the selected badge to all selected users
+      // Update each selected user's document with the selected badge object
       await Promise.all(
-        selectedUserDocs.map((user) =>
-          updateDocument("users", user.id, { badge: badgeData })
+        selectedUsers.map((userId) =>
+          updateDocument("users", userId, { badge: selectedBadge }) // Store full badge object
         )
       );
 
       setToast({
-        visible: true,
         message: `Badge "${selectedBadge.name}" assigned to selected users.`,
         type: "success",
+        visible: true,
       });
-      setSelectedUsers([]);
       setSelectedBadge(null);
+      setSelectedUsers([]);
     } catch (error) {
       console.error("Error assigning badge:", error);
       setToast({
-        visible: true,
-        message: "Error assigning badge.",
+        message: "Error assigning badge. Please try again.",
         type: "error",
+        visible: true,
       });
     }
   };
 
+  // Filter users based on the search term
+  const filteredUsers = users.filter((user) =>
+    user.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div>
+    <div className="w-full p-2">
       <h1 className="text-2xl font-semibold mb-4">Assign Badge to Users</h1>
 
-      <form onSubmit={handleAssignBadge} className="space-y-4">
-        {/* Select Users using TagInput */}
-        <div>
-          <label htmlFor="userTags" className="block text-gray-700">
-            Select Users
-          </label>
-          <TagInput
-            options={users.map((user) => `${user.fullName} (${user.email})`)} // Use fullName and email for display
-            placeholder="Search and select users"
-            onChange={(selected) => {
-              console.log("TagInput selected users:", selected); // Debugging
-              setSelectedUsers(selected);
-            }}
-            maxTags={10} // Max 10 users can be selected
-          />
-        </div>
+      {/* Search Users */}
+      <div className="mb-4">
+        <label htmlFor="userSearch" className="block text-gray-700">
+          Search Users
+        </label>
+        <Input
+          id="userSearch"
+          placeholder="Type to search users..."
+          value={searchTerm || ""} // Ensure value is never undefined
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full mt-2 p-2 border border-slate-300"
+        />
 
-        {/* Select Badge using SelectInput */}
-        <div>
-          <label htmlFor="badgeSelect" className="block text-gray-700">
-            Select Badge
-          </label>
-          <SelectInput
-            options={badges.map((badge) => ({
-              value: badge.name,
-              label: `${badge.name} - ${badge.description}`,
-              id: badge.id,
-              description: badge.description,
-              icon: badge.icon,
-              slug: badge.slug,
-            }))} // Badge name, id, description, icon, slug for proper structure
-            placeholder="Select a badge"
-            onChange={(selectedBadgeValue) => {
-              const badge = badges.find(
-                (badge) => badge.name === selectedBadgeValue
-              );
-              console.log("SelectInput selected badge:", badge); // Debugging
-              setSelectedBadge(badge);
-            }}
-          />
-        </div>
+        <ul className="mt-2 max-h-60 overflow-y-auto border border-slate-300">
+          {filteredUsers.length > 0 ? (
+            filteredUsers.map((user) => (
+              <li
+                key={user.id}
+                className="p-2 flex items-center cursor-pointer hover:bg-slate-200 transition-all duration-300"
+                onClick={() => handleUserSelection(user.id)}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedUsers.includes(user.id)}
+                  onChange={() => handleUserSelection(user.id)}
+                  className="mr-2"
+                />
+                {user.fullName}
+              </li>
+            ))
+          ) : (
+            <li className="p-2 text-slate-400">No users found</li>
+          )}
+        </ul>
+      </div>
 
-        {/* Submit Button */}
-        <div className="flex justify-end">
-          <Button type="submit" className="bg-green-500 text-white">
-            Assign Badge
-          </Button>
-        </div>
-      </form>
+      {/* Selected Users */}
+      <div className="mb-4">
+        <label className="block text-gray-700">Selected Users</label>
+        <Input
+          type="text"
+          value={selectedUsers
+            .map((userId) => users.find((user) => user.id === userId)?.fullName)
+            .join(", ")}
+          readOnly
+          placeholder="No users selected"
+          className="w-full mt-2 p-2 border border-slate-300"
+        />
+      </div>
 
-      {/* Toast Notification */}
+      {/* Select Badge */}
+      <div className="mb-4">
+        <label htmlFor="badgeSelect" className="block text-gray-700">
+          Select Badge
+        </label>
+        <SelectInput
+          options={badges.map(badge => ({ label: badge.name, id: badge.id }))} // Map badges for SelectInput
+          placeholder="Select a badge"
+          value={selectedBadge ? selectedBadge.name : ""} // Ensure value is never undefined
+          onChange={(e) => {
+            const badge = badges.find(b => b.name === e.target.value);
+            setSelectedBadge(badge);
+          }}
+          className="w-full mt-2"
+        />
+      </div>
+
+      {/* Assign Badge Button */}
+      <div className="flex justify-end">
+        <Button
+          onClick={handleAssignBadge}
+          className="bg-green-500 text-white px-4 py-2 rounded"
+        >
+          Assign Badge
+        </Button>
+      </div>
+
+      {/* Toast for success or error message */}
       <Toast
-        type={toast.type}
         message={toast.message}
+        type={toast.type}
         visible={toast.visible}
         onClose={() => setToast({ ...toast, visible: false })}
       />

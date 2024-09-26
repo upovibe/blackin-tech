@@ -406,19 +406,6 @@ const Table = ({
                 <FaPenToSquare className="text-blue-500 group-hover:text-blue-600" />{" "}
                 Edit
               </li>
-              {/* <li
-                onClick={() =>
-                  setModal({
-                    visible: true,
-                    action: "disable",
-                    rowData: row,
-                  })
-                }
-                className="group transition-all duration-200 ease-in-out cursor-pointer hover:bg-gray-200 p-1 rounded flex items-center gap-2 px-2"
-              >
-                <FaUserSlash className="text-yellow-500 group-hover:text-yellow-600" />
-                Disable
-              </li> */}
               <li
                 onClick={() =>
                   setModal({
