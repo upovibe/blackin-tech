@@ -16,6 +16,7 @@ import AvatarUpload from "../common/AvatarUpload";
 import CoverImageUpload from "../common/CoverImageUpload";
 import Button from "../common/Button";
 import Toast from "../common/Toast";
+import Divider from "../common/Divider"
 import { FaTwitter, FaLinkedin, FaGithub, FaFacebook, FaInstagram, FaMedium, FaTwitch, FaDiscord, FaMinus, FaPlus } from "react-icons/fa";
 
 const socialMediaIcons = {
@@ -262,7 +263,8 @@ const EditProfile = () => {
           <h3 className="text-lg font-semibold">Social Media Links</h3>
           {socialLinks.map((social, index) => (
             <div key={index} className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 w-full">
+              <div className="flex flex-col md:flex-row items-center gap-2 w-full my-1">
+                <div className="w-full md:w-32">
                 <SelectInput
                   name="platform"
                   placeholder="Platform"
@@ -273,25 +275,17 @@ const EditProfile = () => {
                     value: platform,
                   }))}
                 />
+
+                </div>
                 <Input
                   type="url"
                   name="url"
                   placeholder="Social Link URL"
                   value={social.url}
                   onChange={(e) => handleSocialChange(index, e)}
-                />
-                <div className="size-fit">
-                  <Button
-                    type="button"
-                    onClick={addSocialLink}
-                    className="bg-blue-500 text-white size-10"
-                  >
-                    <FaPlus />
-                  </Button>
-                </div>
-              </div>
-              {index > 0 && (
-                <div className="size-fit">
+                /> 
+                 {index > 0 && (
+                <div className="size-fit ml-auto">
                   <Button
                     type="button"
                     onClick={() => removeSocialLink(index)}
@@ -301,6 +295,18 @@ const EditProfile = () => {
                   </Button>
                 </div>
               )}
+              <Divider className="bg-black/5 my-2 inline-block md:hidden" />
+                <div className="size-fit ml-auto">
+                  <Button
+                    type="button"
+                    onClick={addSocialLink}
+                    className="bg-blue-500 text-white size-10"
+                  >
+                    <FaPlus />
+                  </Button>
+                </div>
+              </div>
+
             </div>
           ))}
         </div>
