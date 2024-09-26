@@ -16,12 +16,7 @@ import Toast from "../common/Toast";
 import Tooltip from "../common/Tooltip";
 import DefaultCoverImage from "../../assets/images/placeholder-image.png";
 import DefaultAvatar from "../../assets/images/placeholder-image.png";
-import {
-  FaUserPlus,
-  FaUserMinus,
-  FaEye,
-  FaTimes,
-} from "react-icons/fa";
+import { FaUserPlus, FaUserMinus, FaEye, FaTimes } from "react-icons/fa";
 
 const UserProfileList = ({
   profiles,
@@ -46,22 +41,12 @@ const UserProfileList = ({
   // Fetch profiles and listen for real-time connection counts
   useEffect(() => {
     const fetchProfiles = async () => {
-      if (!user || !user.uid) {
-        setLoading(false);
-        return;
-      }
-
+      setLoading(true);
       try {
-        const connectionList = await getConnectionsByUserId(user.uid);
-        setConnections(
-          new Set(connectionList.map((conn) => conn.connectedUserId))
-        );
-
         const allProfiles = await getAllDocuments("users");
         const validProfiles = allProfiles.filter(
-          (profile) => profile.fullName && profile.id !== user.uid
+          (profile) => profile.fullName && profile.id !== user?.uid
         );
-
 
         const shuffledProfiles = validProfiles.sort(() => Math.random() - 0.5);
 
@@ -70,7 +55,7 @@ const UserProfileList = ({
           shuffledProfiles.map(async (profile) => {
             if (profile.badgeId) {
               const badge = await getDocumentByID("badges", profile.badgeId);
-              return { ...profile, badge }; 
+              return { ...profile, badge };
             }
             return profile;
           })
@@ -78,15 +63,22 @@ const UserProfileList = ({
 
         setProfileList(profilesWithBadges);
 
-        // Set up real-time listener for connection counts
-        profilesWithBadges.forEach((profile) => {
-          listenToConnectionCount(profile.id, (count) => {
-            setConnectionCounts((prevCounts) => ({
-              ...prevCounts,
-              [profile.id]: count,
-            }));
+        // Set up real-time listener for connection counts if user is logged in
+        if (user && user.uid) {
+          const connectionList = await getConnectionsByUserId(user.uid);
+          setConnections(
+            new Set(connectionList.map((conn) => conn.connectedUserId))
+          );
+
+          profilesWithBadges.forEach((profile) => {
+            listenToConnectionCount(profile.id, (count) => {
+              setConnectionCounts((prevCounts) => ({
+                ...prevCounts,
+                [profile.id]: count,
+              }));
+            });
           });
-        });
+        }
       } catch (error) {
         console.error("Error fetching profiles:", error);
       } finally {
@@ -102,6 +94,13 @@ const UserProfileList = ({
   };
 
   const handleConnect = async (profileId, profile) => {
+    if (!user || !user.uid) {
+      setToastMessage("Sign in to connect.");
+      setToastType("error");
+      setToastVisible(true);
+      return; // Exit the function if the user is not logged in
+    }
+
     setIsConnecting(true);
     try {
       await addConnection(
@@ -224,7 +223,7 @@ const UserProfileList = ({
           </div>
 
           <div className="flex flex-col flex-grow items-center justify-between relative">
-            <div className="-translate-y-9 p-1 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-full transition-all duration-300 ease-linear group hover:bg-gradient-to-r hover:from-green-400 hover:via-blue-500 hover:to-purple-600 h-1/6 min-h-20 min-w-20 rounded-full overflow-hidden">
+            <div className="-translate-y-9 p-1 min-h-20 min-w-20 h-1/6 rounded-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500transition-all duration-300 ease-linear group hover:bg-gradient-to-r hover:from-green-400 hover:via-blue-500 hover:to-purple-600 overflow-hidden">
               <img
                 src={profile.avatarUrl || DefaultCoverImage}
                 alt={profile.fullName}
@@ -235,32 +234,30 @@ const UserProfileList = ({
             <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full">
               <div className="p-3 size-full text-center">
                 <div className="flex items-center justify-center gap-1">
-                <h3 className="text-center capitalize font-semibold truncate mt-3">
-                  {profile.fullName}
-                </h3>
-                {profile.badge && profile.badge.icon && (
-                  <Tooltip
-                    position="top"
-                    text={`${profile.badge.name || "Badge"}: ${
-                      profile.badge.description || "No description available"
-                    }`}
-                  >
-                    <img
-                      src={profile.badge.icon}
-                      alt={profile.badge.name || "Badge icon"}
-                      className="size-4 min-h-4 min-w-4 ilter drop-shadow-lg mt-3"
-                    />
-                  </Tooltip>
-                )}
-                </div>                
+                  <h3 className="text-center capitalize font-semibold truncate mt-3">
+                    {profile.fullName}
+                  </h3>
+                  {profile.badge && profile.badge.icon && (
+                    <Tooltip
+                      position="top"
+                      text={`${profile.badge.name || "Badge"}: ${
+                        profile.badge.description || "No description available"
+                      }`}
+                    >
+                      <img
+                        src={profile.badge.icon}
+                        alt={profile.badge.name || "Badge icon"}
+                        className="size-4 min-h-4 min-w-4 ilter drop-shadow-lg mt-3"
+                      />
+                    </Tooltip>
+                  )}
+                </div>
 
                 <div className="flex items-baseline space-x-2 mr-auto text-slate-800 font-semibold text-sm">
                   {profile.professionalTitle && (
-                    <>
-                      <span className="text-sm truncate">
-                        {profile.professionalTitle}
-                      </span>
-                    </>
+                    <span className="text-sm truncate">
+                      {profile.professionalTitle}
+                    </span>
                   )}
                 </div>
 
@@ -271,28 +268,37 @@ const UserProfileList = ({
 
               <div className="absolute bg-gradient-to-t bg-slate-100 bottom-0 duration-300 ease-in-out flex flex-grow from-slate-400 h-1/2 items-center justify-center opacity-0 p-3 size-full to-slate-50 transition-opacity via-slate-200 group-hover:opacity-100">
                 <div className="flex justify-center">
-                  {user.uid === profile.id ? (
-                    <button
-                      type="button"
-                      className="flex items-center justify-center gap-2 border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-36 hover:bg-slate-800 hover:text-white/80"
-                      onClick={() => navigate(`/profile/${profile.userName}`)}
-                    >
-                      <FaEye />
-                      View
-                    </button>
-                  ) : connections.has(profile.id) ? (
-                    <button
-                      type="button"
-                      className="flex items-center justify-center gap-2 border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-36 hover:bg-slate-800 hover:text-white/80"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDisconnect(profile.id);
-                      }}
-                      disabled={isDisconnecting}
-                    >
-                      <FaUserMinus />{" "}
-                      {isDisconnecting ? "Disconnecting..." : "Disconnect"}
-                    </button>
+                  {user ? (
+                    connections.has(profile.id) ? (
+                      <button
+                        type="button"
+                        className="flex items-center justify-center gap-2 border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-36 hover:bg-slate-800 hover:text-white/80"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDisconnect(profile.id);
+                        }}
+                        disabled={isDisconnecting}
+                      >
+                        <FaUserMinus />{" "}
+                        {isDisconnecting ? "Disconnecting..." : "Disconnect"}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="flex items-center justify-center gap-2 border-2 border-slate-600/25 duration-300 ease-in-out font-semibold p-2 rounded-full text-slate-950 text-sm transition-all w-36 hover:bg-slate-800 hover:text-white/80"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleConnect(profile.id, {
+                            fullName: profile.fullName,
+                            avatarUrl: profile.avatarUrl,
+                          });
+                        }}
+                        disabled={isConnecting}
+                      >
+                        <FaUserPlus />{" "}
+                        {isConnecting ? "Connecting..." : "Connect"}
+                      </button>
+                    )
                   ) : (
                     <button
                       type="button"
@@ -306,8 +312,7 @@ const UserProfileList = ({
                       }}
                       disabled={isConnecting}
                     >
-                      <FaUserPlus />{" "}
-                      {isConnecting ? "Connecting..." : "Connect"}
+                      <FaUserPlus /> {"Connect"}
                     </button>
                   )}
                 </div>
@@ -316,6 +321,7 @@ const UserProfileList = ({
           </div>
         </div>
       ))}
+
       {/* Toast Notification */}
       <Toast
         role="alert"

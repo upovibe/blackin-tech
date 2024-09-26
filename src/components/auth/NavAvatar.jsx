@@ -52,7 +52,7 @@ const NavAvatar = () => {
 
   return (
     <div className="relative">
-      <div className="p-[2px] bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-full group transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-green-400 group-hover:via-blue-500 group-hover:to-purple-600">
+      <div className="p-[2px] rounded-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500transition-all duration-300 ease-linear group hover:bg-gradient-to-r hover:from-green-400 hover:via-blue-500 hover:to-purple-600 overflow-hidden">
         <img
           src={user.avatarUrl || defaultAvatar}
           alt="User Avatar"
@@ -71,7 +71,7 @@ const NavAvatar = () => {
             className="flex flex-col items-center space-y-2 mb-2 cursor-pointer"
             onClick={handleClick}
           >
-            <div className="p-[3px] bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-full transition-all duration-300 ease-linear group hover:bg-gradient-to-r hover:from-green-400 hover:via-blue-500 hover:to-purple-600">
+            <div className="p-[3px] rounded-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500transition-all duration-300 ease-linear group hover:bg-gradient-to-r hover:from-green-400 hover:via-blue-500 hover:to-purple-600 overflow-hidden">
               <img
                 src={user.avatarUrl || defaultAvatar}
                 alt="User Profile Pic"
