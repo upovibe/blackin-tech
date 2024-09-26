@@ -29,7 +29,7 @@ const SettingsPage = () => {
   return (
     <main>
       <section className="flex items-center justify-center p-2">
-        <div className="container w-full xl:w-8/12">
+        <div className="container w-full xl:w-8/12 pb-20">
           <div className="p-4">
             <h1 className="text-2xl font-bold mb-6">Settings</h1>
             <TabComponent

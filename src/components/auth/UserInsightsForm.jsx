@@ -347,7 +347,7 @@ const UserInsightsForm = () => {
                     key={index}
                     className="flex flex-col items-center justify-between gap-3 w-full"
                   >
-                    <div className="flex items-center justify-between gap-3 w-full">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-3 w-full">
                       <div className="w-full">
                         <Input
                           name="companyName"
@@ -365,7 +365,7 @@ const UserInsightsForm = () => {
                         />
                       </div>
                     </div>
-                    <div className="flex items-center justify-between gap-3 w-full">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-3 w-full">
                       <div className="w-full">
                         <Input
                           name="startDate"
@@ -421,7 +421,7 @@ const UserInsightsForm = () => {
 
               {/* Educational Qualifications */}
               <HorizontalLineWithText>
-                <span className="text-sm font-semibold">Work History</span>
+                <span className="text-sm font-semibold">Qualifications</span>
               </HorizontalLineWithText>
               <div className="my-5 mb-14">
                 {formValues.education.map((edu, index) => (
@@ -429,7 +429,7 @@ const UserInsightsForm = () => {
                     key={index}
                     className="flex items-center justify-between gap-3"
                   >
-                    <div className="flex items-center gap-2 w-full">
+                    <div className="flex flex-col md:flex-row items-center gap-2 w-full">
                       <div className="w-full">
                         <SelectInput
                           name="category"
@@ -457,7 +457,7 @@ const UserInsightsForm = () => {
                           onChange={(e) => handleEducationChange(index, e)}
                         />
                       </div>
-                      <div className="size-fit">
+                      <div className="size-fit ml-auto">
                         <Button
                           type="button"
                           onClick={addEducation}
@@ -492,7 +492,7 @@ const UserInsightsForm = () => {
                     key={index}
                     className="flex items-center justify-between gap-3"
                   >
-                    <div className="flex items-center gap-2 w-full">
+                    <div className="flex flex-col md:flex-row items-center gap-2 w-full">
                       <div className="w-full">
                         <Input
                           name="certName"
@@ -518,7 +518,7 @@ const UserInsightsForm = () => {
                           onChange={(e) => handleCertificationChange(index, e)}
                         />
                       </div>
-                      <div className="size-fit">
+                      <div className="size-fit ml-auto">
                         <Button
                           type="button"
                           onClick={addCertification}
@@ -548,7 +548,7 @@ const UserInsightsForm = () => {
                 </span>
               </HorizontalLineWithText>
               <div className="my-5">
-                <div className=" flex items-center gap-3 mb-14">
+                <div className=" flex flex-col md:flex-row items-center gap-3 mb-14">
                   <div className="w-full">
                     <Input
                       name="resumeURL"
