@@ -25,7 +25,7 @@ const SubscriptionList = () => {
   useEffect(() => {
     const fetchSubscriptions = async () => {
       try {
-        const data = await getAllDocuments("subscriptions"); // Replace with your collection name
+        const data = await getAllDocuments("subscriptions");
         setSubscriptions(data);
       } catch (error) {
         console.error("Error fetching subscriptions:", error);
@@ -43,10 +43,10 @@ const SubscriptionList = () => {
     setToastType("info");
     setToastVisible(true);
 
-    // Simulate an async action (replace with actual Firestore operation if needed)
+
     setTimeout(() => {
       setButtonLoadingStates((prev) => ({ ...prev, [subscriptionId]: false }));
-    }, 2000); // Adjust the timeout as necessary
+    }, 2000);
   };
 
   if (loading) {
@@ -58,22 +58,22 @@ const SubscriptionList = () => {
       {subscriptions.length > 0 ? (
         subscriptions.map((sub, index) => (
           <div key={sub.id} className="subscription-item w-full lg:w-4/12 p-3">
-            <div className="relative bg-gray-100 rounded-2xl shadow flex flex-col items-center justify-center lg:h-[30rem] py-6 w-full">
+            <div className="relative bg-gray-100 rounded-2xl shadow-lg flex flex-col items-center justify-center lg:h-[30rem] py-6 w-full">
               {/* Badge for New or Highlighted Plans */}
               <div className="absolute -top-3 ">
                 {sub.badge && (
                   <span
                     className={`badge ${
                       badgeColors[index % badgeColors.length]
-                    } text-white px-2 py-1 rounded-full text-xs font-semibold uppercase text-center shadow-sm`}
+                    } text-white px-2 py-1 rounded-full text-xs font-semibold uppercase text-center shadow-lg`}
                   >
                     {sub.badge}
                   </span>
                 )}
               </div>
 
-              <div className="size-full flex flex-col items-center justify-between w-full">
-                <div className="flex items-center flex-col w-full">
+              <div className="size-full flex flex-col items-center justify-between w-full gap-10">
+                <div className="flex items-center flex-col w-full gap-2">
                   {/* Title */}
                   <h3 className="text-3xl font-bold mt-4 mb-2 text-slate-800 leading-tight w-full text-center">
                     {sub.title}

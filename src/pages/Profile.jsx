@@ -22,8 +22,8 @@ import ProfileProgress from "../components/auth/ProfileProgress";
 import JobProfile from "../components/lists/JobProfile";
 import Divider from "../components/common/Divider";
 import TabComponent from "../components/common/TabComponent.jsx";
-import DefaultCoverImage from "../assets/images/coverimage.jpg";
-import DefaultAvatar from "../assets/images/avatar-default.png";
+import DefaultCoverImage from "../assets/images/placeholder-image.png";
+import DefaultAvatar from "../assets/images/placeholder-image.png";
 import {
   FaInfoCircle,
   FaLink,
@@ -234,11 +234,14 @@ function Profile() {
               <div className="flex items-start justify-between w-full">
                 <div className="flex items-start lg:items-start flex-col gap-1 w-1/2">
                   <div className="relative flex flex-col items-center justify-center">
-                    <img
-                      src={profileUser.avatarUrl || DefaultAvatar}
-                      alt="User Avatar"
-                      className="w-28 h-28 rounded-full border-2 border-opacity-20 border-white"
-                    />
+                    <div className="w-28 h-28 p-1 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-full">
+                      <img
+                        src={profileUser.avatarUrl || DefaultAvatar}
+                        alt="User Avatar"
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    </div>
+
                     {profileUser.role === "admin" && (
                       <span className="absolute bottom-0 text-sm px-3 py-[1px] shadow bg-orange-400 text-white rounded-full font-semibold w-max">
                         {profileUser.role}
@@ -372,7 +375,8 @@ function Profile() {
 
                 <div className="flex items-center justify-between w-full">
                   <span className="text-sm font-semibold text-slate-800 flex items-center gap-2">
-                    <FaUserPlus/>Connections
+                    <FaUserPlus />
+                    Connections
                   </span>
                   <span className="text-sm font-semibold text-slate-800">
                     {connectionCount}
@@ -380,7 +384,8 @@ function Profile() {
                 </div>
                 <div className="flex items-center justify-between w-full">
                   <span className="text-sm font-semibold text-slate-800 flex items-center gap-2">
-                    <FaEye/>Profile Views
+                    <FaEye />
+                    Profile Views
                   </span>
                   <span className="text-sm font-semibold text-slate-800">
                     {profileViews}

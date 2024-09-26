@@ -8,7 +8,7 @@ const JobManagementPage = () => {
   const navigate = useNavigate();
 
   const handleBackClick = () => {
-    navigate(-1);
+    navigate("/jobs");
   };
 
   

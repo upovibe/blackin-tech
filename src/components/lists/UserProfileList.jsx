@@ -14,12 +14,13 @@ import loadingAnimation from "../../assets/animations/Animation - Loading.json";
 import noDataAnimation from "../../assets/animations/Animation - No Data Found.json";
 import Toast from "../common/Toast";
 import Tooltip from "../common/Tooltip";
+import DefaultCoverImage from "../../assets/images/placeholder-image.png";
+import DefaultAvatar from "../../assets/images/placeholder-image.png";
 import {
   FaUserPlus,
   FaUserMinus,
   FaEye,
   FaTimes,
-  FaInfoCircle,
 } from "react-icons/fa";
 
 const UserProfileList = ({
@@ -30,7 +31,7 @@ const UserProfileList = ({
 }) => {
   const { user } = UserAuth();
   const [badge, setBadge] = useState(null);
-  const [profileList, setProfileList] = useState([]); // Renamed this state variable to 'profileList'
+  const [profileList, setProfileList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [connections, setConnections] = useState(new Set());
   const [connectionCounts, setConnectionCounts] = useState({});
@@ -61,21 +62,21 @@ const UserProfileList = ({
           (profile) => profile.fullName && profile.id !== user.uid
         );
 
-        // Shuffle profiles for random arrangement
+
         const shuffledProfiles = validProfiles.sort(() => Math.random() - 0.5);
 
         // Fetch the badges for each profile
         const profilesWithBadges = await Promise.all(
           shuffledProfiles.map(async (profile) => {
             if (profile.badgeId) {
-              const badge = await getDocumentByID("badges", profile.badgeId); // Assuming badges are stored in a 'badges' collection
-              return { ...profile, badge }; // Add badge to the profile
+              const badge = await getDocumentByID("badges", profile.badgeId);
+              return { ...profile, badge }; 
             }
-            return profile; // Return profile without badge if no badgeId
+            return profile;
           })
         );
 
-        setProfileList(profilesWithBadges); // Updated to use the profiles with badges
+        setProfileList(profilesWithBadges);
 
         // Set up real-time listener for connection counts
         profilesWithBadges.forEach((profile) => {
@@ -207,7 +208,7 @@ const UserProfileList = ({
               className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-full z-"
               style={{
                 backgroundImage: `url(${
-                  profile.coverImageUrl || "https://via.placeholder.com/150"
+                  profile.coverImageUrl || DefaultAvatar
                 })`,
               }}
             />
@@ -223,16 +224,18 @@ const UserProfileList = ({
           </div>
 
           <div className="flex flex-col flex-grow items-center justify-between relative">
-            <div className="-translate-y-9 border-4 border-white h-1/6 min-h-20 min-w-20 overflow-hidden rounded-full size-20">
+            <div className="-translate-y-9 p-1 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-full transition-all duration-300 ease-linear group hover:bg-gradient-to-r hover:from-green-400 hover:via-blue-500 hover:to-purple-600 h-1/6 min-h-20 min-w-20 rounded-full overflow-hidden">
               <img
-                src={profile.avatarUrl || "https://via.placeholder.com/150"}
+                src={profile.avatarUrl || DefaultCoverImage}
                 alt={profile.fullName}
+                className="rounded-full size-20 min-h-20 min-w-20"
               />
             </div>
+
             <div className="absolute bottom-0 flex flex-col flex-grow h-5/6 justify-between size-full">
               <div className="p-3 size-full text-center">
                 <div className="flex items-center justify-center gap-1">
-                <h3 className="text-center capitalize font-semibold truncate">
+                <h3 className="text-center capitalize font-semibold truncate mt-3">
                   {profile.fullName}
                 </h3>
                 {profile.badge && profile.badge.icon && (
@@ -245,7 +248,7 @@ const UserProfileList = ({
                     <img
                       src={profile.badge.icon}
                       alt={profile.badge.name || "Badge icon"}
-                      className="size-4 min-h-4 min-w-4 ilter drop-shadow-lg"
+                      className="size-4 min-h-4 min-w-4 ilter drop-shadow-lg mt-3"
                     />
                   </Tooltip>
                 )}
