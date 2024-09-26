@@ -4,7 +4,7 @@ import MainLayout from './components/Layout/MainLayout';
 import DashboardLayout from './components/Layout/DashboardLayout';
 import PrivateRoute from './routes/PrivateRoute';
 import PublicRoute from './routes/PublicRoute';
-import Home from './pages/Home.jsx';
+import Home from './pages/Home';
 import About from './pages/About';
 import Jobs from './pages/Jobs';
 import Connect from './pages/Connect';
