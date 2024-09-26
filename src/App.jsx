@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { UserAuth } from './contexts/AuthContext';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './components/Layout/MainLayout';
 import DashboardLayout from './components/Layout/DashboardLayout';
 import PrivateRoute from './routes/PrivateRoute';
@@ -23,11 +24,13 @@ import JobPortal from './admin/JobPortal';
 import AssignBadge from './admin/AssignBadge';
 import DataSettings from './admin/DataSettings';
 import StartReports from './admin/StartReports';
-import Subscribe from './pages/Subscribe'
+import Subscribe from './pages/Subscribe';
 import AssignBadgeForm from './components/forms/AssignBadgeForm';
 import Test from './admin/Test';
 
 function App() {
+  const { user } = UserAuth();
+
   return (
     <Router>
       <Routes>
@@ -42,14 +45,13 @@ function App() {
         <Route path="/subscribe" element={<MainLayout><Subscribe /></MainLayout>} />
         <Route path="/connect" element={<MainLayout><Connect /></MainLayout>} />
         <Route path="/search" element={<MainLayout><Search /></MainLayout>} />
-        <Route path="/search" element={<MainLayout><Search /></MainLayout>} />
         <Route path="/terms" element={<MainLayout><Terms /></MainLayout>} />
         <Route path="/about" element={<MainLayout><About /></MainLayout>} />
         <Route path="/assignadge" element={<MainLayout><AssignBadgeForm /></MainLayout>} />
 
         {/* Private routes with MainLayout */}
         <Route element={<PrivateRoute />}>
-          <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
+          <Route path="/profile" element={<Navigate to={`/profile/${user?.userName}`} />} /> {/* Use optional chaining to handle null user */}
           <Route path="/profile/:userName" element={<MainLayout><Profile /></MainLayout>} />
           <Route path="/settings" element={<MainLayout><Settings /></MainLayout>} />
           <Route path="/completeprofile" element={<CompleteProfile />} />
