@@ -153,41 +153,41 @@ const CompleteProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Use the utility function to convert the username to lowercase
     const formValuesWithLowercaseUsername = {
-      ...formValues,
-      userName: toLowerCase(formValues.userName),
+        ...formValues,
+        userName: toLowerCase(formValues.userName), // Convert username to lowercase
     };
 
     if (validateStep()) {
-      try {
-        // Now using formValuesWithLowercaseUsername for submission
-        const result = await updateProfile(formValuesWithLowercaseUsername);
+        try {
+            const result = await updateProfile(formValuesWithLowercaseUsername);
 
-        if (result.success) {
-          setToastMessage("Profile updated successfully!");
-          setToastType("success");
-          setToastVisible(true);
-          setIsSubmitted(true);
-          setTimeout(() => {
-            navigate("/");
-          }, 3000);
-        } else {
-          setToastMessage("Failed to update profile.");
-          setToastType("error");
-          setToastVisible(true);
+            if (result.success) {
+                setToastMessage("Profile updated successfully!");
+                setToastType("success");
+                setToastVisible(true);
+                setIsSubmitted(true);
+                
+                // Navigate to the user's profile
+                setTimeout(() => {
+                    navigate(`/profile/${formValuesWithLowercaseUsername.userName}`);
+                }, 3000);
+            } else {
+                setToastMessage("Failed to update profile.");
+                setToastType("error");
+                setToastVisible(true);
+            }
+        } catch (error) {
+            setToastMessage("An error occurred.");
+            setToastType("error");
+            setToastVisible(true);
         }
-      } catch (error) {
-        setToastMessage("An error occurred.");
+    } else {
+        setToastMessage("Please fill out all required fields.");
         setToastType("error");
         setToastVisible(true);
-      }
-    } else {
-      setToastMessage("Please fill out all required fields.");
-      setToastType("error");
-      setToastVisible(true);
     }
-  };
+};
 
   if (isSubmitted) {
     return (

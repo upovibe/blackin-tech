@@ -77,17 +77,24 @@ export const signInWithGoogle = async (navigate) => {
         email: user.email,
         fullName: user.email.split("@")[0],
         provider: "google",
-        role: "user",
+        role: "user", // Default role
         createdAt: new Date(),
         profileCompleted: false,
       });
       userDocSnapshot = await getDoc(userDocRef);
     }
+    
     const userData = userDocSnapshot.data();
-    if (userData.profileCompleted) {
-      navigate("/");
+    
+    // Redirect based on user role and profile completion
+    if (userData.role === "admin") {
+      navigate("/dashboard"); // Redirect to dashboard if admin
     } else {
-      navigate("/CompleteProfile");
+      if (userData.profileCompleted) {
+        navigate("/"); // Redirect to home if profile is completed
+      } else {
+        navigate("/CompleteProfile"); // Redirect to profile completion page
+      }
     }
 
     return { success: true, user: userData };
@@ -95,7 +102,6 @@ export const signInWithGoogle = async (navigate) => {
     return { success: false, message: error.message };
   }
 };
-
 
 //Signin User with export funtion
 export const signInUser = async (identifier, password) => {
@@ -144,11 +150,11 @@ export const signInUser = async (identifier, password) => {
 
     const userData = userDoc.data();
 
-    // Check if the user is the admin or a normal user
+    // Check if the user is an admin or a normal user
     if (isAdmin && userData.role === 'admin') {
-      return { success: true, user };
+      return { success: true, user: userData }; // Return user data for admin
     } else if (!isAdmin && userData.role === 'user') {
-      return { success: true, user };
+      return { success: true, user: userData }; // Return user data for normal user
     } else {
       return { success: false, message: "Unauthorized access." };
     }

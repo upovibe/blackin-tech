@@ -43,7 +43,7 @@ const SignInForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!formValues.identifier || !formValues.password) {
       setToast({
         type: "error",
@@ -52,18 +52,23 @@ const SignInForm = () => {
       });
       return;
     }
-
+  
     setLoading(true);
-
+  
     try {
       const result = await signInUser(
         formValues.identifier,
         formValues.password
       );
-
+  
       if (result.success) {
-        navigate("/");
-
+        // Redirect based on user role
+        if (result.user.role === "admin") {
+          navigate("/dashboard");
+        } else {
+          navigate("/");
+        }
+  
         setToast({
           type: "success",
           message: "Sign-in successful!",
@@ -85,7 +90,7 @@ const SignInForm = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
