@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { storage } from '../../services/firebase';
 import { FaCloudUploadAlt } from 'react-icons/fa';
-import avatarDefault from '../../assets/images/avatar-default.png';
+import avatarDefault from '../../assets/images/placeholder-image.png';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import Lottie from 'lottie-react';
 import animationData from '../../assets/animations/Animation - AvatarLoader.json';
@@ -12,7 +12,6 @@ const AvatarUpload = ({ onUpload }) => {
   const [error, setError] = useState('');
 
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const MAX_DIMENSION = 1000;
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -27,42 +26,28 @@ const AvatarUpload = ({ onUpload }) => {
       return;
     }
 
-    const img = new Image();
-    img.src = URL.createObjectURL(file);
+    setIsUploading(true);
+    setError(''); // Clear previous errors
 
-    img.onload = () => {
-      if (img.width > MAX_DIMENSION || img.height > MAX_DIMENSION) {
-        setError(`Image dimensions should not exceed ${MAX_DIMENSION}x${MAX_DIMENSION} pixels.`);
-        return;
-      }
+    const fileRef = ref(storage, `avatars/${file.name}`);
+    const uploadTask = uploadBytesResumable(fileRef, file);
 
-      setIsUploading(true);
-      setError(''); // Clear previous errors
-
-      const fileRef = ref(storage, `avatars/${file.name}`);
-      const uploadTask = uploadBytesResumable(fileRef, file);
-
-      uploadTask.on(
-        'state_changed',
-        null,
-        (err) => {
-          setError(err.message);
-          setIsUploading(false);
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          setImage(downloadURL);
-          if (typeof onUpload === 'function') {
-            onUpload(downloadURL);
-          }
-          setIsUploading(false);
+    uploadTask.on(
+      'state_changed',
+      null,
+      (err) => {
+        setError(err.message);
+        setIsUploading(false);
+      },
+      async () => {
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        setImage(downloadURL);
+        if (typeof onUpload === 'function') {
+          onUpload(downloadURL);
         }
-      );
-    };
-
-    img.onerror = () => {
-      setError('Invalid image file.');
-    };
+        setIsUploading(false);
+      }
+    );
   };
 
   return (

@@ -36,7 +36,7 @@ function NavBar() {
                 <Link to="/Connect">Connect</Link>
               </li>
               <li className='block w-full hover:bg-slate-700/50 hover:text-white md:hover:text-slate-950 md:hover:bg-transparent transition-all duration-300 ease-in-out md:border-b-2 border-transparent md:hover:border-slate-700 p-2 md:p-0 md:pb-[1px]'>
-                <Link to="/about">About</Link>
+                <Link to="/">About</Link>
               </li>
             </ul>
           </div>
@@ -80,15 +80,15 @@ function NavBar() {
                 <Link to="/connect" className='block w-full h-full p-2'>Connect</Link>
               </li>
               <li className="hover:bg-slate-500 rounded-md transition-all w-full">
-                <Link to="/about" className='block w-full h-full p-2'>About</Link>
+                <Link to="/" className='block w-full h-full p-2'>About</Link>
               </li>
               <li className="hover:bg-slate-500 rounded-md transition-all w-full">
-                <Link to="/terms" className='block w-full h-full p-2'>Terms</Link>
+                <Link to="/" className='block w-full h-full p-2'>Terms</Link>
               </li>
             </ul>
             {!user && (
               <div className='p-2'>
-                <Button className="block bg-white text-black hover:text-white w-full" onClick={handleSignUpClick}>Sign Up</Button>
+                <Button className="block bg-slate-800 w-full" onClick={handleSignUpClick}>Sign Up</Button>
               </div>
             )}
           </div>

@@ -8,6 +8,7 @@ import HorizontalLineWithText from "../common/HorizontalLineWithText";
 import Toast from "../common/Toast";
 import Loader from "../common/Loader";
 import { signInUser, signInWithGoogle } from "../../services/authService";
+import Logo from "../common/Logo";
 
 const SignInForm = () => {
   const [formValues, setFormValues] = useState({
@@ -18,8 +19,8 @@ const SignInForm = () => {
   const [fadeIn, setFadeIn] = useState(false);
   const [toast, setToast] = useState({
     visible: false,
-    message: '',
-    type: 'success',
+    message: "",
+    type: "success",
   });
 
   const navigate = useNavigate();
@@ -114,6 +115,10 @@ const SignInForm = () => {
     >
       {/* Loader Overlay */}
       {loading && <Loader visible={loading} />}
+
+      <div className="flex items-center justify-center mb-8 md:hidden ">
+        <Logo />
+      </div>
 
       <h2 className="text-lg font-bold mb-4 text-center">
         Sign in to BlackIn Tech

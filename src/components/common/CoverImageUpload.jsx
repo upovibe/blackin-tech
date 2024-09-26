@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { storage } from "../../services/firebase";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import coverDefault from "../../assets/images/banner.png";
+import coverDefault from "../../assets/images/placeholder-image.png";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import Lottie from "lottie-react";
 import animationData from "../../assets/animations/Animation - AvatarLoader.json";
@@ -12,8 +12,6 @@ const CoverImageUpload = ({ onUpload }) => {
   const [error, setError] = useState("");
 
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const MIN_WIDTH = 1024;
-  const MIN_HEIGHT = 576;
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -28,44 +26,28 @@ const CoverImageUpload = ({ onUpload }) => {
       return;
     }
 
-    const img = new Image();
-    img.src = URL.createObjectURL(file);
+    setIsUploading(true);
+    setError("");
 
-    img.onload = () => {
-      if (img.width < MIN_WIDTH || img.height < MIN_HEIGHT) {
-        setError(
-          `Image dimensions must be at least ${MIN_WIDTH}x${MIN_HEIGHT} pixels.`
-        );
-        return;
-      }
+    const fileRef = ref(storage, `coverImages/${file.name}`);
+    const uploadTask = uploadBytesResumable(fileRef, file);
 
-      setIsUploading(true);
-      setError(""); // Clear previous errors
-
-      const fileRef = ref(storage, `coverImages/${file.name}`);
-      const uploadTask = uploadBytesResumable(fileRef, file);
-
-      uploadTask.on(
-        "state_changed",
-        null,
-        (err) => {
-          setError(err.message);
-          setIsUploading(false);
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          setImage(downloadURL);
-          if (typeof onUpload === "function") {
-            onUpload(downloadURL);
-          }
-          setIsUploading(false);
+    uploadTask.on(
+      "state_changed",
+      null,
+      (err) => {
+        setError(err.message);
+        setIsUploading(false);
+      },
+      async () => {
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        setImage(downloadURL);
+        if (typeof onUpload === "function") {
+          onUpload(downloadURL);
         }
-      );
-    };
-
-    img.onerror = () => {
-      setError("Invalid image file.");
-    };
+        setIsUploading(false);
+      }
+    );
   };
 
   return (
@@ -108,7 +90,6 @@ const CoverImageUpload = ({ onUpload }) => {
       )}
     </div>
   );
-  
 };
 
 export default CoverImageUpload;

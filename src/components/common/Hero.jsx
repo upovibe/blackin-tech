@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import animationHero from "../../assets/animations/Animation - Signup.json";
 import { FaUserFriends, FaBriefcase, FaRocket } from "react-icons/fa"; // Icons import
@@ -6,6 +7,7 @@ import Button from "../common/Button";
 
 function Hero() {
   const [text, setText] = useState("");
+  const navigate = useNavigate();
   const [isDeleting, setIsDeleting] = useState(false);
   const texts = [
     "Empower Your Career",
@@ -49,6 +51,14 @@ function Hero() {
     return () => clearTimeout(typingTimeout);
   }, [text, typing, isDeleting, textIndex]);
 
+  const handleExplore = () => {
+    navigate("/jobs");
+  }
+  const handleJoin = () => {
+    navigate("/signin");
+  }
+
+
   return (
     <div className="relative flex flex-col items-center justify-center overflow-hidde px-2">
       <div className="flex flex-col items-center justify-center gap-5">
@@ -67,13 +77,13 @@ function Hero() {
           </p>
           <div className="flex  items-center justify-center gap-3">
             <Button
-              href="#explore"
+              onClick={handleExplore}
               className="bg-slate-600 w-36 rounded-full text-md md:text-lg font-semibold text-white hover:bg-slate-700 transition transform hover:scale-105 duration-300"
             >
               Explore
             </Button>
             <Button
-              href="#join"
+              onClick={handleJoin}
               className="bg-slate-700 w-36 rounded-full text-md md:text-lg font-semibold text-white hover:bg-slate-800 transition transform hover:scale-105 duration-300"
             >
               Join

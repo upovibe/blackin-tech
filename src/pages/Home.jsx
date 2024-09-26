@@ -12,10 +12,11 @@ import Subscribe from "./Subscribe";
 import Divider from "../components/common/Divider";
 
 function Home() {
+
   useEffect(() => {
     AOS.init({ duration: 1000 }); // Initialize AOS with animation duration
   }, []);
-
+  
   return (
     <main className="">
       <section className="flex items-center justify-center py-16 relative z-10">

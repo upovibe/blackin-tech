@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../common/Input";
+import Logo from "../common/Logo"
 import Button from "../common/Button";
 import Checkbox from "../common/Checkbox";
 import PasswordInput from "../common/PasswordInput";
@@ -133,6 +134,10 @@ const SignUpForm = () => {
     >
       {/* Loader Overlay */}
       {loading && <Loader visible={loading} />}
+
+      <div className="flex items-center justify-center mb-8 md:hidden ">
+        <Logo />
+      </div>
 
       <h2 className="text-lg font-bold mb-4 text-center">
         Sign up to BlackIn Tech
