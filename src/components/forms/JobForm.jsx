@@ -15,7 +15,7 @@ import { fetchCountries } from "../../api/fetchStaticData";
 import ImagesUpload from "../common/ImagesUpload";
 import { uploadImages } from "../../services/storageService";
 import AvatarUpload from "../common/AvatarUpload";
-import SlidingCheckbox from "../common/SlidingCheckbox";
+import SlidingCheckBox from "../common/SlidingCheckBox";
 import CompanyLogo from "../../assets/images/company-logo.png";
 
 const JobForm = () => {
@@ -253,7 +253,7 @@ const JobForm = () => {
         />
 
         <div className="flex items-center mt-4">
-          <SlidingCheckbox
+          <SlidingCheckBox
             id="media-toggle"
             name="showMediaUpload"
             checked={showMediaUpload}
