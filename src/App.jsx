@@ -4,7 +4,7 @@ import MainLayout from './components/Layout/MainLayout';
 import DashboardLayout from './components/Layout/DashboardLayout';
 import PrivateRoute from './routes/PrivateRoute';
 import PublicRoute from './routes/PublicRoute';
-import Home from './pages/Home';
+import Home from './pages/Home.jsx';
 import About from './pages/About';
 import Jobs from './pages/Jobs';
 import Connect from './pages/Connect';
@@ -36,7 +36,7 @@ function App() {
         <Route path="/signin" element={<PublicRoute element={<SignIn />} />} />
 
         {/* Public routes with MainLayout */}
-        <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+        <Route path="/" element={<MainLayout><Home/></MainLayout>} />
         <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />
         <Route path="/jobs/:slug" element={<MainLayout><JobDetails /></MainLayout>} />
         <Route path="/subscribe" element={<MainLayout><Subscribe /></MainLayout>} />
