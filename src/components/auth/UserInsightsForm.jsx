@@ -5,7 +5,7 @@ import TagInput from "../common/TagInput";
 import SelectInput from "../common/SelectInput";
 import Button from "../common/Button";
 import DocsUpload from "../common/DocsUpload";
-import SlidingCheckbox from "../common/SlidingCheckbox";
+import SlidingCheckbox from "../common/SlidingCheckBox";
 import Lottie from "lottie-react";
 import successAnimation from "../../assets/animations/Animation - JobPosted.json";
 import formLoading from "../../assets/animations/Animation - FormLoading.json";
