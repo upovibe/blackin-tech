@@ -84,7 +84,7 @@ const AssignBadgeForm = () => {
   );
 
   return (
-    <div className="w-full p-2">
+    <div className="w-full p-2 over">
       <h1 className="text-2xl font-semibold mb-4">Assign Badge to Users</h1>
 
       {/* Search Users */}

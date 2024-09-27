@@ -389,7 +389,7 @@ const UserBadgeTable = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="h-screen overflow-auto pb-48">
       <h1 className="text-2xl font-semibold mb-4">Manage Assigned Badges</h1>
 
       <div className="mb-4 flex justify-between items-center">

@@ -250,27 +250,29 @@ function Profile() {
                   </div>
                   <div className="flex flex-col items-start gap-3">
                     <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-1">
-                        <span className="text-2xl font-bold">
+                      <div className="flex items-start gap-2">
+                        <span className="text-xl leading-none font-bold whitespace-nowrap overflow-hidden text-ellipsis">
                           {profileUser.fullName || "Anonymous"}
                         </span>
-                        {badge && badge.name && (
-                          <Tooltip
-                            position="top"
-                            text={`${badge.name}: ${
-                              badge.description || "Click to see more details"
-                            }`}
-                          >
-                            <img
-                              src={badge.icon}
-                              alt={badge.name}
-                              className="size-4 ilter drop-shadow-lg"
-                            />
-                          </Tooltip>
-                        )}
+                        <div className="ml-auto">
+                          {badge && badge.name && (
+                            <Tooltip
+                              position="top"
+                              text={`${badge.name}: ${
+                                badge.description || "Click to see more details"
+                              }`}
+                            >
+                              <img
+                                src={badge.icon}
+                                alt={badge.name}
+                                className="size-4 filter drop-shadow-lg"
+                              />
+                            </Tooltip>
+                          )}
+                        </div>
                       </div>
                       <div className="flex flex-row gap-2 items-center">
-                        <span className="font-semibold text-lg lowercase">
+                        <span className="font-semibold text-lg lowercase whitespace-nowrap overflow-hidden text-ellipsis">
                           @{profileUser.userName || "Anonymous"}
                         </span>
                         &#183;

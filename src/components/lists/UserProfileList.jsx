@@ -198,13 +198,12 @@ const UserProfileList = ({
       {filteredProfiles.map((profile) => (
         <div
           key={profile.id}
-          className="border-2 border-opacity-30 bg-slate-50 border-slate-400 cursor-pointer flex flex-col group overflow-hidden rounded-xl shadow hover:duration-300 hover:ease-in-out hover:shadow-md hover:transition-all"
-          style={{ width: "180px", minHeight: "260px" }}
+          className="border-2 border-opacity-30 bg-slate-50 border-slate-400 cursor-pointer flex flex-col group overflow-visible rounded-xl shadow hover:duration-300 hover:ease-in-out hover:shadow-md hover:transition-all w-[180px] min-h-[260px]"           
           onClick={() => handleProfileClick(profile.userName)}
         >
           <div className="relative">
             <div
-              className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-full z-"
+              className="bg-center bg-cover h-20 min-h-20 overflow-hidden w-full rounded-t-[10px]"
               style={{
                 backgroundImage: `url(${
                   profile.coverImageUrl || DefaultAvatar
