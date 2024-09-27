@@ -219,7 +219,9 @@ const SignUpForm = () => {
             >
               Sign up with Google
             </Button>
-            <HorizontalLineWithText text="or" />
+            <HorizontalLineWithText>
+            <span>Or</span>
+          </HorizontalLineWithText>
             <Button
               className="w-full text-sm h-10"
               iconLeft={<FaEnvelope />}

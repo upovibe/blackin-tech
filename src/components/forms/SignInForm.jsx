@@ -140,7 +140,9 @@ const SignInForm = () => {
           >
             Sign in with Google
           </Button>
-          <HorizontalLineWithText text="or" />
+          <HorizontalLineWithText>
+            <span>Or</span>
+          </HorizontalLineWithText>
           <Input
             type="text"
             name="identifier"
