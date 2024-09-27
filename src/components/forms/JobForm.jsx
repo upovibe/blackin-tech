@@ -91,7 +91,7 @@ const JobForm = () => {
     setFormData({ ...formData, logo: url });
     setLogoError(false);
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -254,7 +254,7 @@ const JobForm = () => {
           onChange={(content) =>
             setFormData({ ...formData, description: content })
           }
-          placeholder="Add more info on Salary(optional), Required Qualifications, Company Overview, Benefits, etc."
+          placeholder="Add more info on Required Qualifications, Company Overview, Benefits, Salary(optional), etc."
           className="bg-slate-200 text-slate-900 rounded-md"
         />
 
