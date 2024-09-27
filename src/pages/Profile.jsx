@@ -254,7 +254,6 @@ function Profile() {
                         <span className="text-xl leading-none font-bold whitespace-nowrap overflow-hidden text-ellipsis">
                           {profileUser.fullName || "Anonymous"}
                         </span>
-                        <div className="ml-auto">
                           {badge && badge.name && (
                             <Tooltip
                               position="top"
@@ -265,11 +264,10 @@ function Profile() {
                               <img
                                 src={badge.icon}
                                 alt={badge.name}
-                                className="size-4 filter drop-shadow-lg"
+                                className="size-[1.2rem] filter drop-shadow-lg"
                               />
                             </Tooltip>
                           )}
-                        </div>
                       </div>
                       <div className="flex flex-row gap-2 items-center">
                         <span className="font-semibold text-lg lowercase whitespace-nowrap overflow-hidden text-ellipsis">

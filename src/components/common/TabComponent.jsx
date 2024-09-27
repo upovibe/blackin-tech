@@ -29,8 +29,8 @@ const TabComponent = ({ tabs, defaultActiveTab, onTabChange, orientation = "hori
                 : "w-full px-4 py-2 text-sm font-medium border-b-2 border-transparent transition-colors duration-200 text-center md:text-left"
             } transition-colors duration-200 ${
               activeTab === tab.label
-                ? "text-slate-700 bg-gray-100 border-b-2 border-black/50"
-                : "text-gray-600 hover:bg-gray-100"
+                ? "text-slate-700 bg-gray-200 border-b-2 border-black/50"
+                : "text-gray-600 hover:bg-gray-300"
             }`}
           >
             {tab.label}
