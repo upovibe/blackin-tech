@@ -82,10 +82,19 @@ const CompleteProfile = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    if (name === "userName") {
+      const alphanumericValue = value.replace(/[^a-zA-Z0-9_]/g, "");
+      setFormValues((prev) => ({
+        ...prev,
+        [name]: alphanumericValue,
+      }));
+    } else {
+      setFormValues((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleTagChange = (tags) => {
@@ -109,45 +118,22 @@ const CompleteProfile = () => {
     }));
   };
 
-  //const validateStep = () => {
-    //switch (step) {
-      //case 1:
-        //return formValues.avatarUrl !== "";
-      //case 2:
-        //return formValues.coverImageUrl !== "";
-      //case 3:
-        //return formValues.userName !== "" && formValues.bio !== "";
-      //case 4:
-        //return formValues.pronouns !== "" && formValues.languages.length > 0;
-      //case 5:
-        //return formValues.country !== "" && formValues.city !== "";
-  //     default:
-  //      return false;
-  //  }
-  //};
-
-const validateStep = () => {
-  const userNamePattern = /^[a-zA-Z0-9_]+$/; // Only allows letters, numbers, and underscores
-
-  switch (step) {
-    case 1:
-      return formValues.avatarUrl !== "";
-    case 2:
-      return formValues.coverImageUrl !== "";
-    case 3:
-      return (
-        formValues.userName !== "" && 
-        formValues.bio !== "" && 
-        userNamePattern.test(formValues.userName) // Validates username characters
-      );
-    case 4:
-      return formValues.pronouns !== "" && formValues.languages.length > 0;
-    case 5:
-      return formValues.country !== "" && formValues.city !== "";
-    default:
-      return false;
-  }
-};
+  const validateStep = () => {
+    switch (step) {
+      case 1:
+        return formValues.avatarUrl !== "";
+      case 2:
+        return formValues.coverImageUrl !== "";
+      case 3:
+        return formValues.userName !== "" && formValues.bio !== "";
+      case 4:
+        return formValues.pronouns !== "" && formValues.languages.length > 0;
+      case 5:
+        return formValues.country !== "" && formValues.city !== "";
+      default:
+        return false;
+    }
+  };
 
   const nextStep = (e) => {
     e.preventDefault();

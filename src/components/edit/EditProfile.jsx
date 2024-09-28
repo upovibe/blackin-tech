@@ -16,8 +16,19 @@ import AvatarUpload from "../common/AvatarUpload";
 import CoverImageUpload from "../common/CoverImageUpload";
 import Button from "../common/Button";
 import Toast from "../common/Toast";
-import Divider from "../common/Divider"
-import { FaTwitter, FaLinkedin, FaGithub, FaFacebook, FaInstagram, FaMedium, FaTwitch, FaDiscord, FaMinus, FaPlus } from "react-icons/fa";
+import Divider from "../common/Divider";
+import {
+  FaTwitter,
+  FaLinkedin,
+  FaGithub,
+  FaFacebook,
+  FaInstagram,
+  FaMedium,
+  FaTwitch,
+  FaDiscord,
+  FaMinus,
+  FaPlus,
+} from "react-icons/fa";
 
 const socialMediaIcons = {
   twitter: FaTwitter,
@@ -110,10 +121,19 @@ const EditProfile = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    if (name === "userName") {
+      const alphanumericValue = value.replace(/[^a-zA-Z0-9_]/g, "");
+      setFormValues((prev) => ({
+        ...prev,
+        [name]: alphanumericValue,
+      }));
+    } else {
+      setFormValues((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleTagChange = (tags) => {
@@ -258,24 +278,26 @@ const EditProfile = () => {
           value={formValues.city}
           onChange={handleInputChange}
         />
-        {/* Social Media Links Section */}
         <div>
           <h3 className="text-lg font-semibold">Social Media Links</h3>
           {socialLinks.map((social, index) => (
-            <div key={index} className="flex items-center justify-between gap-3">
+            <div
+              key={index}
+              className="flex items-center justify-between gap-3"
+            >
               <div className="flex flex-col md:flex-row items-center gap-2 w-full my-1">
                 <div className="w-full md:w-32">
-                <SelectInput
-                  name="platform"
-                  placeholder="Platform"
-                  value={social.platform}
-                  onChange={(e) => handleSocialChange(index, e)}
-                  options={Object.keys(socialMediaIcons).map((platform) => ({
-                    label: platform.charAt(0).toUpperCase() + platform.slice(1),
-                    value: platform,
-                  }))}
-                />
-
+                  <SelectInput
+                    name="platform"
+                    placeholder="Platform"
+                    value={social.platform}
+                    onChange={(e) => handleSocialChange(index, e)}
+                    options={Object.keys(socialMediaIcons).map((platform) => ({
+                      label:
+                        platform.charAt(0).toUpperCase() + platform.slice(1),
+                      value: platform,
+                    }))}
+                  />
                 </div>
                 <Input
                   type="url"
@@ -283,9 +305,8 @@ const EditProfile = () => {
                   placeholder="Social Link URL"
                   value={social.url}
                   onChange={(e) => handleSocialChange(index, e)}
-                /> 
-                 {index > 0 && (
-                <div className="size-fit ml-auto">
+                />
+                {socialLinks.length > 1 && (
                   <Button
                     type="button"
                     onClick={() => removeSocialLink(index)}
@@ -293,9 +314,11 @@ const EditProfile = () => {
                   >
                     <FaMinus />
                   </Button>
-                </div>
-              )}
-              <Divider className="bg-black/5 my-2 inline-block md:hidden" />
+                )}
+              </div>
+
+              {/* Show Add button only for the last item */}
+              {index === socialLinks.length - 1 && (
                 <div className="size-fit ml-auto">
                   <Button
                     type="button"
@@ -305,11 +328,11 @@ const EditProfile = () => {
                     <FaPlus />
                   </Button>
                 </div>
-              </div>
-
+              )}
             </div>
           ))}
         </div>
+
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Loading..." : "Update Profile"}
         </Button>

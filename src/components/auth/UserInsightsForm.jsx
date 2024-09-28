@@ -463,7 +463,9 @@ const UserInsightsForm = () => {
                           onChange={(e) => handleEducationChange(index, e)}
                         />
                       </div>
-                        {index > 0 && (
+                      <div className="flex items-center justify-end ml-auto gap-2">
+                        {/* Show Remove button only if there is more than one education entry */}
+                        {formValues.education.length > 1 && (
                           <div className="size-fit ml-auto">
                             <Button
                               type="button"
@@ -473,16 +475,19 @@ const UserInsightsForm = () => {
                               <FaMinus />
                             </Button>
                           </div>
-                        )}                        
-                        <Divider className="bg-black/5 mb-3 inline-block md:hidden" />
-                      <div className="size-fit ml-auto">
-                        <Button
-                          type="button"
-                          onClick={addEducation}
-                          className="bg-blue-500 text-white size-10"
-                        >
-                          <FaPlus />
-                        </Button>
+                        )}
+                        {/* Show Add button only for the last item */}
+                        {index === formValues.education.length - 1 && (
+                          <div className="size-fit ml-auto">
+                            <Button
+                              type="button"
+                              onClick={addEducation}
+                              className="bg-blue-500 text-white size-10"
+                            >
+                              <FaPlus />
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -525,26 +530,32 @@ const UserInsightsForm = () => {
                           onChange={(e) => handleCertificationChange(index, e)}
                         />
                       </div>
-                        {index > 0 && (
+
+                      <div className="flex items-center gap-2 justify-end ml-auto">
+                        {/* Show Remove button only if there is more than one certification */}
+                        {formValues.certifications.length > 1 && (
                           <div className="size-fit ml-auto">
-                          <Button
-                            type="button"
-                            onClick={() => removeCertification(index)}
-                            className="bg-red-500 text-white size-10"
-                          >
-                            <FaMinus />
-                          </Button>
+                            <Button
+                              type="button"
+                              onClick={() => removeCertification(index)}
+                              className="bg-red-500 text-white size-10"
+                            >
+                              <FaMinus />
+                            </Button>
                           </div>
-                        )}                        
-                        <Divider className="bg-black/5 mb-3 inline-block md:hidden" />
-                      <div className="size-fit ml-auto">
-                        <Button
-                          type="button"
-                          onClick={addCertification}
-                          className="bg-blue-500 text-white size-10"
-                        >
-                          <FaPlus />
-                        </Button>
+                        )}
+                        {/* Show Add button only for the last item */}
+                        {index === formValues.certifications.length - 1 && (
+                          <div className="size-fit ml-auto">
+                            <Button
+                              type="button"
+                              onClick={addCertification}
+                              className="bg-blue-500 text-white size-10"
+                            >
+                              <FaPlus />
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
